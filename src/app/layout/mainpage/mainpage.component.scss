@@ -1,0 +1,9 @@
+.sidenav {
+  padding: 20px;
+  border: 1px solid var(--mdc-outlined-card-outline-color);
+}
+
+main {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}

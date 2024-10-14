@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>{{ data.title }}</h1>
+
+<mat-dialog-content>
+  <div>{{ data.message }}</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <!-- CANCEL BUTTON -->
+  <button
+    mat-button
+    *ngIf="data.cancelButton?.show || true"
+    [color]="data.cancelButton?.color || 'primary'"
+    (click)="close(false)"
+  >{{ data.cancelButton?.text || STRING.SHARED.DIALOGS.CANCEL_BUTTON }}</button>
+
+  <!-- ACCEPT BUTTON -->
+  <button
+    mat-button
+    *ngIf="data.acceptButton?.show || true"
+    [color]="data.acceptButton?.color || 'primary'"
+    (click)="close(true)"
+  >{{ data.acceptButton?.text || STRING.SHARED.DIALOGS.ACCEPT_BUTTON }}</button>
+
+</mat-dialog-actions>
