@@ -1,0 +1,11 @@
+mat-icon {
+  cursor: pointer;
+}
+
+::ng-deep mat-icon:hover {
+  color: var(--mat-primary)
+}
+
+mat-icon:active {
+  color: greenyellow;
+}

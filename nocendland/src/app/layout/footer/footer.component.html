@@ -1,0 +1,10 @@
+<ng-container *ngIf="footerService.showingFooter()">
+  <footer class="flex justify-center items-center h-12 gap-4 w-full border-t border-white/20">
+    <ng-container *ngFor="let button of footerService.buttons()">
+      <mat-icon (click)="footerService.onClickButton(button)">{{ button.icon }}</mat-icon>
+      <div [class]="!button.active ? 'hidden' : ''" [style.width]="button.active ? getTextWidth(button.text) : 0">
+        <span class="fade-in" *ngIf="button.active">{{ button.text }}</span>
+      </div>
+    </ng-container>
+  </footer>
+</ng-container>

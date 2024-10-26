@@ -1,0 +1,38 @@
+<ng-template #intakeContent>
+
+  <router-outlet></router-outlet>
+
+  
+
+  <!-- @for (intake of intakeList; track $index) {
+    
+  } -->
+  <!-- <form *ngIf="!!intakeForm" [formGroup]="intakeForm" class="grid grid-cols-2 gap-4"> -->
+
+    <!-- INGREDIENTE -->
+    <!-- <mat-form-field appearance="outline">
+      <mat-label>Ingrediente</mat-label>
+      <mat-select formControlName="ingredient" multiple>
+        @for (ingredient of ingredientService.ingredientList(); track ingredient) {
+          <mat-option [value]="ingredient"> {{ ingredient.name }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="cursor-pointer">
+      <mat-label>ingredient</mat-label>
+      <input matInput formControlName="ingredient" class="cursor-pointer" readonly/>
+    </mat-form-field> -->
+
+    <!-- CANTIDAD EN GRAMOS -->
+    <!-- <mat-form-field appearance="outline">
+      <mat-label>Cantidad en gramos</mat-label>
+      <input matInput type="number" formControlName="quantity_in_grams" readonly/>
+    </mat-form-field>
+    
+  </form> -->
+
+  
+
+</ng-template>
+
+<app-column-center-container [template]="intakeContent"></app-column-center-container>

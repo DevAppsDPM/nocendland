@@ -1,0 +1,73 @@
+@import '@angular/material/prebuilt-themes/magenta-violet.css';
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import 'tailwindcss/tailwind.css';
+
+@import "styles/animations";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: black }
+
+
+:root {
+
+  // Tamaño del footer
+  --standard-footer-height: 48px;
+
+  // Tamaño del header
+  --standard-toolbar-height: 64px;
+  --small-toolbar-height: 56px;
+
+  // Height con el offset toolbar
+  --offset-toolbar-height: var(--standard-toolbar-height);
+
+  @media(width < 600px) {
+    --offset-toolbar-height: var(--small-toolbar-height);
+  }
+
+  .container-100-with-offset-toolbar-height {
+    width: 100%;
+    height: var(--offset-toolbar-height);
+  }
+
+  // Height con el offset footer
+  .container-100-with-offset-footer-height {
+    width: 100%;
+    height: calc(100% - var(--standard-footer-height));
+  }
+
+  // Height offset con footer y toolbar
+  .container-100-with-offset-toolbar-and-footer-height {
+    width: 100%;
+    height: calc(100vh - (var(--offset-toolbar-height) + var(--standard-footer-height) + 1px));
+  }
+
+  // Scrollbar
+  ::-webkit-scrollbar-track
+  {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar
+  {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb
+  {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background-color: #e5e7eb;
+  }
+
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mdc-notched-outline__notch { // TODO: BUG DE MATERIAL 3 PROBAR DE QUITAR CUANDO ACTUALICE.
+  border-right: none;
+}

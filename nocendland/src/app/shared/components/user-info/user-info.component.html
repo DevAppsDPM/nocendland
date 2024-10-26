@@ -1,0 +1,18 @@
+<mat-card appearance="outlined">
+
+  <!-- CARGANDO INFORMACIÓN DEL USUARIO -->
+  <div *ngIf="!supabase.user()" class="flex justify-center">
+    <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+  </div>
+
+  <mat-card-header *ngIf="!!supabase.user()">
+    <mat-card-title>{{ supabase.user()?.user_name }}</mat-card-title>
+    <mat-card-subtitle>{{ supabase.user()?.email }}</mat-card-subtitle>
+    <img [src]="supabase.user()?.avatar_url" alt="Avatar del usuario" mat-card-avatar>
+  </mat-card-header>
+
+  <!-- ACCIONES -->
+  <mat-card-actions align="end">
+    <button mat-button color="warn" (click)="supabase.signOut()"><mat-icon>logout</mat-icon>Salir</button>
+  </mat-card-actions>
+</mat-card>

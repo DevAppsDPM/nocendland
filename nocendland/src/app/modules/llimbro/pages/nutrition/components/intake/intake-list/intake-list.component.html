@@ -1,0 +1,26 @@
+    @for (intake of intakesList; track $index) {
+
+        <main class="grid p-3 gap-4" [class]="multiselect ? 'grid-cols-4' : 'grid-cols-3'">
+
+            <!-- IMAGEN -->
+            <img [src]="intake.nutrition_ingredient.image || RESOURCES.DEFAULT_IMAGE" [alt]=""/>
+            
+            <!-- NOMBRE -->
+            <div>{{ intake.nutrition_ingredient.name }}</div>
+            
+            <!-- SELECTOR DE GRAMOS -->
+            <div class="border-solid border-2 border-gray-400 rounded-lg h-16 w-32 flex items-center justify-between p-4">
+                <div>{{intake.quantity_in_grams}}</div>
+                <div class="grid grid-cols-1">
+                    <mat-icon class="cursor-pointer">keyboard_arrow_up</mat-icon>
+                    <mat-icon class="cursor-pointer">keyboard_arrow_down</mat-icon>
+                </div>
+            </div>
+
+            <mat-checkbox
+                *ngIf="multiselect"
+            />
+            
+        </main>
+        <mat-divider></mat-divider>
+    }

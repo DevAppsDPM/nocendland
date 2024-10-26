@@ -1,0 +1,24 @@
+<!-- <dpm-listing
+  [multiSelection]=""
+  [activateConfirm]=""
+/> -->
+
+<main>
+
+  <article class="h-full overflow-auto">
+
+    <mat-selection-list #ingredientList [multiple]="multiSelection" hideSingleSelectionIndicator>
+      <mat-list-option *ngFor="let ingredient of nutritionService.ingredient.ingredientList()" [value]="ingredient" (click)="!multiSelection && emitIngredient(ingredient)">
+        <img matListItemAvatar *ngIf="!nutritionService.ingredient.readingImagesOfIngredients()" [src]="ingredient.image || RESOURCES.DEFAULT_IMAGE" [alt]="STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.LIST_AVATAR_ALT"/>
+        <span matListItemTitle>{{ ingredient.name }}</span>
+        <span matListItemLine>{{ ingredient.description }}</span>
+      </mat-list-option>
+    </mat-selection-list>
+
+  </article>
+
+  <footer *ngIf="multiSelection && activateConfirm" class="flex justify-end h-full pt-4 pr-4">
+    <button mat-fab [disabled]="ingredientList.selectedOptions.selected.length === 0" (click)="emitIngredients(ingredientList.selectedOptions.selected)"><mat-icon>{{ iconConfirm }}</mat-icon></button>
+  </footer>
+
+</main>

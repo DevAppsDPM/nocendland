@@ -1,0 +1,19 @@
+<main *ngIf="!!items">
+
+    <article class="h-full overflow-auto">
+  
+      <mat-selection-list #list [multiple]="multiSelection" hideSingleSelectionIndicator>
+        <mat-list-option *ngFor="let item of items()" [value]="item" (click)="!multiSelection && emitItem(item)">
+          <img matListItemAvatar *ngIf="!!item.image" [src]="item.image || RESOURCES.DEFAULT_IMAGE" [alt]="STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.LIST_AVATAR_ALT"/>
+          <span matListItemTitle>{{ item.name }}</span>
+          <span matListItemLine>{{ item.description }}</span>
+        </mat-list-option>
+      </mat-selection-list>
+  
+    </article>
+  
+    <footer *ngIf="multiSelection && activateConfirm" class="flex justify-end h-full pt-4 pr-4">
+      <button mat-fab [disabled]="list.selectedOptions.selected.length === 0" (click)="emitItems(list.selectedOptions.selected)"><mat-icon>{{ iconConfirm }}</mat-icon></button>
+    </footer>
+  
+  </main>

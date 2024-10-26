@@ -1,0 +1,19 @@
+<div class="calendar-container">
+  <div class="header">
+    <button (click)="prevMonth()">&#9664;</button>
+    <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
+    <button (click)="nextMonth()">&#9654;</button>
+  </div>
+
+  <div class="days-container">
+    <div *ngFor="let day of weekDays" class="day-header">{{ day }}</div>
+
+    <!-- Agrega días vacíos si el mes no empieza en lunes -->
+    <div *ngFor="let empty of getEmptyDays()" class="day"></div>
+
+    <!-- Muestra los días del mes -->
+    <div *ngFor="let day of daysInMonth" class="day" [class]="isSelectedDay(day) ? 'bg-indigo-950' : ''" (click)="onDayClick(day)">
+      {{ day }}
+    </div>
+  </div>
+</div>
