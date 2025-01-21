@@ -1,5 +1,13 @@
 <ng-template #objectivesContent>
-  <p>objectives works!</p>
+  <app-calendar (dateSelected)="dateSelected($event)" class="pb-4"/>
+
+  <article class="grid gap-1 p-1">
+    <div>calories: {{ calories }}</div>
+    <div>proteins: {{ proteins }}</div>
+    <div>carbohydrates: {{ carbohydrates }}</div>
+    <div>fats: {{ fats }}</div>
+  </article>
+
 </ng-template>
 
 <app-column-center-container [template]="objectivesContent"></app-column-center-container>

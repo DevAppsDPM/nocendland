@@ -42,7 +42,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "nutrition_ingredient_id_user_foreign"
+            foreignKeyName: "nutrition_ingredient_id_user_fkey"
             columns: ["id_user"]
             isOneToOne: false
             referencedRelation: "user"
@@ -52,14 +52,14 @@ export type Database = {
       }
       nutrition_intake: {
         Row: {
-          date: Date
+          date: string
           id: number
           id_user: string
           ingredient: number
           quantity_in_grams: number | null
         }
         Insert: {
-          date?: Date
+          date?: string
           id?: number
           id_user: string
           ingredient: number
@@ -81,7 +81,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "nutrition_intake_ingredient_foreign"
+            foreignKeyName: "nutrition_intake_ingredient_fkey"
             columns: ["ingredient"]
             isOneToOne: false
             referencedRelation: "nutrition_ingredient"
@@ -173,7 +173,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      nutrition_intake_with_totals: {
+        Row: {
+          calories: number | null
+          carbohydrates: number | null
+          date: string | null
+          fats: number | null
+          ingredient: number | null
+          ingredient_name: string | null
+          intake_id: number | null
+          proteins: number | null
+          quantity_in_grams: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nutrition_intake_ingredient_fkey"
+            columns: ["ingredient"]
+            isOneToOne: false
+            referencedRelation: "nutrition_ingredient"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nutrition_objectives_totals: {
+        Row: {
+          calories: number | null
+          carbohydrates: number | null
+          date: string | null
+          fats: number | null
+          proteins: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

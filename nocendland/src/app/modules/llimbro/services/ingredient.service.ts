@@ -44,6 +44,12 @@ export class IngredientService extends supabaseService {
     return this.supabaseService.supabase.from(this.tableName).select('*').eq('id', ingredientId).single()
   }
 
+  public async readIngredientListByIdList(ingredientIdList: number[]) {
+    console.log('Reading ingredient list with id list', ingredientIdList)
+    const query = await this.supabaseService.supabase.from(this.tableName).select('*').in('id', ingredientIdList);
+    return query.data || [];
+  }
+
   /**
    * INSERT | UPDATE
    * @param ingredient

@@ -11,7 +11,7 @@ import { MatIconButton } from '@angular/material/button';
   selector: 'app-intakes-view',
   standalone: true,
   imports: [
-    CalendarComponent, 
+    CalendarComponent,
     IntakeListComponent,
     MatDivider,
     MatIcon,
@@ -21,12 +21,11 @@ import { MatIconButton } from '@angular/material/button';
   styleUrl: './intakes-view.component.scss'
 })
 export class IntakesViewComponent {
-  protected multiselect: boolean = false
-  
+
   @ViewChild(IntakeListComponent) intakeList!: IntakeListComponent
 
-  constructor(private intakeService: IntakeService, protected navigate: NavigateService) { }
-  
+  constructor(protected intakeService: IntakeService, protected navigate: NavigateService) { }
+
   protected dateSelected(dateSelected: Date): void {
     setTimeout(() => this.intakeList.date = dateSelected)
   }

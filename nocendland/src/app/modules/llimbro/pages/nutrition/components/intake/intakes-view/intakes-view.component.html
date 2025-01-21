@@ -1,20 +1,22 @@
-<main class="grid grid-cols-1 gap-4 h-full">
+<main class="grid grid-cols-1 gap-4 h-full items-start">
     <app-calendar (dateSelected)="dateSelected($event)" class="pb-4"></app-calendar>
-    
+
     <mat-divider></mat-divider>
 
     <section class="flex items-center justify-between">
         <div class="text-2xl">Ingestas del día </div>
 
-        <!-- BOTÓN MULTISELECT -->
-        <button mat-icon-button (click)="multiselect = !multiselect"><mat-icon>{{multiselect ? 'delete_forever' : 'delete'}}</mat-icon></button>
+        <div>
+            <!-- BOTÓN MULTISELECT -->
+            <button mat-icon-button (click)="intakeService.multiselectList.set(!intakeService.multiselectList())"><mat-icon>{{intakeService.multiselectList() ? 'delete_forever' : 'delete'}}</mat-icon></button>
 
-        <!-- BOTÓN AÑADIR -->
-        <button mat-icon-button (click)="navigate.to('select-ingredients')"><mat-icon>add</mat-icon></button>
+            <!-- BOTÓN AÑADIR -->
+            <button mat-icon-button (click)="navigate.to('select-ingredients')"><mat-icon>add</mat-icon></button>
+        </div>
     </section>
-    
-    <section class="h-full overflow-auto">
-        <app-intake-list [multiselect]="multiselect" class="pt-4"></app-intake-list>
+
+    <section class="h-full overflow-auto relative">
+        <app-intake-list class="pt-4"></app-intake-list>
     </section>
 
 </main>

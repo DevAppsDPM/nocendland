@@ -23,6 +23,7 @@
     "@angular/router": "^18.2.0",
     "@supabase/supabase-js": "^2.45.4",
     "rxjs": "~7.8.0",
+    "supabase": "^2.6.8",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"
   },

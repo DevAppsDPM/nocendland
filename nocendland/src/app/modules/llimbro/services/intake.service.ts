@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal, WritableSignal} from '@angular/core';
 import { SupabaseService } from '@app/api/services/supabase.service';
 import { NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT } from '@app/data/types/llimbro';
 import { supabaseService } from '@app/data/types/supabase';
@@ -11,6 +11,8 @@ import { IngredientService } from './ingredient.service';
 export class IntakeService extends supabaseService {
   tableName: string = 'nutrition_intake'
 
+  public multiselectList: WritableSignal<boolean> = signal(false)
+
   constructor(protected override supabaseService: SupabaseService, private ingredientService: IngredientService) {
     super(supabaseService)
   }
@@ -22,7 +24,7 @@ export class IntakeService extends supabaseService {
     if (!query.data) return Promise.reject(query.error)
 
     console.log('NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT[]', query.data)
-      
+
     return query.data
   }
 
@@ -39,5 +41,10 @@ export class IntakeService extends supabaseService {
 
     return query.data
   }
-  
+
+  public async deleteIntakes(intakeIds: number[]) {
+    const query = await this.supabaseService.supabase.from(this.tableName).delete().in('id', intakeIds)
+
+    return query.data
+  }
 }

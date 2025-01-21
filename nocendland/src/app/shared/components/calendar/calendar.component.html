@@ -9,10 +9,10 @@
     <div *ngFor="let day of weekDays" class="day-header">{{ day }}</div>
 
     <!-- Agrega días vacíos si el mes no empieza en lunes -->
-    <div *ngFor="let empty of getEmptyDays()" class="day"></div>
+    <div *ngFor="let empty of getEmptyDays()" class="day rounded-full"></div>
 
     <!-- Muestra los días del mes -->
-    <div *ngFor="let day of daysInMonth" class="day" [class]="isSelectedDay(day) ? 'bg-indigo-950' : ''" (click)="onDayClick(day)">
+    <div *ngFor="let day of daysInMonth" class="day rounded-full" [class]="isSelectedDay(day) ? 'bg-indigo-950' : ''" (click)="onDayClick(day)">
       {{ day }}
     </div>
   </div>
