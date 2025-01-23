@@ -38,7 +38,7 @@ export class SupabaseService {
   protected constructor(private router: Router) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
   }
-  
+
   public addIdUserToEntity(entity: any): any {
     return {
       ...entity,
@@ -97,7 +97,7 @@ export class SupabaseService {
   }
 
   public signInGithub(): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
-    return this.supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: 'http://localhost:4200/auth/callback' } })
+    return this.supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: environment.auth_github_redirectTo } })
   }
 
   public signOut() {
