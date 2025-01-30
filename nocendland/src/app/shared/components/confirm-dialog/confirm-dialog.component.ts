@@ -10,18 +10,16 @@ import {DIALOG_CONFIRM} from "@shared/services/confirm-dialog.service"
 import {MatButton} from "@angular/material/button"
 import {STRING} from "@data/constants/STRING"
 import {NgIf} from "@angular/common"
-import {CdkMonitorFocus} from "@angular/cdk/a11y"
 
 @Component({
     selector: 'app-confirm-dialog',
-    imports: [
-        MatDialogTitle,
-        MatDialogContent,
-        MatDialogActions,
-        MatButton,
-        NgIf,
-        CdkMonitorFocus
-    ],
+  imports: [
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatButton,
+    NgIf
+  ],
     templateUrl: './confirm-dialog.component.html',
     styleUrl: './confirm-dialog.component.scss'
 })

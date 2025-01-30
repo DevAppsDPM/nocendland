@@ -1,7 +1,4 @@
 import {Component} from '@angular/core';
-import {
-  IngredientsComponent
-} from "@app/modules/llimbro/pages/nutrition/components/ingredient/ingredients/ingredients.component";
 import {RouterOutlet} from "@angular/router";
 import {
   ColumnCenterContainerComponent
@@ -9,11 +6,10 @@ import {
 
 @Component({
     selector: 'app-ingredient',
-    imports: [
-        IngredientsComponent,
-        RouterOutlet,
-        ColumnCenterContainerComponent
-    ],
+  imports: [
+    RouterOutlet,
+    ColumnCenterContainerComponent
+  ],
     templateUrl: './ingredient.component.html',
     styleUrl: './ingredient.component.scss'
 })

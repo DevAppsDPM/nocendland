@@ -1,19 +1,18 @@
 import {Component} from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatListModule} from "@angular/material/list";
-import {NgForOf, NgIf} from "@angular/common";
+import {NgIf} from "@angular/common";
 import {ROUTES} from "../../data/constants/ROUTES";
 import {Router} from "@angular/router";
 import {SideNavService} from "@shared/services/layout/side-nav.service";
 
 @Component({
     selector: 'app-side-nav-menu',
-    imports: [
-        MatIcon,
-        MatListModule,
-        NgForOf,
-        NgIf
-    ],
+  imports: [
+    MatIcon,
+    MatListModule,
+    NgIf
+  ],
     templateUrl: './side-nav-menu.component.html',
     styleUrl: './side-nav-menu.component.scss'
 })

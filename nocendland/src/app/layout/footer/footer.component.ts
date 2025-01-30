@@ -1,17 +1,15 @@
-import { Component } from '@angular/core';
-import {MatDivider} from "@angular/material/divider"
+import {Component} from '@angular/core';
 import {MatIcon} from "@angular/material/icon"
 import {NgForOf, NgIf} from "@angular/common"
-import {FOOTER_BUTTON, FooterService} from "@shared/services/layout/footer.service"
+import {FooterService} from "@shared/services/layout/footer.service"
 
 @Component({
     selector: 'app-footer',
-    imports: [
-        MatDivider,
-        MatIcon,
-        NgForOf,
-        NgIf
-    ],
+  imports: [
+    MatIcon,
+    NgForOf,
+    NgIf
+  ],
     templateUrl: './footer.component.html',
     styleUrl: './footer.component.scss'
 })

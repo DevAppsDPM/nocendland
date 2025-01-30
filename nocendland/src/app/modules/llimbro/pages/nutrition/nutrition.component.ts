@@ -1,21 +1,15 @@
 import {AfterViewInit, Component, OnDestroy} from '@angular/core';
 import {STRING} from "@data/constants/STRING";
-import {IngredientComponent} from "./components/ingredient/ingredient.component";
 import {ROUTES} from "@data/constants/ROUTES";
 import {Router, RouterOutlet} from "@angular/router";
 import {NutritionService} from "@modules/llimbro/services/nutrition.service"
-import {ObjectivesComponent} from "@modules/llimbro/pages/nutrition/components/objectives/objectives.component"
-import {IntakeComponent} from "@modules/llimbro/pages/nutrition/components/intake/intake.component"
 import {FOOTER_BUTTON, FooterService} from "@shared/services/layout/footer.service"
 
 @Component({
     selector: 'app-nutrition',
-    imports: [
-        IngredientComponent,
-        ObjectivesComponent,
-        IntakeComponent,
-        RouterOutlet,
-    ],
+  imports: [
+    RouterOutlet,
+  ],
     templateUrl: './nutrition.component.html',
     styleUrl: './nutrition.component.scss'
 })

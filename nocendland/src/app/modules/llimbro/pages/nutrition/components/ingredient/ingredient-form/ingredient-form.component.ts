@@ -5,34 +5,29 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {Location, NgIf} from "@angular/common";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {STRING} from "@data/constants/STRING";
-import {MatButton, MatFabButton, MatIconButton} from "@angular/material/button";
+import {MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {ActivatedRoute} from "@angular/router";
 import {IngredientService} from "@modules/llimbro/services/ingredient.service";
 import {ConfirmDialogService, DIALOG_CONFIRM} from "@shared/services/confirm-dialog.service"
 import {MatDivider} from "@angular/material/divider"
 import {NUTRITION_INGREDIENT} from "@data/types/llimbro"
-import {
-  ColumnCenterContainerComponent
-} from "@shared/components/column-center-container/column-center-container.component";
-import { RESOURCES } from '@app/data/constants/RESOURCES';
+import {RESOURCES} from '@app/data/constants/RESOURCES';
 
 @Component({
     selector: 'app-ingredient-form',
-    imports: [
-        MatFormField,
-        MatInput,
-        MatLabel,
-        MatProgressSpinner,
-        NgIf,
-        ReactiveFormsModule,
-        MatIconButton,
-        MatIcon,
-        MatDivider,
-        MatButton,
-        MatFabButton,
-        ColumnCenterContainerComponent
-    ],
+  imports: [
+    MatFormField,
+    MatInput,
+    MatLabel,
+    MatProgressSpinner,
+    NgIf,
+    ReactiveFormsModule,
+    MatIconButton,
+    MatIcon,
+    MatDivider,
+    MatFabButton
+  ],
     templateUrl: './ingredient-form.component.html',
     styleUrl: './ingredient-form.component.scss'
 })
@@ -48,7 +43,7 @@ export class IngredientFormComponent implements AfterViewInit {
 
   @ViewChild('imageInput') imageInput!: ElementRef
   @ViewChild('name') nameField!: ElementRef
-  
+
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
