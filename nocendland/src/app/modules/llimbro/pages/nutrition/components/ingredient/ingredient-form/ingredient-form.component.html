@@ -20,7 +20,7 @@
     <section class="row-span-2 flex justify-center items-center">
       <mat-progress-spinner mode="indeterminate"  *ngIf="ingredientService.processingImage()"></mat-progress-spinner>
       <img class="h-auto w-full max-w-lg rounded-lg" *ngIf="!ingredientService.processingImage()" [src]="image || RESOURCES.DEFAULT_IMAGE" alt="" />
-      <input #imageInput (change)="onFileSelected($event)" type="file" accept="image/png, image/jpeg" hidden />
+      <input #imageInput (change)="onFileSelected($event)" type="file" accept="image/*" capture="environment" hidden />
     </section>
 
     <!-- NOMBRE -->
