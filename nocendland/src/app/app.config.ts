@@ -1,15 +1,19 @@
-import {APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
+import {APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection, isDevMode} from '@angular/core';
 import {provideRouter, Router} from '@angular/router';
 
 import { routes } from './app-routing.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {SupabaseService} from "@api/services/supabase.service";
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideAnimationsAsync(), provideAnimationsAsync(),
+    provideAnimationsAsync(), provideAnimationsAsync(), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          }),
     // {
     //   provide: APP_INITIALIZER,
     //   useFactory: initializeApp,
