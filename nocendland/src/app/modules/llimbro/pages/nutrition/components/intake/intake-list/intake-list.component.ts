@@ -9,6 +9,8 @@ import { IntakeService } from '@modules/llimbro/services/intake.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgIf } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';
+import {FormsModule} from "@angular/forms"
+import {Debounce} from "@core/decorators/Debounce"
 
 @Component({
   selector: 'app-intake-list',
@@ -21,7 +23,8 @@ import { MatFabButton } from '@angular/material/button';
     MatIcon,
     MatDivider,
     MatCheckboxModule,
-    MatFabButton
+    MatFabButton,
+    FormsModule
   ],
   templateUrl: './intake-list.component.html',
   styleUrl: './intake-list.component.scss'
@@ -46,6 +49,13 @@ export class IntakeListComponent {
     this.intakeService.readIntakesByDate(this._date!).then((intakes: NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT[]) => {
       this.intakesList = intakes
     })
+  }
+
+  @Debounce(500)
+  protected saveNewQuantityInGramsIntake(newQuantity: number, intake: any): void {
+    delete intake.nutrition_ingredient
+    this.intakeService.saveIntake(intake)
+      .then(() => this.readIntakes())
   }
 
   protected deleteIntakes(): void {

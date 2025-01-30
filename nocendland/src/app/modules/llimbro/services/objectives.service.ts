@@ -16,14 +16,28 @@ export class ObjectivesService extends supabaseService {
   /**
    * @param date
    */
-  public async readObjectiveSumByDate(date: Date): Promise<void> {
+  public async readObjectiveSumByDate(date: Date): Promise<NUTRITION_OBJETIVES_TOTALS> {
     try {
+      let totals: NUTRITION_OBJETIVES_TOTALS = {
+        calories: 0,
+        carbohydrates: 0,
+        fats: 0,
+        proteins: 0,
+        date: ''
+      }
+
       const values = await this.getIntakeJoinIngredientOnlyValues(date)
-      // values.map((value: NUTRITION_INTAKE_WITH_TOTALS) => {
-      //   value.
-      // })
+      values.map(value => {
+        totals.calories! += value.calories || 0
+        totals.carbohydrates! += value.carbohydrates || 0
+        totals.fats! += value.fats || 0
+        totals.proteins! += value.proteins || 0
+      })
+
+      return Promise.resolve(totals)
     } catch (error) {
       console.error(`Error en readObjectiveSumByDate: ${error}`)
+      return Promise.reject(error)
     }
   }
 
@@ -37,6 +51,7 @@ export class ObjectivesService extends supabaseService {
     const query = await this.supabaseService.supabase.from(this.view.nutrition_objectives_totals)
       .select('*')
       .eq('date', date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate())
+      .eq('id_user', this.supabaseService.user()?.id)
 
     if (!!query.error) throw new Error(`${query.error}`)
 

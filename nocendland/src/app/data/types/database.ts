@@ -179,6 +179,7 @@ export type Database = {
           carbohydrates: number | null
           date: string | null
           fats: number | null
+          id_user: string | null
           ingredient: number | null
           ingredient_name: string | null
           intake_id: number | null
@@ -186,6 +187,13 @@ export type Database = {
           quantity_in_grams: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "nutrition_intake_id_user_foreign"
+            columns: ["id_user"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "nutrition_intake_ingredient_fkey"
             columns: ["ingredient"]

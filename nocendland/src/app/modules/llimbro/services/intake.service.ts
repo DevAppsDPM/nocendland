@@ -30,7 +30,7 @@ export class IntakeService extends supabaseService {
 
   public async saveIntake(intake: NUTRITION_INTAKE) {
     intake = this.supabaseService.addIdUserToEntity(intake)
-    const query = await this.supabaseService.supabase.from(this.tableName).upsert({date: new Date(), ingredient: 77, quantity_in_grams: 3, id_user: 'd142ee21-e490-4552-afa3-9489990d00ed'}).select().single()
+    const query = await this.supabaseService.supabase.from(this.tableName).upsert(intake).select().single()
 
     return query.data
   }

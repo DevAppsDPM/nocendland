@@ -4,7 +4,11 @@ import {
 } from "@shared/components/column-center-container/column-center-container.component"
 import {IntakeService} from "@modules/llimbro/services/intake.service"
 import {CalendarComponent} from "@shared/components/calendar/calendar.component"
-import {NUTRITION_INGREDIENT, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT} from "@data/types/llimbro"
+import {
+  NUTRITION_INGREDIENT,
+  NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT,
+  NUTRITION_OBJETIVES_TOTALS
+} from "@data/types/llimbro"
 import {IngredientService} from "@modules/llimbro/services/ingredient.service"
 import {ObjectivesService} from "@modules/llimbro/services/objectives.service"
 
@@ -31,15 +35,11 @@ export class ObjectivesComponent {
   }
 
   private async getObjectiveProgress(dateSelected: Date): Promise<void> {
-    this.objectivesService.readObjectiveSumByDate(dateSelected)
-    // const intakes: NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT[] = await this.intakeService.readIntakesByDate(dateSelected)
-    // const ingredients = await this.ingredientService.readIngredientListByIdList(intakes.map((intake: NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT): number => intake.ingredient))
-    // console.log(ingredients)
-    // ingredients.map((ingredient: NUTRITION_INGREDIENT) => {
-    //   this.calories      += ingredient.calories_per_100 || 0
-    //   this.proteins      += ingredient.proteins_per_100 || 0
-    //   this.carbohydrates += ingredient.carbohydrates_per_100 || 0
-    //   this.fats          += ingredient.fats_per_100 || 0
-    // })
+    const totals: NUTRITION_OBJETIVES_TOTALS = await this.objectivesService.readObjectiveSumByDate(dateSelected)
+    this.calories = totals.calories || 0
+    this.proteins = totals.proteins || 0
+    this.carbohydrates = totals.carbohydrates || 0
+    this.fats = totals.fats || 0
+
   }
 }
