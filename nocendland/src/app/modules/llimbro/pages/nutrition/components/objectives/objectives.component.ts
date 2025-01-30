@@ -35,6 +35,7 @@ export class ObjectivesComponent {
 
   private async getObjectiveProgress(dateSelected: Date): Promise<void> {
     const totals: NUTRITION_OBJETIVES_TOTALS = await this.objectivesService.readObjectiveSumByDate(dateSelected)
+    console.warn(totals)
     this.calories = totals.calories || 0
     this.proteins = totals.proteins || 0
     this.carbohydrates = totals.carbohydrates || 0
