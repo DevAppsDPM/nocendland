@@ -30,7 +30,7 @@ export class SupabaseService {
 
   public user: WritableSignal<USER | undefined> = signal(undefined)
 
-  private signInModes: Record<SUPABASE_SIGNIN_PROVIDER, (auth: any) => Promise<AuthOtpResponse | OAuthResponse>> = {
+  private signInModes: Record<SUPABASE_SIGNIN_PROVIDER, (auth?: any) => Promise<AuthOtpResponse | OAuthResponse>> = {
     'email': this.signInEmail,
     'github': this.signInOAuth,
     'google': this.signInOAuth,
@@ -90,7 +90,7 @@ export class SupabaseService {
   }
 
   public signIn(provider: SUPABASE_SIGNIN_PROVIDER, auth?: any): Promise<AuthOtpResponse | OAuthResponse> {
-    return this.signInModes[provider](auth)
+    return this.signInModes[provider](auth || undefined)
   }
 
   private signInEmail(email: string): Promise<AuthOtpResponse> {
