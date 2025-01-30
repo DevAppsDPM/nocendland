@@ -30,11 +30,11 @@ export class SupabaseService {
 
   public user: WritableSignal<USER | undefined> = signal(undefined)
 
-  private signInModes: Record<SUPABASE_SIGNIN_PROVIDER, (auth?: any) => Promise<AuthOtpResponse | OAuthResponse>> = {
-    'email': this.signInEmail,
-    'github': this.signInOAuth,
-    'google': this.signInOAuth,
-  }
+  // private signInModes: Record<SUPABASE_SIGNIN_PROVIDER, (auth?: any) => Promise<AuthOtpResponse | OAuthResponse>> = {
+  //   'email': this.signInEmail,
+  //   'github': this.signInOAuth,
+  //   'google': this.signInOAuth,
+  // }
 
   protected constructor(private router: Router) {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
@@ -89,16 +89,20 @@ export class SupabaseService {
     return this.supabase.auth.exchangeCodeForSession(code)
   }
 
-  public signIn(provider: SUPABASE_SIGNIN_PROVIDER, auth?: any): Promise<AuthOtpResponse | OAuthResponse> {
-    return this.signInModes[provider](auth || undefined)
-  }
+  // public signIn(provider: SUPABASE_SIGNIN_PROVIDER, auth?: any): Promise<AuthOtpResponse | OAuthResponse> {
+  //   // return this.signInModes[provider](auth || undefined)
+  // }
 
   private signInEmail(email: string): Promise<AuthOtpResponse> {
     return this.supabase.auth.signInWithOtp({ email })
   }
 
-  public signInOAuth(oauthProvider: SUPABASE_SIGNIN_OAUTH_PROVIDER): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
-    return this.supabase.auth.signInWithOAuth({ provider: oauthProvider, options: { redirectTo: environment.auth_github_redirectTo } })
+  public signInGithub(): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
+    return this.supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: environment.auth_github_redirectTo } })
+  }
+
+  public signInGoogle(): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
+    return this.supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: environment.auth_github_redirectTo } })
   }
 
   public signOut() {
