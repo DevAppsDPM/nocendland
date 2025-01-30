@@ -32,7 +32,8 @@ export class SupabaseService {
 
   private signInModes: Record<SUPABASE_SIGNIN_PROVIDER, (auth: any) => Promise<AuthOtpResponse | OAuthResponse>> = {
     'email': this.signInEmail,
-    'github': this.signInGithub
+    'github': this.signInOAuth,
+    'google': this.signInOAuth,
   }
 
   protected constructor(private router: Router) {
@@ -96,8 +97,8 @@ export class SupabaseService {
     return this.supabase.auth.signInWithOtp({ email })
   }
 
-  public signInGithub(): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
-    return this.supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: environment.auth_github_redirectTo } })
+  public signInOAuth(oauthProvider: SUPABASE_SIGNIN_OAUTH_PROVIDER): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
+    return this.supabase.auth.signInWithOAuth({ provider: oauthProvider, options: { redirectTo: environment.auth_github_redirectTo } })
   }
 
   public signOut() {
@@ -149,7 +150,8 @@ export class SupabaseService {
   }
 }
 
-export declare type SUPABASE_SIGNIN_PROVIDER = 'email' | 'github'
+export declare type SUPABASE_SIGNIN_OAUTH_PROVIDER = 'github' | 'google'
+export declare type SUPABASE_SIGNIN_PROVIDER = 'email' | SUPABASE_SIGNIN_OAUTH_PROVIDER
 
 interface USER {
   id: string

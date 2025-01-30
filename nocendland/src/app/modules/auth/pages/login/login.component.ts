@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {SupabaseService} from "@api/services/supabase.service";
+import {SUPABASE_SIGNIN_PROVIDER, SupabaseService} from "@api/services/supabase.service";
 
 @Component({
     selector: 'app-login',
@@ -11,8 +11,8 @@ export class LoginComponent {
   constructor(private supabase: SupabaseService) {
   }
 
-  public signIn(): void {
-    // this.supabase.signIn('github')
-    this.supabase.signInGithub()
+  public signIn(provider: SUPABASE_SIGNIN_PROVIDER): void {
+    this.supabase.signIn(provider)
+    // this.supabase.signInGithub()
   }
 }
