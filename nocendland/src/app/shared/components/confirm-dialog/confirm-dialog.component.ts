@@ -13,18 +13,17 @@ import {NgIf} from "@angular/common"
 import {CdkMonitorFocus} from "@angular/cdk/a11y"
 
 @Component({
-  selector: 'app-confirm-dialog',
-  standalone: true,
-  imports: [
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatButton,
-    NgIf,
-    CdkMonitorFocus
-  ],
-  templateUrl: './confirm-dialog.component.html',
-  styleUrl: './confirm-dialog.component.scss'
+    selector: 'app-confirm-dialog',
+    imports: [
+        MatDialogTitle,
+        MatDialogContent,
+        MatDialogActions,
+        MatButton,
+        NgIf,
+        CdkMonitorFocus
+    ],
+    templateUrl: './confirm-dialog.component.html',
+    styleUrl: './confirm-dialog.component.scss'
 })
 export class ConfirmDialogComponent {
 

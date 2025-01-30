@@ -7,17 +7,16 @@ import { RESOURCES } from '@app/data/constants/RESOURCES';
 import { STRING } from '@app/data/constants/STRING';
 
 @Component({
-  selector: 'dpm-listing',
-  standalone: true,
-  imports: [
-    MatListModule,
-    NgForOf,
-    NgIf,
-    MatIcon,
-    MatFabButton
-  ],
-  templateUrl: './dpmlisting.component.html',
-  styleUrl: './dpmlisting.component.scss'
+    selector: 'dpm-listing',
+    imports: [
+        MatListModule,
+        NgForOf,
+        NgIf,
+        MatIcon,
+        MatFabButton
+    ],
+    templateUrl: './dpmlisting.component.html',
+    styleUrl: './dpmlisting.component.scss'
 })
 export class DPMlistingComponent {
   @Input() multiSelection: boolean = false

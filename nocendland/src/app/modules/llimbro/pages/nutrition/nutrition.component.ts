@@ -9,16 +9,15 @@ import {IntakeComponent} from "@modules/llimbro/pages/nutrition/components/intak
 import {FOOTER_BUTTON, FooterService} from "@shared/services/layout/footer.service"
 
 @Component({
-  selector: 'app-nutrition',
-  standalone: true,
-  imports: [
-    IngredientComponent,
-    ObjectivesComponent,
-    IntakeComponent,
-    RouterOutlet,
-  ],
-  templateUrl: './nutrition.component.html',
-  styleUrl: './nutrition.component.scss'
+    selector: 'app-nutrition',
+    imports: [
+        IngredientComponent,
+        ObjectivesComponent,
+        IntakeComponent,
+        RouterOutlet,
+    ],
+    templateUrl: './nutrition.component.html',
+    styleUrl: './nutrition.component.scss'
 })
 export class NutritionComponent implements AfterViewInit, OnDestroy {
   private footerButtons: FOOTER_BUTTON[] = [

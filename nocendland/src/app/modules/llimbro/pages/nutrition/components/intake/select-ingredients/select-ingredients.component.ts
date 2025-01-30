@@ -8,15 +8,14 @@ import { IntakeService } from '@app/modules/llimbro/services/intake.service';
 import { NUTRITION_INGREDIENT, NUTRITION_INTAKE } from '@app/data/types/llimbro';
 
 @Component({
-  selector: 'app-select-ingredients',
-  standalone: true,
-  imports: [
-    IngredientsListComponent, 
-    MatIcon,
-    MatIconButton
-  ],
-  templateUrl: './select-ingredients.component.html',
-  styleUrl: './select-ingredients.component.scss'
+    selector: 'app-select-ingredients',
+    imports: [
+        IngredientsListComponent,
+        MatIcon,
+        MatIconButton
+    ],
+    templateUrl: './select-ingredients.component.html',
+    styleUrl: './select-ingredients.component.scss'
 })
 export class SelectIngredientsComponent {
   protected readonly STRING = STRING

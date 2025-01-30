@@ -18,24 +18,23 @@ import {
 import { RESOURCES } from '@app/data/constants/RESOURCES';
 
 @Component({
-  selector: 'app-ingredient-form',
-  standalone: true,
-  imports: [
-    MatFormField,
-    MatInput,
-    MatLabel,
-    MatProgressSpinner,
-    NgIf,
-    ReactiveFormsModule,
-    MatIconButton,
-    MatIcon,
-    MatDivider,
-    MatButton,
-    MatFabButton,
-    ColumnCenterContainerComponent
-  ],
-  templateUrl: './ingredient-form.component.html',
-  styleUrl: './ingredient-form.component.scss'
+    selector: 'app-ingredient-form',
+    imports: [
+        MatFormField,
+        MatInput,
+        MatLabel,
+        MatProgressSpinner,
+        NgIf,
+        ReactiveFormsModule,
+        MatIconButton,
+        MatIcon,
+        MatDivider,
+        MatButton,
+        MatFabButton,
+        ColumnCenterContainerComponent
+    ],
+    templateUrl: './ingredient-form.component.html',
+    styleUrl: './ingredient-form.component.scss'
 })
 export class IngredientFormComponent implements AfterViewInit {
   protected readonly FORM_LABELS = STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.FORM_LABELS

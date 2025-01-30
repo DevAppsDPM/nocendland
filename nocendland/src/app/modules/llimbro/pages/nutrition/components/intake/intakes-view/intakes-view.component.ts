@@ -8,17 +8,16 @@ import { NavigateService } from '@app/shared/services/navigate.service';
 import { MatIconButton } from '@angular/material/button';
 
 @Component({
-  selector: 'app-intakes-view',
-  standalone: true,
-  imports: [
-    CalendarComponent,
-    IntakeListComponent,
-    MatDivider,
-    MatIcon,
-    MatIconButton
-  ],
-  templateUrl: './intakes-view.component.html',
-  styleUrl: './intakes-view.component.scss'
+    selector: 'app-intakes-view',
+    imports: [
+        CalendarComponent,
+        IntakeListComponent,
+        MatDivider,
+        MatIcon,
+        MatIconButton
+    ],
+    templateUrl: './intakes-view.component.html',
+    styleUrl: './intakes-view.component.scss'
 })
 export class IntakesViewComponent {
 

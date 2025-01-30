@@ -7,16 +7,15 @@ import {Router} from "@angular/router";
 import {SideNavService} from "@shared/services/layout/side-nav.service";
 
 @Component({
-  selector: 'app-side-nav-menu',
-  standalone: true,
-  imports: [
-    MatIcon,
-    MatListModule,
-    NgForOf,
-    NgIf
-  ],
-  templateUrl: './side-nav-menu.component.html',
-  styleUrl: './side-nav-menu.component.scss'
+    selector: 'app-side-nav-menu',
+    imports: [
+        MatIcon,
+        MatListModule,
+        NgForOf,
+        NgIf
+    ],
+    templateUrl: './side-nav-menu.component.html',
+    styleUrl: './side-nav-menu.component.scss'
 })
 export class SideNavMenuComponent {
 

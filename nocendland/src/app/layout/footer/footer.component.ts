@@ -5,16 +5,15 @@ import {NgForOf, NgIf} from "@angular/common"
 import {FOOTER_BUTTON, FooterService} from "@shared/services/layout/footer.service"
 
 @Component({
-  selector: 'app-footer',
-  standalone: true,
-  imports: [
-    MatDivider,
-    MatIcon,
-    NgForOf,
-    NgIf
-  ],
-  templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss'
+    selector: 'app-footer',
+    imports: [
+        MatDivider,
+        MatIcon,
+        NgForOf,
+        NgIf
+    ],
+    templateUrl: './footer.component.html',
+    styleUrl: './footer.component.scss'
 })
 export class FooterComponent {
 

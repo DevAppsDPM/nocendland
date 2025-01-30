@@ -6,14 +6,13 @@ import {NgIf, NgTemplateOutlet} from "@angular/common"
  * centrada con bordes a los lados (Estilo twitter)
  */
 @Component({
-  selector: 'app-column-center-container',
-  standalone: true,
-  imports: [
-    NgTemplateOutlet,
-    NgIf
-  ],
-  templateUrl: './column-center-container.component.html',
-  styleUrl: './column-center-container.component.scss'
+    selector: 'app-column-center-container',
+    imports: [
+        NgTemplateOutlet,
+        NgIf
+    ],
+    templateUrl: './column-center-container.component.html',
+    styleUrl: './column-center-container.component.scss'
 })
 export class ColumnCenterContainerComponent {
   @Input() template!: any

@@ -14,17 +14,16 @@ import {NgIf} from "@angular/common";
 import {SupabaseService} from "../../../api/services/supabase.service";
 
 @Component({
-  selector: 'app-user-info',
-  standalone: true,
-  imports: [
-    MatButton,
-    MatCardModule,
-    MatIcon,
-    MatProgressSpinner,
-    NgIf
-  ],
-  templateUrl: './user-info.component.html',
-  styleUrl: './user-info.component.scss'
+    selector: 'app-user-info',
+    imports: [
+        MatButton,
+        MatCardModule,
+        MatIcon,
+        MatProgressSpinner,
+        NgIf
+    ],
+    templateUrl: './user-info.component.html',
+    styleUrl: './user-info.component.scss'
 })
 export class UserInfoComponent {
 

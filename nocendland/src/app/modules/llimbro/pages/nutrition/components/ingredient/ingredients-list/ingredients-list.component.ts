@@ -10,18 +10,17 @@ import { NutritionService } from '@app/modules/llimbro/services/nutrition.servic
 import { DPMlistingComponent } from "../../../../../../../shared/components/dpmlisting/dpmlisting.component";
 
 @Component({
-  selector: 'app-ingredients-list',
-  standalone: true,
-  imports: [
-    MatListModule,
-    NgForOf,
-    NgIf,
-    MatIcon,
-    MatFabButton,
-    DPMlistingComponent
-],
-  templateUrl: './ingredients-list.component.html',
-  styleUrl: './ingredients-list.component.scss'
+    selector: 'app-ingredients-list',
+    imports: [
+        MatListModule,
+        NgForOf,
+        NgIf,
+        MatIcon,
+        MatFabButton,
+        DPMlistingComponent
+    ],
+    templateUrl: './ingredients-list.component.html',
+    styleUrl: './ingredients-list.component.scss'
 })
 export class IngredientsListComponent {
   protected readonly STRING = STRING;

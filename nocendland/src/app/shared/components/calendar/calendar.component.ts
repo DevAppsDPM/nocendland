@@ -2,13 +2,12 @@ import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnInit, Outpu
 import {NgForOf} from "@angular/common"
 
 @Component({
-  selector: 'app-calendar',
-  standalone: true,
-  imports: [
-    NgForOf,
-  ],
-  templateUrl: './calendar.component.html',
-  styleUrl: './calendar.component.scss'
+    selector: 'app-calendar',
+    imports: [
+        NgForOf,
+    ],
+    templateUrl: './calendar.component.html',
+    styleUrl: './calendar.component.scss'
 })
 export class CalendarComponent implements OnInit, AfterViewInit {
   protected currentDate: Date = new Date();

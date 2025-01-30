@@ -9,19 +9,18 @@ import {SideNavMenuComponent} from "../side-nav-menu/side-nav-menu.component";
 import {FooterComponent} from "@layout/footer/footer.component"
 
 @Component({
-  selector: 'app-mainpage',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    MatDrawerContainer,
-    MatDrawer,
-    HeaderComponent,
-    UserInfoComponent,
-    SideNavMenuComponent,
-    FooterComponent,
-  ],
-  templateUrl: './mainpage.component.html',
-  styleUrl: './mainpage.component.scss'
+    selector: 'app-mainpage',
+    imports: [
+        RouterOutlet,
+        MatDrawerContainer,
+        MatDrawer,
+        HeaderComponent,
+        UserInfoComponent,
+        SideNavMenuComponent,
+        FooterComponent,
+    ],
+    templateUrl: './mainpage.component.html',
+    styleUrl: './mainpage.component.scss'
 })
 export class MainpageComponent {
 

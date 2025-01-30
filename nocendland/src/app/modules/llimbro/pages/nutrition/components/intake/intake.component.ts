@@ -21,26 +21,25 @@ import { NavigateService } from '@app/shared/services/navigate.service';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-intake',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    CalendarComponent,
-    ColumnCenterContainerComponent,
-    MatIconButton,
-    MatIcon,
-    IngredientsComponent,
-    MatFormField,
-    ReactiveFormsModule,
-    NgIf,
-    MatInput,
-    MatLabel,
-    MatSelectModule,
-    IntakeListComponent,
-    MatDivider,
-],
-  templateUrl: './intake.component.html',
-  styleUrl: './intake.component.scss'
+    selector: 'app-intake',
+    imports: [
+        RouterOutlet,
+        CalendarComponent,
+        ColumnCenterContainerComponent,
+        MatIconButton,
+        MatIcon,
+        IngredientsComponent,
+        MatFormField,
+        ReactiveFormsModule,
+        NgIf,
+        MatInput,
+        MatLabel,
+        MatSelectModule,
+        IntakeListComponent,
+        MatDivider,
+    ],
+    templateUrl: './intake.component.html',
+    styleUrl: './intake.component.scss'
 })
 export class IntakeComponent {
   public intakeForm!: FormGroup;

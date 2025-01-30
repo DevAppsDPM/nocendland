@@ -13,14 +13,13 @@ import {IngredientService} from "@modules/llimbro/services/ingredient.service"
 import {ObjectivesService} from "@modules/llimbro/services/objectives.service"
 
 @Component({
-  selector: 'app-objectives',
-  standalone: true,
-  imports: [
-    ColumnCenterContainerComponent,
-    CalendarComponent
-  ],
-  templateUrl: './objectives.component.html',
-  styleUrl: './objectives.component.scss'
+    selector: 'app-objectives',
+    imports: [
+        ColumnCenterContainerComponent,
+        CalendarComponent
+    ],
+    templateUrl: './objectives.component.html',
+    styleUrl: './objectives.component.scss'
 })
 export class ObjectivesComponent {
   protected calories     : number = 0

@@ -7,16 +7,15 @@ import {HeaderService} from "@shared/services/layout/header.service"
 import {MatDivider} from "@angular/material/divider"
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [
-    MatIcon,
-    MatIconButton,
-    MatToolbar,
-    MatDivider
-  ],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+    selector: 'app-header',
+    imports: [
+        MatIcon,
+        MatIconButton,
+        MatToolbar,
+        MatDivider
+    ],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
 

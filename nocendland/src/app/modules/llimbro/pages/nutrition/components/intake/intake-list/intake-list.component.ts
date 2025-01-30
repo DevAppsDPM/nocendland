@@ -13,21 +13,20 @@ import {FormsModule} from "@angular/forms"
 import {Debounce} from "@core/decorators/Debounce"
 
 @Component({
-  selector: 'app-intake-list',
-  standalone: true,
-  imports: [
-    NgIf,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatIcon,
-    MatDivider,
-    MatCheckboxModule,
-    MatFabButton,
-    FormsModule
-  ],
-  templateUrl: './intake-list.component.html',
-  styleUrl: './intake-list.component.scss'
+    selector: 'app-intake-list',
+    imports: [
+        NgIf,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatIcon,
+        MatDivider,
+        MatCheckboxModule,
+        MatFabButton,
+        FormsModule
+    ],
+    templateUrl: './intake-list.component.html',
+    styleUrl: './intake-list.component.scss'
 })
 export class IntakeListComponent {
   protected readonly RESOURCES = RESOURCES;

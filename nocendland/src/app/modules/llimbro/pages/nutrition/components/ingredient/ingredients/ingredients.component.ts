@@ -14,18 +14,17 @@ import { NUTRITION_INGREDIENT } from '@app/data/types/llimbro';
 import { IngredientsListComponent } from "../ingredients-list/ingredients-list.component";
 
 @Component({
-  selector: 'app-ingredients',
-  standalone: true,
-  imports: [
-    NgIf,
-    MatIcon,
-    MatIconButton,
-    MatProgressBar,
-    ColumnCenterContainerComponent,
-    IngredientsListComponent
-],
-  templateUrl: './ingredients.component.html',
-  styleUrl: './ingredients.component.scss'
+    selector: 'app-ingredients',
+    imports: [
+        NgIf,
+        MatIcon,
+        MatIconButton,
+        MatProgressBar,
+        ColumnCenterContainerComponent,
+        IngredientsListComponent
+    ],
+    templateUrl: './ingredients.component.html',
+    styleUrl: './ingredients.component.scss'
 })
 export class IngredientsComponent {
   public showList: boolean = true

@@ -4,13 +4,12 @@ import {SupabaseService} from "@api/services/supabase.service";
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
-  selector: 'app-callback',
-  standalone: true,
-  imports: [
-    MatProgressSpinner
-  ],
-  templateUrl: './callback.component.html',
-  styleUrl: './callback.component.scss'
+    selector: 'app-callback',
+    imports: [
+        MatProgressSpinner
+    ],
+    templateUrl: './callback.component.html',
+    styleUrl: './callback.component.scss'
 })
 export class CallbackComponent implements OnInit {
 
