@@ -51,7 +51,7 @@ export class IntakeListComponent {
   }
 
   @Debounce(500)
-  protected saveNewQuantityInGramsIntake(newQuantity: number, intake: any): void {
+  protected saveNewQuantityInGramsIntake(intake: any): void {
     delete intake.nutrition_ingredient
     this.intakeService.saveIntake(intake)
       .then(() => this.readIntakes())

@@ -14,7 +14,7 @@
                 <div class="relative w-full flex justify-between">
                     <mat-form-field appearance="outline" class="w-20">
                         <mat-label>Gramos</mat-label>
-                        <input matInput type="number" class="custom-number-input" [(ngModel)]="intake.quantity_in_grams" (ngModelChange)="saveNewQuantityInGramsIntake($event, intake)"/>
+                        <input matInput type="number" class="custom-number-input" [(ngModel)]="intake.quantity_in_grams" (ngModelChange)="saveNewQuantityInGramsIntake(intake)"/>
                     </mat-form-field>
 
                     <mat-checkbox
