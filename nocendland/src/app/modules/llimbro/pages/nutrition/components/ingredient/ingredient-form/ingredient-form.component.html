@@ -45,25 +45,25 @@
   <!-- CALORÍAS -->
   <mat-form-field appearance="outline">
     <mat-label>{{ FORM_LABELS.CALORIES }}</mat-label>
-    <input matInput type="number" formControlName="calories_per_100" />
+    <input #calories matInput type="number" formControlName="calories_per_100" (focus)="calories.select()"/>
   </mat-form-field>
 
   <!-- PROTEÍNAS -->
   <mat-form-field appearance="outline">
     <mat-label>{{ FORM_LABELS.PROTEINS }}</mat-label>
-    <input matInput type="number" formControlName="proteins_per_100" />
+    <input #proteins matInput type="number" formControlName="proteins_per_100" (focus)="proteins.select()"/>
   </mat-form-field>
 
   <!-- GRASAS -->
   <mat-form-field appearance="outline">
     <mat-label>{{ FORM_LABELS.FATS }}</mat-label>
-    <input matInput type="number" formControlName="fats_per_100" />
+    <input #fats matInput type="number" formControlName="fats_per_100" (focus)="fats.select()"/>
   </mat-form-field>
 
   <!-- HIDRATOS -->
   <mat-form-field appearance="outline">
     <mat-label>{{ FORM_LABELS.CARBOHYDRATES }}</mat-label>
-    <input matInput type="number" formControlName="carbohydrates_per_100" />
+    <input #carbohydrates matInput type="number" formControlName="carbohydrates_per_100" (focus)="carbohydrates.select()"/>
   </mat-form-field>
 
 </form>
