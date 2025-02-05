@@ -18,6 +18,7 @@ export class CallbackComponent implements OnInit {
   }
   ngOnInit(): void {
     this.route.fragment.subscribe(fragment => {
+      console.log('CALLBACK -> Fragment', fragment)
       if (fragment) {
         // Extraer el access_token del fragmento
         const params: URLSearchParams = new URLSearchParams(fragment)
@@ -27,6 +28,7 @@ export class CallbackComponent implements OnInit {
           // Aquí puedes guardar el access_token o usarlo como desees
           localStorage.setItem(LOCAL_STORAGE_PROPERTIES.TOKEN, accessToken)
 
+          console.log('CALLBACK -> exchangeCodeForSession()')
           this.supabase.exchangeCodeForSession(accessToken)
             .then(() => this.router.navigateByUrl(''))
             .then(() => console.log('Navegando a raíz después del login'))
