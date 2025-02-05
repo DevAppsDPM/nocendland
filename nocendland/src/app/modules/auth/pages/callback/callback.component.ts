@@ -27,7 +27,9 @@ export class CallbackComponent implements OnInit {
           // Aquí puedes guardar el access_token o usarlo como desees
           localStorage.setItem(LOCAL_STORAGE_PROPERTIES.TOKEN, accessToken)
 
-          this.supabase.exchangeCodeForSession(accessToken).then(() => this.router.navigateByUrl(''))
+          this.supabase.exchangeCodeForSession(accessToken)
+            .then(() => this.router.navigateByUrl(''))
+            .then(() => console.log('Navegando a raíz después del login'))
         }
       }
     })
