@@ -36,8 +36,6 @@ export class IntakeListComponent {
 
   private _date: Date | undefined
 
-  @ViewChild('inputGrams') inputGrams: ElementRef | undefined
-
   @Input() set date(date: Date) {
     if (!date) return
     this._date = date
@@ -70,10 +68,5 @@ export class IntakeListComponent {
     if (selected) this.intakeIdsSelected.push(intake.id)
     else this.intakeIdsSelected.splice(this.intakeIdsSelected.indexOf(intake.id))
     console.log('IntakeIdsSelected', this.intakeIdsSelected)
-  }
-
-  protected selectGramsValue(): void {
-    if (!this.inputGrams) return
-    this.inputGrams.nativeElement.select()
   }
 }
