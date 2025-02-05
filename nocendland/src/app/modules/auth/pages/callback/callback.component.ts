@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {SupabaseService} from "@api/services/supabase.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {LOCAL_STORAGE_PROPERTIES} from "@data/constants/LOCAL_STORAGE_PROPERTIES"
 
 @Component({
     selector: 'app-callback',
@@ -24,7 +25,7 @@ export class CallbackComponent implements OnInit {
 
         if (!!accessToken) {
           // Aquí puedes guardar el access_token o usarlo como desees
-          localStorage.setItem('nocendland-token', accessToken)
+          localStorage.setItem(LOCAL_STORAGE_PROPERTIES.TOKEN, accessToken)
 
           this.supabase.exchangeCodeForSession(accessToken).then(() => this.router.navigateByUrl(''))
         }

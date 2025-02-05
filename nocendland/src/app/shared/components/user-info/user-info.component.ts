@@ -1,17 +1,10 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {MatButton} from "@angular/material/button";
-import {
-  MatCard,
-  MatCardActions,
-  MatCardAvatar,
-  MatCardHeader, MatCardModule,
-  MatCardSubtitle,
-  MatCardTitle
-} from "@angular/material/card";
+import {MatCardModule} from "@angular/material/card";
 import {MatIcon} from "@angular/material/icon";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {NgIf} from "@angular/common";
-import {SupabaseService} from "../../../api/services/supabase.service";
+import {SupabaseService} from "@api/services/supabase.service";
 
 @Component({
     selector: 'app-user-info',

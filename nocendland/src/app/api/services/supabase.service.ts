@@ -12,6 +12,7 @@ import {
 import { FileObject, StorageError } from '@supabase/storage-js'
 import {environment} from '../../../environments/environment'
 import {Router} from "@angular/router";
+import {LOCAL_STORAGE_PROPERTIES} from "@data/constants/LOCAL_STORAGE_PROPERTIES"
 
 export interface Profile {
   id?: string
@@ -107,6 +108,7 @@ export class SupabaseService {
 
   public signOut() {
     this.router.navigateByUrl('auth')
+    localStorage.removeItem(LOCAL_STORAGE_PROPERTIES.TOKEN)
     return this.supabase.auth.signOut()
   }
 
