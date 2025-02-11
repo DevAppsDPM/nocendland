@@ -1,5 +1,6 @@
 ﻿const LLIMBRO_ROUTE = 'llimbro'
 const AUTH_ROUTE = 'auth'
+const OBJETIVE_ROUTE = 'objectives'
 
 export const ROUTES = {
   MODULES: {
@@ -17,7 +18,10 @@ export const ROUTES = {
         VIEW: 'view',
         SELECT_INGREDIENTS: 'select-ingredients'
       },
-      OBJECTIVES: 'objectives'
+      OBJECTIVES: {
+        ROUTE: OBJETIVE_ROUTE,
+        CONFIG: 'objetive-config'
+      }
     },
     AUTH: {
       ROUTE: AUTH_ROUTE,

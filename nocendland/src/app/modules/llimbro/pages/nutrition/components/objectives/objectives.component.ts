@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import {
   ColumnCenterContainerComponent
 } from "@shared/components/column-center-container/column-center-container.component"
-import {IntakeService} from "@modules/llimbro/services/intake.service"
+import {IntakeService} from "@modules/nutrition/services/intake.service"
 import {CalendarComponent} from "@shared/components/calendar/calendar.component"
 import {
   NUTRITION_INGREDIENT,
-  NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT,
+  NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT, NUTRITION_OBJETIVES_LEVELS,
   NUTRITION_OBJETIVES_TOTALS
 } from "@data/types/llimbro"
-import {IngredientService} from "@modules/llimbro/services/ingredient.service"
-import {ObjectivesService} from "@modules/llimbro/services/objectives.service"
+import {IngredientService} from "@modules/nutrition/services/ingredient.service"
+import {ObjectivesService} from "@modules/nutrition/services/objectives.service"
 
 @Component({
     selector: 'app-objectives',

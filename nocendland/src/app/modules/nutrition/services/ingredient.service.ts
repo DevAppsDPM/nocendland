@@ -1,6 +1,6 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
 import {SupabaseService} from "@api/services/supabase.service";
-import { supabaseService } from '@app/data/types/supabase';
+import { supabaseService } from '@data/types/supabase';
 import {NUTRITION_INGREDIENT} from "@data/types/llimbro";
 import {StorageError} from "@supabase/storage-js"
 

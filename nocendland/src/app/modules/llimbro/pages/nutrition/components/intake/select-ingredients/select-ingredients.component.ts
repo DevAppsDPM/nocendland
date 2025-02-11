@@ -4,7 +4,7 @@ import { NavigateService } from '@app/shared/services/navigate.service';
 import { STRING } from '@app/data/constants/STRING';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
-import { IntakeService } from '@app/modules/llimbro/services/intake.service';
+import { IntakeService } from '@modules/nutrition/services/intake.service';
 import { NUTRITION_INGREDIENT, NUTRITION_INTAKE } from '@app/data/types/llimbro';
 
 @Component({
@@ -21,7 +21,7 @@ export class SelectIngredientsComponent {
   protected readonly STRING = STRING
 
   constructor(protected navigate: NavigateService, private intakeService: IntakeService) { }
-  
+
   protected saveIntakes(ingredients: NUTRITION_INGREDIENT[]) {
     let intakes: NUTRITION_INTAKE[] = ingredients.map(ingredient => {
       let intake: NUTRITION_INTAKE = {

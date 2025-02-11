@@ -5,7 +5,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { RESOURCES } from '@data/constants/RESOURCES';
 import { NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT } from '@data/types/llimbro';
-import { IntakeService } from '@modules/llimbro/services/intake.service';
+import { IntakeService } from '@modules/nutrition/services/intake.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgIf } from '@angular/common';
 import { MatFabButton } from '@angular/material/button';

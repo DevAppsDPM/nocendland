@@ -6,7 +6,7 @@ import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {STRING} from "@data/constants/STRING";
 import {MatProgressBar} from "@angular/material/progress-bar";
-import {NutritionService} from "@modules/llimbro/services/nutrition.service"
+import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {NUTRITION_INGREDIENT} from '@app/data/types/llimbro';
 import {IngredientsListComponent} from "../ingredients-list/ingredients-list.component";
 

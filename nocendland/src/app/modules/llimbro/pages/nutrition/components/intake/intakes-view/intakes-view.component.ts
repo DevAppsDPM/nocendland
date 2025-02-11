@@ -3,7 +3,7 @@ import { CalendarComponent } from "../../../../../../../shared/components/calend
 import { IntakeListComponent } from "../intake-list/intake-list.component";
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
-import { IntakeService } from '@app/modules/llimbro/services/intake.service';
+import { IntakeService } from '@modules/nutrition/services/intake.service';
 import { NavigateService } from '@app/shared/services/navigate.service';
 import { MatIconButton } from '@angular/material/button';
 

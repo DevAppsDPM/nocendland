@@ -1,7 +1,7 @@
 import {Injectable, signal, WritableSignal} from '@angular/core';
-import { SupabaseService } from '@app/api/services/supabase.service';
-import { NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT } from '@app/data/types/llimbro';
-import { supabaseService } from '@app/data/types/supabase';
+import { SupabaseService } from '@api/services/supabase.service';
+import { NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT } from '@data/types/llimbro';
+import { supabaseService } from '@data/types/supabase';
 import { IngredientService } from './ingredient.service';
 
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {ROUTES} from "@data/constants/ROUTES"
-import {IngredientService} from "@modules/llimbro/services/ingredient.service"
+import {IngredientService} from "@modules/nutrition/services/ingredient.service"
 
 @Injectable({
   providedIn: 'root'

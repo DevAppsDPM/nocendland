@@ -3,8 +3,8 @@ import {
   ColumnCenterContainerComponent
 } from "@shared/components/column-center-container/column-center-container.component"
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms"
-import {IntakeService} from '@app/modules/llimbro/services/intake.service';
-import {IngredientService} from '@app/modules/llimbro/services/ingredient.service';
+import {IntakeService} from '@modules/nutrition/services/intake.service';
+import {IngredientService} from '@modules/nutrition/services/ingredient.service';
 import {MatSelectModule} from '@angular/material/select';
 import {RouterOutlet} from '@angular/router';
 

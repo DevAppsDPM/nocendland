@@ -6,7 +6,7 @@ import {MatListModule, MatListOption} from '@angular/material/list';
 import {RESOURCES} from '@app/data/constants/RESOURCES';
 import {STRING} from '@app/data/constants/STRING';
 import {NUTRITION_INGREDIENT} from '@app/data/types/llimbro';
-import {NutritionService} from '@app/modules/llimbro/services/nutrition.service';
+import {NutritionService} from '@modules/nutrition/services/nutrition.service';
 
 @Component({
     selector: 'app-ingredients-list',

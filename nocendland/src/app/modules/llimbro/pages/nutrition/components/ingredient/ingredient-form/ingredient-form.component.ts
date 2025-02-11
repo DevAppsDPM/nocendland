@@ -8,7 +8,7 @@ import {STRING} from "@data/constants/STRING";
 import {MatFabButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {ActivatedRoute} from "@angular/router";
-import {IngredientService} from "@modules/llimbro/services/ingredient.service";
+import {IngredientService} from "@modules/nutrition/services/ingredient.service";
 import {ConfirmDialogService, DIALOG_CONFIRM} from "@shared/services/confirm-dialog.service"
 import {MatDivider} from "@angular/material/divider"
 import {NUTRITION_INGREDIENT} from "@data/types/llimbro"
