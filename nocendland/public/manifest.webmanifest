@@ -1,7 +1,7 @@
 {
   "name": "Nocend land",
   "short_name": "Nocend land",
-  "background_color": "#fafafa",
+  "background_color": "#161215",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
