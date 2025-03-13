@@ -1,0 +1,38 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title-group>
+      <img
+        matCardAvatar
+        [src]="currentIntakeJoinIngredient.nutrition_ingredient.image"
+        [alt]="'Image of ' + currentIntakeJoinIngredient.nutrition_ingredient.name"
+      />
+      <mat-card-title class="text-white">
+        {{ currentIntakeJoinIngredient.nutrition_ingredient.name }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ currentIntakeJoinIngredient.nutrition_ingredient.description }}
+      </mat-card-subtitle>
+    </mat-card-title-group>
+  </mat-card-header>
+
+  <mat-card-content>
+    <mat-form-field appearance="outline">
+      <mat-label>Cantidad (g)</mat-label>
+      <input matInput type="number" [(ngModel)]="currentIntakeJoinIngredient.quantity_in_grams" (ngModelChange)="saveChanges()">
+    </mat-form-field>
+    <br />
+<!--    <button mat-raised-button color="primary" (click)="saveChanges()">Guardar</button>-->
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <!-- PREV -->
+    <button mat-button (click)="prevIngredient()">
+      <mat-icon>arrow_left</mat-icon><span class="prev-next-name">{{ getPrevIngredientName() }}</span>
+    </button>
+
+    <!-- NEXT -->
+    <button mat-button (click)="nextIngredient()">
+      <span class="prev-next-name">{{ getNextIngredientName() }}</span><mat-icon iconPositionEnd>arrow_right</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
