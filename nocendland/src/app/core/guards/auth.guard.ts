@@ -6,7 +6,7 @@ export const authGuard: CanActivateChildFn = async (childRoute, state) => {
   const supabase: SupabaseService = inject(SupabaseService)
   const router: Router = inject(Router)
 
-  const authenticated: boolean = await supabase.isAutenticated()
+  const authenticated: boolean = await supabase.isAuthenticated()
   if (!authenticated) {
     console.log('Autenticado', authenticated)
 

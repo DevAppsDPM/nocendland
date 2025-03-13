@@ -1,8 +1,0 @@
-<main class="h-full grid grid-rows-2">
-    <header class="flex items-center justify-start">
-        <button mat-icon-button (click)="navigate.to('intake-view')"><mat-icon>arrow_back</mat-icon></button>
-        <div class="text-2xl w-full">{{ STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.SELECT_INGREDIENTS }}</div>
-    </header>
-    
-    <app-ingredients-list [multiSelection]="true" (ingredientsEmitter)="saveIntakes($event)"></app-ingredients-list>
-</main>

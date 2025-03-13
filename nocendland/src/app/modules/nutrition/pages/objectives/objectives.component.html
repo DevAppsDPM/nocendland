@@ -1,0 +1,9 @@
+<!--<app-calendar (dateSelected)="nutritionService.dateSelected.set($event)" class="pb-4"/>-->
+
+<article class="grid gap-1 p-1">
+  <div>calories: {{ nutritionService.objectives()?.calories || 0 }}</div>
+  <div>proteins: {{ nutritionService.objectives()?.proteins || 0 }}</div>
+  <div>carbohydrates: {{ nutritionService.objectives()?.carbohydrates || 0 }}</div>
+  <div>fats: {{ nutritionService.objectives()?.fats || 0 }}</div>
+</article>
+

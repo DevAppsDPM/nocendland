@@ -13,19 +13,15 @@ import { FileObject, StorageError } from '@supabase/storage-js'
 import {environment} from '../../../environments/environment'
 import {Router} from "@angular/router";
 import {LOCAL_STORAGE_PROPERTIES} from "@data/constants/LOCAL_STORAGE_PROPERTIES"
+import {LoggerService} from "@core/services/logger.service"
 
-export interface Profile {
-  id?: string
-  username: string
-  website: string
-  avatar_url: string
-}
 
 @Injectable({
   providedIn: 'root',
+  deps: [LoggerService]
 })
 export class SupabaseService {
-  public supabase: SupabaseClient
+  public client: SupabaseClient
   _session: AuthSession | null = null
   protected storageName: string = 'nocendland'
 
@@ -37,9 +33,22 @@ export class SupabaseService {
   //   'google': this.signInOAuth,
   // }
 
-  protected constructor(private router: Router) {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
+  protected constructor(private router: Router, private logger: LoggerService) {
+    this.client = createClient(environment.supabaseUrl, environment.supabaseKey)
+    this.logger.setConfig(SupabaseService.name, '#3ecf8e')
   }
+
+  /* UTILS */
+
+  public handleQueryError<T>(query: { error: any; data: T }, log: string): Promise<T> {
+    if (!!query.error) {
+      this.logger.error(`Supabase query error: [${log}]`, query.error)
+      return Promise.reject(query.error)
+    }
+    return Promise.resolve(query.data)
+  }
+
+  /* AUTH */
 
   public addIdUserToEntity(entity: any): any {
     return {
@@ -58,14 +67,14 @@ export class SupabaseService {
   }
 
   get session() {
-    this.supabase.auth.getSession().then(({ data }) => {
+    this.client.auth.getSession().then(({ data }) => {
       this._session = data.session
     })
     return this._session
   }
 
-  public isAutenticated(): Promise<boolean> {
-    return this.supabase.auth.getUser().then((user: UserResponse): boolean => {
+  public isAuthenticated(): Promise<boolean> {
+    return this.client.auth.getUser().then((user: UserResponse): boolean => {
         const isAuthenticated: boolean = !!user.data.user
         if (isAuthenticated) this.readUser(user.data.user?.id!)
         return isAuthenticated
@@ -73,8 +82,8 @@ export class SupabaseService {
   }
 
   public readUser(userId: string): void {
-    console.log('Leyendo información del usuario')
-    this.supabase
+    this.logger.log('Leyendo información del usuario')
+    this.client
       .from('user')
       .select(`*`)
       .eq('id', userId)
@@ -83,11 +92,11 @@ export class SupabaseService {
   }
 
   public authChanges(callback: (event: AuthChangeEvent, session: Session | null) => void) {
-    return this.supabase.auth.onAuthStateChange(callback)
+    return this.client.auth.onAuthStateChange(callback)
   }
 
   public exchangeCodeForSession(code: string): Promise<any> {
-    return this.supabase.auth.exchangeCodeForSession(code)
+    return this.client.auth.exchangeCodeForSession(code)
   }
 
   // public signIn(provider: SUPABASE_SIGNIN_PROVIDER, auth?: any): Promise<AuthOtpResponse | OAuthResponse> {
@@ -95,21 +104,21 @@ export class SupabaseService {
   // }
 
   private signInEmail(email: string): Promise<AuthOtpResponse> {
-    return this.supabase.auth.signInWithOtp({ email })
+    return this.client.auth.signInWithOtp({ email })
   }
 
-  public signInGithub(): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
-    return this.supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: environment.auth_github_redirectTo } })
+  public signInGithub(): Promise<OAuthResponse> {
+    return this.client.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: environment.auth_github_redirectTo } })
   }
 
-  public signInGoogle(): Promise<OAuthResponse> { // TODO: CAMBIAR LA URL POR ALGO DE ENVIRONMENTS
-    return this.supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: environment.auth_github_redirectTo } })
+  public signInGoogle(): Promise<OAuthResponse> {
+    return this.client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: environment.auth_github_redirectTo } })
   }
 
   public signOut() {
     this.router.navigateByUrl('auth')
     localStorage.removeItem(LOCAL_STORAGE_PROPERTIES.TOKEN)
-    return this.supabase.auth.signOut()
+    return this.client.auth.signOut()
   }
 
   updateProfile(profile: Profile) {
@@ -118,15 +127,15 @@ export class SupabaseService {
       updated_at: new Date(),
     }
 
-    return this.supabase.from('profiles').upsert(update)
+    return this.client.from('profiles').upsert(update)
   }
 
   downLoadImage(path: string) {
-    return this.supabase.storage.from('avatars').download(path)
+    return this.client.storage.from('avatars').download(path)
   }
 
   uploadAvatar(filePath: string, file: File) {
-    return this.supabase.storage.from('avatars').upload(filePath, file)
+    return this.client.storage.from('avatars').upload(filePath, file)
   }
 
   /* STORAGE */
@@ -139,7 +148,7 @@ export class SupabaseService {
 
       const byteArray = new Uint8Array(arrayBuffer)
 
-      return this.supabase.storage.from(this.storageName).upload(path, byteArray, { contentType: file.type, upsert: true })
+      return this.client.storage.from(this.storageName).upload(path, byteArray, { contentType: file.type, upsert: true })
     }
 
     reader.readAsArrayBuffer(file)
@@ -148,12 +157,20 @@ export class SupabaseService {
   }
 
   public readImage(path: string): Promise<{data: Blob, error: null} | {data: null, error: StorageError}> {
-    return this.supabase.storage.from(this.storageName).download(path)
+    return this.client.storage.from(this.storageName).download(path)
   }
 
   public readImages(path: string): Promise<{data: FileObject[], error: null} | {data: null, error: StorageError}> {
-    return this.supabase.storage.from(this.storageName).list(path)
+    return this.client.storage.from(this.storageName).list(path)
   }
+}
+
+
+export interface Profile {
+  id?: string
+  username: string
+  website: string
+  avatar_url: string
 }
 
 export declare type SUPABASE_SIGNIN_OAUTH_PROVIDER = 'github' | 'google'

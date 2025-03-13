@@ -1,19 +1,61 @@
-<main *ngIf="!!items">
+<main>
+  <!-- FILTER -->
+  <mat-form-field appearance="outline">
+    <mat-label>Buscar</mat-label>
+    <input matInput [(ngModel)]="listingService.filter">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
 
-    <article class="h-full overflow-auto">
-  
-      <mat-selection-list #list [multiple]="multiSelection" hideSingleSelectionIndicator>
-        <mat-list-option *ngFor="let item of items()" [value]="item" (click)="!multiSelection && emitItem(item)">
-          <img matListItemAvatar *ngIf="!!item.image" [src]="item.image || RESOURCES.DEFAULT_IMAGE" [alt]="STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.LIST_AVATAR_ALT"/>
-          <span matListItemTitle>{{ item.name }}</span>
-          <span matListItemLine>{{ item.description }}</span>
+  <article class="h-full overflow-auto">
+    <div *ngIf="listingService.filteredItems().length === 0">No hay elementos</div>
+
+    <!-- SINGLE -->
+    <div [hidden]="multiselect">
+      <mat-selection-list #list [multiple]="false" hideSingleSelectionIndicator>
+        <mat-list-option
+          *ngFor="let item of listingService.filteredItems(); let index = index"
+          [value]="item"
+          (click)="confirm(item, index)"
+        >
+          <img
+            *ngIf="!!item[config.columnConfig.image?.src]"
+            matListItemAvatar
+            [src]="item[config.columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
+            [alt]="config.columnConfig.image?.alt"
+          />
+          <div matListItemTitle>{{ core.getNestedProperty(item, config.columnConfig.title) }}</div>
+          <div matListItemLine *ngFor="let line of config.columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
         </mat-list-option>
       </mat-selection-list>
-  
-    </article>
-  
-    <footer *ngIf="multiSelection && activateConfirm" class="flex justify-end h-full pt-4 pr-4">
-      <button mat-fab [disabled]="list.selectedOptions.selected.length === 0" (click)="emitItems(list.selectedOptions.selected)"><mat-icon>{{ iconConfirm }}</mat-icon></button>
-    </footer>
-  
-  </main>
+    </div>
+    <!-- TODO: HACER QUE ESTE CÓDIGO NO ESTÉ REPETIDO -->
+    <!-- MULTI -->
+    <div [hidden]="!multiselect">
+      <mat-selection-list #listMultiSelect [multiple]="true" hideSingleSelectionIndicator>
+        <mat-list-option
+          *ngFor="let item of listingService.filteredItems()"
+          [value]="item"
+        >
+          <img
+            *ngIf="!!item[config.columnConfig.image?.src]"
+            matListItemAvatar
+            [src]="item[config.columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
+            [alt]="config.columnConfig.image?.alt"
+          />
+          <div matListItemTitle>{{ core.getNestedProperty(item, config.columnConfig.title) }}</div>
+          <div matListItemLine *ngFor="let line of config.columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+
+  </article>
+
+  <footer *ngIf="config.activateConfirm && (!!config.multiSelection && config.multiSelection())" class="flex justify-end h-full pt-4 pr-4">
+    <button mat-fab [disabled]="listMultiSelect!.selectedOptions.selected.length === 0"
+            (click)="confirm(listMultiSelect!.selectedOptions.selected)">
+      <mat-icon>{{ config.iconConfirm || 'done' }}</mat-icon>
+    </button>
+  </footer>
+
+</main>
+

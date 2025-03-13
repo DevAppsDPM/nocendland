@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {MatToolbar} from "@angular/material/toolbar";
-import {SideNavService} from "@shared/services/layout/side-nav.service";
-import {HeaderService} from "@shared/services/layout/header.service"
+import {SideNavService} from "@core/services/layout/side-nav.service";
+import {HeaderService} from "@core/services/layout/header.service"
 import {MatDivider} from "@angular/material/divider"
 
 @Component({

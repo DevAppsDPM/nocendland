@@ -4,6 +4,9 @@ import { supabaseService } from '@data/types/supabase';
 import {NUTRITION_INGREDIENT} from "@data/types/llimbro";
 import {StorageError} from "@supabase/storage-js"
 
+/**
+ * TODO ELIMINAR
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -28,11 +31,11 @@ export class IngredientService extends supabaseService {
     return this.tableName + '/' + this.supabaseService.user()?.id + '/' + ingredient.id
   }
 
-  public readIngredients(): void {
-    console.log('Reading all ingredients... ')
+  public loadIngredients(): void {
+    console.warn('aaa')
     this.readingIngredients.set(true)
 
-    this.supabaseService.supabase.from(this.tableName).select('*').then(ingredients => {
+    this.supabaseService.client.from(this.tableName).select('*').then(ingredients => {
       this.ingredientList.set(ingredients.data || [])
 
       this.readingIngredients.set(false)
@@ -41,12 +44,12 @@ export class IngredientService extends supabaseService {
 
   public readIngredientById(ingredientId: number) {
     console.log('Reading ingredient with id', ingredientId)
-    return this.supabaseService.supabase.from(this.tableName).select('*').eq('id', ingredientId).single()
+    return this.supabaseService.client.from(this.tableName).select('*').eq('id', ingredientId).single()
   }
 
   public async readIngredientListByIdList(ingredientIdList: number[]) {
     console.log('Reading ingredient list with id list', ingredientIdList)
-    const query = await this.supabaseService.supabase.from(this.tableName).select('*').in('id', ingredientIdList);
+    const query = await this.supabaseService.client.from(this.tableName).select('*').in('id', ingredientIdList);
     return query.data || [];
   }
 
@@ -62,7 +65,7 @@ export class IngredientService extends supabaseService {
 
     const update = this.supabaseService.addIdUserToEntity(ingredient)
 
-    const query = await this.supabaseService.supabase.from(this.tableName).upsert(update).select().single()
+    const query = await this.supabaseService.client.from(this.tableName).upsert(update).select().single()
     this.savingIngredient.set(false)
 
     return query.data
@@ -75,7 +78,7 @@ export class IngredientService extends supabaseService {
     // await this.supabaseService.supabase.storage.from(this.tableName).remove([this.getImagePath(ingredients)])
     //   .then(cosa => console.warn('deleted', cosa))
     //   .catch(error => console.error(error))
-    return this.supabaseService.supabase.from(this.tableName).delete().in('id', ingredientIdsToDelete)
+    return this.supabaseService.client.from(this.tableName).delete().in('id', ingredientIdsToDelete)
   }
 
   public uploadImage(ingredient: NUTRITION_INGREDIENT | undefined, file: File) {

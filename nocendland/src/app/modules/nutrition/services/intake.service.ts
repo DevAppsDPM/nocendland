@@ -19,7 +19,7 @@ export class IntakeService extends supabaseService {
 
   public async readIntakesByDate(date: Date): Promise<NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT[]> {
     const select: string = `*, ${this.ingredientService.tableName}(*)` // TODO: Ver si se puede utilizar este select de alguna manera, ahora mismo si no se le pasa a select() el argumento directamente el string da un error raro.
-    const query = await this.supabaseService.supabase.from(this.tableName).select('*, nutrition_ingredient(*)').eq('date', date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate())
+    const query = await this.supabaseService.client.from(this.tableName).select('*, nutrition_ingredient(*)').eq('date', date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate())
 
     if (!query.data) return Promise.reject(query.error)
 
@@ -30,20 +30,20 @@ export class IntakeService extends supabaseService {
 
   public async saveIntake(intake: NUTRITION_INTAKE) {
     intake = this.supabaseService.addIdUserToEntity(intake)
-    const query = await this.supabaseService.supabase.from(this.tableName).upsert(intake).select().single()
+    const query = await this.supabaseService.client.from(this.tableName).upsert(intake).select().single()
 
     return query.data
   }
 
   public async saveIntakes(intakes: NUTRITION_INTAKE[]) {
     intakes = this.supabaseService.addIdUserToEntites(intakes)
-    const query = await this.supabaseService.supabase.from(this.tableName).upsert(intakes).select()
+    const query = await this.supabaseService.client.from(this.tableName).upsert(intakes).select()
 
     return query.data
   }
 
   public async deleteIntakes(intakeIds: number[]) {
-    const query = await this.supabaseService.supabase.from(this.tableName).delete().in('id', intakeIds)
+    const query = await this.supabaseService.client.from(this.tableName).delete().in('id', intakeIds)
 
     return query.data
   }

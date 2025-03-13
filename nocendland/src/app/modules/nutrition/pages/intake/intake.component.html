@@ -1,0 +1,35 @@
+﻿<main class="grid grid-cols-1 gap-4 h-full items-start">
+  <mat-accordion class="accordion-headers-align">
+    <mat-expansion-panel hideToggle [expanded]="!device.isMobile()">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Calendario </mat-panel-title>
+        <mat-panel-description>{{ core.getDateString(nutritionService.dateSelected()) }}<mat-icon>calendar_month</mat-icon></mat-panel-description>
+      </mat-expansion-panel-header>
+      <app-calendar (dateSelected)="dateSelected($event)" class="pb-4"></app-calendar>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-divider></mat-divider>
+
+  <section class="flex items-center justify-between">
+    <div class="text-2xl">Ingestas del día </div>
+
+    <div>
+      <!-- BOTÓN MULTISELECT -->
+      <button mat-icon-button (click)="deleteMode.set(!deleteMode())"><mat-icon>{{deleteMode() ? 'delete_forever' : 'delete'}}</mat-icon></button>
+
+      <!-- BOTÓN AÑADIR -->
+      <button mat-icon-button (click)="selectingIngredients.set(!selectingIngredients())"><mat-icon>{{selectingIngredients() ? 'cancel' : 'add'}}</mat-icon></button>
+    </div>
+  </section>
+
+  <section class="h-full overflow-auto relative">
+    <!-- INGREDIENT LIST -->
+    <dpm-listing *ngIf="selectingIngredients()" [config]="selectIngredientListConfig" [items]="nutritionService.ingredientList()"/>
+
+    <!-- INTAKE LIST -->
+    <dpm-listing *ngIf="!selectingIngredients()" [config]="intakeListConfig" [items]="nutritionService.intakeJoinIngredientList()"/>
+  </section>
+
+</main>
+<!--<app-intake-viewer/>-->

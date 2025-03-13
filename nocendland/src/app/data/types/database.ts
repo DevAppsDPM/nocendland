@@ -66,7 +66,7 @@ export type Database = {
           quantity_in_grams?: number | null
         }
         Update: {
-          date?: Date
+          date?: string
           id?: number
           id_user?: string
           ingredient?: number

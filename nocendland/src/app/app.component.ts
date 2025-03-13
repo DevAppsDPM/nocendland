@@ -1,5 +1,6 @@
 import {Component, HostListener} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
+import {DeviceService} from "@core/services/device.service"
 
 @Component({
     selector: 'app-root',
@@ -11,6 +12,11 @@ export class AppComponent {
   title = 'nocendland';
 
   installPromptEvent: any;
+
+  constructor(
+    private device: DeviceService // esto es para que se ejecute el constructor
+  ) {
+  }
 
   @HostListener('window:beforeinstallprompt', ['$event'])
   onBeforeInstallPrompt(event: Event) {

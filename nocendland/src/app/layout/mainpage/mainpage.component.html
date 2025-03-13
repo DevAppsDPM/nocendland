@@ -6,13 +6,20 @@
     <!-- SIDE MENU -->
     <app-side-nav-menu></app-side-nav-menu>
 
+    <div class="absolute bottom-0">v{{ environment.version }}</div>
+
   </mat-drawer>
 
   <main class="h-full w-full">
     <app-header></app-header>
 
     <article class="container-100-with-offset-toolbar-and-footer-height overflow-auto" (click)="sideNavService.sideNapOpened.set(false)">
-      <router-outlet></router-outlet>
+
+      <ng-template #templateRef>
+        <router-outlet></router-outlet>
+      </ng-template>
+      <app-column-center-container [template]="templateRef"/>
+
     </article>
 
     <app-footer></app-footer>

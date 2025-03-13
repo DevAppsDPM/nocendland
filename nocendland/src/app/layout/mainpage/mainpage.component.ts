@@ -1,12 +1,16 @@
 import {Component} from '@angular/core';
 import {MatDrawer, MatDrawerContainer} from "@angular/material/sidenav";
 import {Router, RouterOutlet} from "@angular/router";
-import {SupabaseService} from "../../api/services/supabase.service";
-import {SideNavService} from "@shared/services/layout/side-nav.service";
+import {SupabaseService} from "@api/services/supabase.service";
+import {SideNavService} from "@core/services/layout/side-nav.service";
 import {HeaderComponent} from "../header/header.component";
-import {UserInfoComponent} from "../../shared/components/user-info/user-info.component";
+import {UserInfoComponent} from "@shared/components/user-info/user-info.component";
 import {SideNavMenuComponent} from "../side-nav-menu/side-nav-menu.component";
 import {FooterComponent} from "@layout/footer/footer.component"
+import {
+  ColumnCenterContainerComponent
+} from "@shared/components/column-center-container/column-center-container.component"
+import {environment} from "../../../environments/environment"
 
 @Component({
     selector: 'app-mainpage',
@@ -18,6 +22,7 @@ import {FooterComponent} from "@layout/footer/footer.component"
         UserInfoComponent,
         SideNavMenuComponent,
         FooterComponent,
+        ColumnCenterContainerComponent,
     ],
     templateUrl: './mainpage.component.html',
     styleUrl: './mainpage.component.scss'
@@ -33,4 +38,6 @@ export class MainpageComponent {
   public verSession(): void {
     console.log('session', this.supabase.session)
   }
+
+  protected readonly environment = environment
 }
