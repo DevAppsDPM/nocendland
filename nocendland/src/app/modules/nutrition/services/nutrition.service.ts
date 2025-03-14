@@ -35,6 +35,11 @@ export class NutritionService {
     this.loadIngredientList()
   }
 
+  public reloadDateSelectedDependent(): void {
+    this.loadObjectiveSumByDate()
+    this.loadIntakeJoinIngredientList()
+  }
+
   /* INGREDIENTS */
 
   public loadIngredientList(): void {
@@ -78,8 +83,7 @@ export class NutritionService {
       this.dateSelected()
 
       untracked(() => {
-        this.loadObjectiveSumByDate()
-        this.loadIntakeJoinIngredientList()
+        this.reloadDateSelectedDependent()
       })
     })
   }

@@ -2,12 +2,13 @@ import {Component} from '@angular/core';
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 
 @Component({
-    selector: 'app-objectives',
+  selector: 'app-objectives',
   imports: [],
-    templateUrl: './objectives.component.html',
-    styleUrl: './objectives.component.scss'
+  templateUrl: './objectives.component.html',
+  styleUrl: './objectives.component.scss'
 })
 export class ObjectivesComponent {
 
-  constructor(protected nutritionService: NutritionService) {}
+  constructor(protected nutritionService: NutritionService) {
+  }
 }

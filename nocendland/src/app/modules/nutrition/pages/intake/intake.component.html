@@ -3,7 +3,7 @@
     <mat-expansion-panel hideToggle [expanded]="!device.isMobile()">
       <mat-expansion-panel-header>
         <mat-panel-title> Calendario </mat-panel-title>
-        <mat-panel-description>{{ core.getDateString(nutritionService.dateSelected()) }}<mat-icon>calendar_month</mat-icon></mat-panel-description>
+        <mat-panel-description>{{ core.getDateStringForUser(nutritionService.dateSelected()) }}<mat-icon>calendar_month</mat-icon></mat-panel-description>
       </mat-expansion-panel-header>
       <app-calendar (dateSelected)="dateSelected($event)" class="pb-4"></app-calendar>
     </mat-expansion-panel>
@@ -23,7 +23,7 @@
     </div>
   </section>
 
-  <section class="h-full overflow-auto relative">
+  <section class="h-full overflow-auto relative pt-1">
     <!-- INGREDIENT LIST -->
     <dpm-listing *ngIf="selectingIngredients()" [config]="selectIngredientListConfig" [items]="nutritionService.ingredientList()"/>
 

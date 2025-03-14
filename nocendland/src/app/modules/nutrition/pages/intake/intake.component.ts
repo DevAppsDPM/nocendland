@@ -81,7 +81,7 @@ export class IntakeComponent {
   private saveIntakes(ingredients: NUTRITION_INGREDIENT[]) {
     let intakes: NUTRITION_INTAKE[] = ingredients.map(ingredient => {
       let intake: NUTRITION_INTAKE = {
-        date: this.core.getDateString(this.nutritionService.dateSelected()),
+        date: this.core.getDateStringForDB(this.nutritionService.dateSelected()),
         ingredient: ingredient.id
       }
 
@@ -89,6 +89,7 @@ export class IntakeComponent {
     })
 
     this.apiIntakeService.saveIntakeList(intakes)
+      .then(() => this.nutritionService.reloadDateSelectedDependent())
       .finally(() => this.selectingIngredients.set(false))
       .finally(() => this.nutritionService.loadIntakeJoinIngredientList())
   }

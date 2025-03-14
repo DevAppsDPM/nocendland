@@ -36,7 +36,7 @@ import {CoreService} from "@core/services/core.service"
   ],
   templateUrl: './dpmlisting.component.html',
   styleUrl: './dpmlisting.component.scss',
-  providers: [LoggerService]
+  providers: [LoggerService, DPMlistingService]
 })
 export class DPMlistingComponent implements OnInit {
   @Input({required: true}) config!: DPMlistingConfig
