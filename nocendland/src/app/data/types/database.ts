@@ -91,32 +91,35 @@ export type Database = {
       }
       nutrition_objective: {
         Row: {
+          calories: number
           carbohydrates: number
           fats: number
-          grams: number
-          id_nutrition_level: number
+          id_user: string
+          level: Database["public"]["Enums"]["nutrition_objetive_levels"]
           proteins: number
         }
         Insert: {
+          calories?: number
           carbohydrates?: number
           fats?: number
-          grams?: number
-          id_nutrition_level: number
+          id_user: string
+          level: Database["public"]["Enums"]["nutrition_objetive_levels"]
           proteins?: number
         }
         Update: {
+          calories?: number
           carbohydrates?: number
           fats?: number
-          grams?: number
-          id_nutrition_level?: number
+          id_user?: string
+          level?: Database["public"]["Enums"]["nutrition_objetive_levels"]
           proteins?: number
         }
         Relationships: [
           {
-            foreignKeyName: "nutrition_objective_id_nutrition_level_foreign"
-            columns: ["id_nutrition_level"]
-            isOneToOne: true
-            referencedRelation: "nutrition_objetive_level"
+            foreignKeyName: "nutrition_objective_id_user_fkey"
+            columns: ["id_user"]
+            isOneToOne: false
+            referencedRelation: "user"
             referencedColumns: ["id"]
           },
         ]
@@ -209,9 +212,18 @@ export type Database = {
           carbohydrates: number | null
           date: string | null
           fats: number | null
+          id_user: string | null
           proteins: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "nutrition_intake_id_user_foreign"
+            columns: ["id_user"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {

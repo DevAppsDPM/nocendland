@@ -1,1 +1,36 @@
-<p>objective-config works!</p>
+<h1 mat-dialog-title>Configuración de objetivos</h1>
+
+<mat-dialog-content>
+  @for (objectiveConfigForm of objectiveConfigFormList; track objectiveConfigForm) {
+    <form *ngIf="!!objectiveConfigFormList" [formGroup]="objectiveConfigForm" class="grid grid-cols-4 gap-4" (change)="saveObjetiveConfig()">
+
+      <!-- LEVEL -->
+      <h3 class="col-span-4">{{ objectiveConfigForm.controls['level'].value }}</h3>
+
+      <!-- NOMBRE -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.FORM_LABELS.CALORIES }}</mat-label>
+        <input id="calories" matInput formControlName="calories" type="number" (focus)="core.inputSelect($event)" />
+      </mat-form-field>
+
+      <!-- NOMBRE -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.FORM_LABELS.PROTEINS }}</mat-label>
+        <input id="proteins" matInput formControlName="proteins" type="number" (focus)="core.inputSelect($event)" />
+      </mat-form-field>
+
+      <!-- NOMBRE -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.FORM_LABELS.CARBOHYDRATES }}</mat-label>
+        <input id="carbohydrates" matInput formControlName="carbohydrates" type="number" (focus)="core.inputSelect($event)" />
+      </mat-form-field>
+
+      <!-- NOMBRE -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.FORM_LABELS.FATS }}</mat-label>
+        <input id="fats" matInput formControlName="fats" type="number" (focus)="core.inputSelect($event)" />
+      </mat-form-field>
+
+    </form>
+  }
+</mat-dialog-content>

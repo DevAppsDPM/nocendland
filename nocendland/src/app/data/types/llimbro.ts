@@ -5,6 +5,7 @@ export type NUTRITION_INTAKE = Database['public']['Tables']['nutrition_intake'][
 export type NUTRITION_INTAKE_WITH_TOTALS = Database['public']['Views']['nutrition_intake_with_totals']['Row']
 export type NUTRITION_OBJETIVES_TOTALS = Database['public']['Views']['nutrition_objectives_totals']['Row']
 export type NUTRITION_OBJETIVES_LEVELS = Database['public']['Enums']['nutrition_objetive_levels']
+export type NUTRITION_OBJECTIVE = Database['public']['Tables']['nutrition_objective']['Row']
 export type NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT = {
     date: string
     id: number

@@ -4,7 +4,8 @@ export const LOGGER_COLORS = {
   API: '#e4a857',
   FOOTER: '#ad77dc',
   NAVIGATE: '#87ac5a',
-  DPM_COMPONENT: '#5887FF'
+  DPM_COMPONENT: '#5887FF',
+  CORE: '#42033D'
 }
 
 @Injectable({

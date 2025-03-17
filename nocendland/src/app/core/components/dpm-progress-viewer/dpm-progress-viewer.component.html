@@ -1,0 +1,13 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title-group>
+      <mat-card-title>{{ config().title }}</mat-card-title>
+      <div matCardAvatar>{{ core.mathGetPercentage(config().value, config().objetive).toFixed(0) }}%</div>
+    </mat-card-title-group>
+  </mat-card-header>
+  <article class="progress-container">
+    <div>{{ config().value }}</div>
+    <mat-progress-bar [value]="core.mathGetPercentage(config().value, config().objetive)"/>
+    <div>{{ config().objetive }}</div>
+  </article>
+</mat-card>

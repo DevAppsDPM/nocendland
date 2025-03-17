@@ -77,7 +77,10 @@ export class IntakeViewerComponent {
   }
 
   private selectInputQuantity(): void {
-    this.inputQuantity()?.nativeElement.select()
+    setTimeout(() => {
+      this.inputQuantity()?.nativeElement.focus()
+      this.inputQuantity()?.nativeElement.select()
+    })
   }
 
   /* EFFECTS */
@@ -91,7 +94,7 @@ export class IntakeViewerComponent {
   private effectInputQuantity(): void {
     effect(() => {
       this.inputQuantity()
-      setTimeout(() => this.selectInputQuantity())
+      this.selectInputQuantity()
     })
   }
 }

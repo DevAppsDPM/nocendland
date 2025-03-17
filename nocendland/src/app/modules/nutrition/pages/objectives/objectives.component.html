@@ -1,9 +1,10 @@
-<!--<app-calendar (dateSelected)="nutritionService.dateSelected.set($event)" class="pb-4"/>-->
+<header class="col-span-2 flex items-center">
+  <div class="text-2xl w-full">{{ STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.OBJECTIVES.NAME }}</div>
+  <button mat-icon-button (click)="openDialogObjectiveConfig()"><mat-icon>settings</mat-icon></button>
+</header>
 
 <article class="grid gap-1 p-1">
-  <div>calories: {{ nutritionService.objectives()?.calories || 0 }}</div>
-  <div>proteins: {{ nutritionService.objectives()?.proteins || 0 }}</div>
-  <div>carbohydrates: {{ nutritionService.objectives()?.carbohydrates || 0 }}</div>
-  <div>fats: {{ nutritionService.objectives()?.fats || 0 }}</div>
+  @for (progressConfig of progressConfigList; track progressConfig) {
+    <dpm-progress-viewer [config]="progressConfig"/>
+  }
 </article>
-

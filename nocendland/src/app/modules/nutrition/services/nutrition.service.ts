@@ -3,12 +3,13 @@ import {ROUTES} from "@data/constants/ROUTES"
 import {IngredientService} from "@modules/nutrition/services/ingredient.service"
 import {
   NUTRITION_INGREDIENT,
-  NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT,
+  NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT, NUTRITION_OBJECTIVE,
   NUTRITION_OBJETIVES_TOTALS
 } from "@data/types/llimbro"
 import {ApiNutritionObjectiveTotalsService} from "@api/services/api-nutrition-objective-totals.service"
 import {ApiNutritionIngredientService} from "@api/services/api-nutrition-ingredient.service"
 import {ApiNutritionIntakeService} from "@api/services/api-nutrition-intake.service"
+import {ApiNutritionObjetiveService} from "@api/services/api-nutrition-objetive.service"
 
 @Injectable({
   providedIn: 'root'
@@ -21,18 +22,25 @@ export class NutritionService {
   public ingredientList: WritableSignal<NUTRITION_INGREDIENT[]> = signal([])
   public loadingIngredientList: WritableSignal<boolean> = signal(false)
 
+  // Intakes
   public intakeJoinIngredientList: WritableSignal<NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT[]> = signal([])
   public loadingIntakeJoinIngredientList: WritableSignal<boolean> = signal(false)
+
+  // Objectives
+  public objectiveList: WritableSignal<NUTRITION_OBJECTIVE[]> = signal([])
+  public loadingObjectiveList: WritableSignal<boolean> = signal(false)
 
   public objectives: WritableSignal<NUTRITION_OBJETIVES_TOTALS | undefined> = signal(undefined)
 
   constructor(
     private apiNutritionIngredient: ApiNutritionIngredientService,
     private apiNutritionIntake: ApiNutritionIntakeService,
+    private apiNutritionObjective: ApiNutritionObjetiveService,
     private apiNutritionObjetiveTotals: ApiNutritionObjectiveTotalsService,
   ) {
     this.effectDateSelected()
     this.loadIngredientList()
+    this.loadObjectiveList()
   }
 
   public reloadDateSelectedDependent(): void {
@@ -63,7 +71,8 @@ export class NutritionService {
       carbohydrates: 0,
       fats: 0,
       proteins: 0,
-      date: ''
+      date: '',
+      id_user: ''
     }
 
     const values = await this.apiNutritionObjetiveTotals.getIntakeJoinIngredientOnlyValues(this.dateSelected())
@@ -75,6 +84,14 @@ export class NutritionService {
     })
 
     this.objectives.set(totals)
+  }
+
+  /* OBJECTIVES */
+  public loadObjectiveList(): void {
+    this.loadingObjectiveList.set(true)
+    this.apiNutritionObjective.readObjectives()
+      .then((objectiveList: NUTRITION_OBJECTIVE[]) => this.objectiveList.set(objectiveList))
+      .finally(() => this.loadingObjectiveList.set(false))
   }
 
   /* EFFECTS */

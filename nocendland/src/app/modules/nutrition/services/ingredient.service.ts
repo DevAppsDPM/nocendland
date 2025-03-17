@@ -32,7 +32,6 @@ export class IngredientService extends supabaseService {
   }
 
   public loadIngredients(): void {
-    console.warn('aaa')
     this.readingIngredients.set(true)
 
     this.supabaseService.client.from(this.tableName).select('*').then(ingredients => {
