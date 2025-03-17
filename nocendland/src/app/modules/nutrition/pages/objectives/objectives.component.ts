@@ -42,13 +42,13 @@ export class ObjectivesComponent {
     if (!this.nutritionService.objectives()) return
 
     const objective: NUTRITION_OBJECTIVE | undefined = this.nutritionService.objectiveList().find(objective => objective.level === 'keep')
-    if (!objective) return
+
 
     this.progressConfigList = [
-      { title: this.STRINGS.CALORIES, value: this.nutritionService.objectives()?.calories || 0, objetive: objective.calories},
-      { title: this.STRINGS.PROTEINS, value: this.nutritionService.objectives()?.proteins || 0, objetive: objective.proteins},
-      { title: this.STRINGS.CARBOHYDRATES, value: this.nutritionService.objectives()?.carbohydrates || 0, objetive: objective.carbohydrates},
-      { title: this.STRINGS.FATS, value: this.nutritionService.objectives()?.fats || 0, objetive: objective.fats},
+      { title: this.STRINGS.CALORIES, value: this.nutritionService.objectives()?.calories || 0, objetive: objective?.calories || 0},
+      { title: this.STRINGS.PROTEINS, value: this.nutritionService.objectives()?.proteins || 0, objetive: objective?.proteins || 0},
+      { title: this.STRINGS.CARBOHYDRATES, value: this.nutritionService.objectives()?.carbohydrates || 0, objetive: objective?.carbohydrates || 0},
+      { title: this.STRINGS.FATS, value: this.nutritionService.objectives()?.fats || 0, objetive: objective?.fats || 0},
     ]
   }
 
