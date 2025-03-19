@@ -41,7 +41,7 @@ export class ObjectiveConfigComponent {
   private buildForm(): void {
     this.levels.map((level: NUTRITION_OBJETIVES_LEVELS) => {
       const objective: NUTRITION_OBJECTIVE | undefined = this.nutritionService.objectiveList().find(objective => objective.level === level)
-      if (!objective) return
+      // if (!objective) return
 
       this.objectiveConfigFormList.push(
         this.formBuilder.group({
