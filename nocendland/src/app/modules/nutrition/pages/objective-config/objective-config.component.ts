@@ -46,10 +46,10 @@ export class ObjectiveConfigComponent {
       this.objectiveConfigFormList.push(
         this.formBuilder.group({
           level: [level],
-          proteins: [objective.proteins],
-          carbohydrates: [objective.carbohydrates],
-          fats: [objective.fats],
-          calories: [objective.calories],
+          proteins: [objective?.proteins || 0],
+          carbohydrates: [objective?.carbohydrates || 0],
+          fats: [objective?.fats || 0],
+          calories: [objective?.calories || 0],
         })
       )
     })

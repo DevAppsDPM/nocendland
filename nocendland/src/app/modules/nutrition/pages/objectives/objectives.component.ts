@@ -45,10 +45,10 @@ export class ObjectivesComponent {
 
 
     this.progressConfigList = [
-      { title: this.STRINGS.CALORIES, value: this.nutritionService.objectives()?.calories || 0, objetive: objective?.calories || 0},
-      { title: this.STRINGS.PROTEINS, value: this.nutritionService.objectives()?.proteins || 0, objetive: objective?.proteins || 0},
-      { title: this.STRINGS.CARBOHYDRATES, value: this.nutritionService.objectives()?.carbohydrates || 0, objetive: objective?.carbohydrates || 0},
-      { title: this.STRINGS.FATS, value: this.nutritionService.objectives()?.fats || 0, objetive: objective?.fats || 0},
+      { title: this.STRINGS.CALORIES, value: parseInt(this.nutritionService.objectives()?.calories?.toFixed(0) || '0'), objetive: objective?.calories || 0},
+      { title: this.STRINGS.PROTEINS, value: parseInt(this.nutritionService.objectives()?.proteins?.toFixed(0) || '0'), objetive: objective?.proteins || 0},
+      { title: this.STRINGS.CARBOHYDRATES, value: parseInt(this.nutritionService.objectives()?.carbohydrates?.toFixed(0) || '0'), objetive: objective?.carbohydrates || 0},
+      { title: this.STRINGS.FATS, value: parseInt(this.nutritionService.objectives()?.fats?.toFixed(0) || '0'), objetive: objective?.fats || 0},
     ]
   }
 
