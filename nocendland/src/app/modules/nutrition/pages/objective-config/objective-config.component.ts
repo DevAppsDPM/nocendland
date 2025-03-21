@@ -9,6 +9,7 @@ import {NUTRITION_OBJECTIVE, NUTRITION_OBJETIVES_LEVELS} from "@data/types/llimb
 import {CoreService} from "@core/services/core.service"
 import {ApiNutritionObjetiveService} from "@api/services/api-nutrition-objetive.service"
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
+import {DeviceService} from "@core/services/device.service"
 
 @Component({
   selector: 'app-objective-config',
@@ -30,8 +31,9 @@ export class ObjectiveConfigComponent {
   protected objectiveConfigFormList: FormGroup[] = []
 
   constructor(
-    private formBuilder: FormBuilder,
+    protected device: DeviceService,
     protected core: CoreService,
+    private formBuilder: FormBuilder,
     private apiNutritionObjetiveService: ApiNutritionObjetiveService,
     private nutritionService: NutritionService,
   ) {

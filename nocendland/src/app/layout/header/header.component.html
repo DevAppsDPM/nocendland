@@ -3,5 +3,11 @@
     <mat-icon>menu</mat-icon>
   </button>
   <h1>{{ headerService.title() }}</h1>
+
+  <div class="w-full flex justify-end">
+    <button mat-icon-button color="primary" (click)="navigate.to('home')">
+      <mat-icon>home</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>
 <mat-divider></mat-divider>

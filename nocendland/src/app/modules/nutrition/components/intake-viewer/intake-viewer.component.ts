@@ -1,4 +1,4 @@
-import {Component, effect, ElementRef, Inject, Signal, signal, viewChild, WritableSignal} from '@angular/core';
+import {Component, effect, ElementRef, Inject, input, Signal, signal, viewChild, WritableSignal} from '@angular/core';
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {MatCardModule} from "@angular/material/card"
 import {MatInputModule} from "@angular/material/input"
@@ -10,6 +10,7 @@ import {ApiNutritionIntakeService} from "@api/services/api-nutrition-intake.serv
 import {NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT} from "@data/types/llimbro"
 import {MAT_DIALOG_DATA} from "@angular/material/dialog"
 import {Debounce} from "@core/decorators/Debounce"
+import {CardDataComponent} from "@core/components/card-data/card-data.component"
 
 @Component({
   selector: 'app-intake-viewer',
@@ -19,7 +20,8 @@ import {Debounce} from "@core/decorators/Debounce"
     MatButtonModule,
     FormsModule,
     MatCardModule,
-    MatIcon
+    MatIcon,
+    CardDataComponent
   ],
   templateUrl: './intake-viewer.component.html',
   styleUrl: './intake-viewer.component.scss'
@@ -97,4 +99,7 @@ export class IntakeViewerComponent {
       this.selectInputQuantity()
     })
   }
+
+  protected readonly input = input
+  protected readonly parseInt = parseInt
 }

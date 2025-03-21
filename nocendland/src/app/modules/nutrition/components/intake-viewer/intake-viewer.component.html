@@ -21,6 +21,13 @@
       <input #inputQuantity matInput type="number" [(ngModel)]="currentIntakeJoinIngredient.quantity_in_grams" (ngModelChange)="saveChanges()">
     </mat-form-field>
     <br />
+
+    <div class="grid gap-1 grid-cols-4">
+      <app-card-data [data]="{ name: 'Calorías', value: (currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0) * parseInt(inputQuantity.value)}"/>
+      <app-card-data [data]="{ name: 'Proteínas', value: (currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0) * parseInt(inputQuantity.value)}"/>
+      <app-card-data [data]="{ name: 'Hidratos', value: (currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0) * parseInt(inputQuantity.value)}"/>
+      <app-card-data [data]="{ name: 'Grasas', value: (currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0) * parseInt(inputQuantity.value)}"/>
+    </div>
 <!--    <button mat-raised-button color="primary" (click)="saveChanges()">Guardar</button>-->
   </mat-card-content>
 

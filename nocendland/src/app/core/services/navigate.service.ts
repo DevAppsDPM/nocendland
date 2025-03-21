@@ -47,6 +47,7 @@ import {filter, Observable} from "rxjs"
 
 
 export const NAVIGATION_ROUTES = {
+  home: { module: '', children: { '': '' } },
   auth: { module: 'auth', children: { 'auth-page': 'auth-page' } },
   nutrition: {
     module: 'nutrition',

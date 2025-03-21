@@ -2,10 +2,10 @@
 
 <mat-dialog-content>
   @for (objectiveConfigForm of objectiveConfigFormList; track objectiveConfigForm) {
-    <form *ngIf="!!objectiveConfigFormList" [formGroup]="objectiveConfigForm" class="grid grid-cols-4 gap-4" (change)="saveObjetiveConfig()">
+    <form *ngIf="!!objectiveConfigFormList" [formGroup]="objectiveConfigForm" [class]="device.isMobile() ? 'grid-cols-1' : 'grid-cols-4'" class="grid gap-4" (change)="saveObjetiveConfig()">
 
       <!-- LEVEL -->
-      <h3 class="col-span-4">{{ objectiveConfigForm.controls['level'].value }}</h3>
+      <h3 [class]="device.isMobile() ? '' : 'col-span-4'">{{ objectiveConfigForm.controls['level'].value }}</h3>
 
       <!-- NOMBRE -->
       <mat-form-field appearance="outline">

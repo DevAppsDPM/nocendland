@@ -5,6 +5,7 @@ import {MatToolbar} from "@angular/material/toolbar";
 import {SideNavService} from "@core/services/layout/side-nav.service";
 import {HeaderService} from "@core/services/layout/header.service"
 import {MatDivider} from "@angular/material/divider"
+import {NavigateService} from "@core/services/navigate.service"
 
 @Component({
     selector: 'app-header',
@@ -19,6 +20,10 @@ import {MatDivider} from "@angular/material/divider"
 })
 export class HeaderComponent {
 
-  constructor(protected sideNavService: SideNavService, protected headerService: HeaderService) {
+  constructor(
+    protected sideNavService: SideNavService,
+    protected headerService: HeaderService,
+    protected navigate: NavigateService,
+  ) {
   }
 }
