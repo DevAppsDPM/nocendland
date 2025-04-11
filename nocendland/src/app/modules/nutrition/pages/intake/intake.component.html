@@ -1,6 +1,6 @@
 ﻿<main class="grid grid-cols-1 gap-4 h-full items-start">
   <mat-accordion class="accordion-headers-align">
-    <mat-expansion-panel hideToggle [expanded]="!device.isMobile()">
+    <mat-expansion-panel hideToggle>
       <mat-expansion-panel-header>
         <mat-panel-title> Calendario </mat-panel-title>
         <mat-panel-description>{{ core.getDateStringForUser(nutritionService.dateSelected()) }}<mat-icon>calendar_month</mat-icon></mat-panel-description>

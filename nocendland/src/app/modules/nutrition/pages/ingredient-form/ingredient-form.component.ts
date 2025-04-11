@@ -15,6 +15,7 @@ import {NUTRITION_INGREDIENT} from "@data/types/llimbro"
 import {RESOURCES} from '@data/constants/RESOURCES';
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {DeviceService} from "@core/services/device.service"
+import {ApiNutritionIngredientService} from "@api/services/api-nutrition-ingredient.service"
 
 @Component({
     selector: 'app-ingredient-form',
@@ -49,15 +50,16 @@ export class IngredientFormComponent implements AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
-    public ingredientService: IngredientService,
     protected location: Location,
     private confirmDialog: ConfirmDialogService,
     private nutritionService: NutritionService,
     protected device: DeviceService,
+    protected apiNutritionIngredientService: ApiNutritionIngredientService,
+    public ingredientService: IngredientService,
   ) {
     this.getUrlParam()
     this.buildForm()
-    if (!this.new) this.ingredientService.readIngredientById(this.ingredientId).then(ingredient => this.setValues(ingredient.data))
+    if (!this.new) this.apiNutritionIngredientService.readIngredientById(this.ingredientId).then(ingredient => this.setValues(ingredient))
   }
 
   ngAfterViewInit(): void {
@@ -104,7 +106,7 @@ export class IngredientFormComponent implements AfterViewInit {
   }
 
   public saveIngredient(): void {
-    this.ingredientService.saveIngredient(this.ingredientForm!.value)
+    this.apiNutritionIngredientService.saveIngredient(this.ingredientForm!.value)
       .then(ingredient => {
         this.new = false
         this.buildForm()
@@ -121,7 +123,9 @@ export class IngredientFormComponent implements AfterViewInit {
     }
 
     this.confirmDialog.open(config).subscribe((deleted: boolean) => {
-      if (deleted) this.ingredientService.deleteIngredients(this.ingredientForm?.value).then(() => this.location.back())
+      if (deleted) this.apiNutritionIngredientService.deleteIngredients([this.ingredientForm?.value])
+        .then(() => this.nutritionService.loadIngredientList())
+        .then(() => this.location.back())
     })
   }
 

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, signal, WritableSignal} from '@angular/core';
 import {ENTITES} from "@data/types/supabase"
 import {API} from "@api/interfaces/api"
 import {SupabaseService} from "@api/services/supabase.service"
@@ -10,6 +10,7 @@ import {NUTRITION_INGREDIENT} from "@data/types/llimbro"
   deps: [LoggerService]
 })
 export class ApiNutritionIngredientService implements API {
+  public savingIngredient: WritableSignal<boolean> = signal(false)
 
   public entity: ENTITES = 'nutrition_ingredient'
 
@@ -52,10 +53,12 @@ export class ApiNutritionIngredientService implements API {
   /* SAVE */
   public async saveIngredient(ingredient: NUTRITION_INGREDIENT): Promise<NUTRITION_INGREDIENT> {
     this.logger.log('Saving ingredient... ', ingredient)
+    this.savingIngredient.set(true)
 
     const update = this.supabase.addIdUserToEntity(ingredient)
 
     const query = await this.supabase.client.from(this.entity).upsert(update).select().single()
+    this.savingIngredient.set(false)
 
     if (!!query.error) {
       this.logger.error('Error saving ingredient with id', query.error)

@@ -9,7 +9,7 @@
           STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INGREDIENT.FORM_TITLE_NEW
       }}
     </div>
-    <mat-progress-spinner *ngIf="ingredientService.savingIngredient()" [diameter]="30" mode="indeterminate"></mat-progress-spinner>
+    <mat-progress-spinner *ngIf="apiNutritionIngredientService.savingIngredient()" [diameter]="30" mode="indeterminate"/>
     <button mat-icon-button color="warn" *ngIf="!new" (click)="deleteIngredient()"><mat-icon>delete</mat-icon></button>
   </header>
 

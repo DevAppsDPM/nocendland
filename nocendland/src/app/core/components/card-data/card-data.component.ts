@@ -1,5 +1,10 @@
-import {Component, input} from '@angular/core';
+import {Component, input, InputSignal} from '@angular/core';
 import {MatCardModule} from "@angular/material/card"
+
+export declare type CARD_DATA = {
+  name: string
+  value: any
+}
 
 @Component({
   selector: 'app-card-data',
@@ -11,5 +16,5 @@ import {MatCardModule} from "@angular/material/card"
 })
 export class CardDataComponent {
 
-  public data = input.required<{ name: string, value: any }>()
+  public data: InputSignal<CARD_DATA> = input.required<CARD_DATA>()
 }

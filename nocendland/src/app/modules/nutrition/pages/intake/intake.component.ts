@@ -14,7 +14,6 @@ import {CoreService} from "@core/services/core.service"
 import {IntakeViewerComponent} from "@modules/nutrition/components/intake-viewer/intake-viewer.component"
 import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog"
 import {MatExpansionModule} from "@angular/material/expansion"
-import {DeviceService} from "@core/services/device.service"
 
 @Component({
   selector: 'app-intake',
@@ -59,7 +58,7 @@ export class IntakeComponent {
       lines: ['quantity_in_grams']
     },
     actions: {
-      confirm: (ingredients, index) => this.openIntakeDialog(index || 0)
+      confirm: (intakes, index) => this.getIntakeListConfirmationMethod(intakes, index || 0)
     },
     multiSelection: this.deleteMode,
     activateConfirm: true,
@@ -70,8 +69,7 @@ export class IntakeComponent {
     private apiIntakeService: ApiNutritionIntakeService,
     private dialog: MatDialog,
     protected nutritionService: NutritionService,
-    protected core: CoreService,
-    protected device: DeviceService,
+    protected core: CoreService
   ) { }
 
   protected dateSelected(dateSelected: Date): void {
@@ -92,6 +90,20 @@ export class IntakeComponent {
       .then(() => this.nutritionService.reloadDateSelectedDependent())
       .finally(() => this.selectingIngredients.set(false))
       .finally(() => this.nutritionService.loadIntakeJoinIngredientList())
+  }
+
+  /**
+   * Función que abre el diálogo de intake o ejecuta la función de borrar intake en base a {@link deleteMode}
+   * @param intakes
+   * @param index para la función de {@link openIntakeDialog}
+   */
+  public getIntakeListConfirmationMethod(intakes: NUTRITION_INTAKE[], index: number): void {
+    if (!this.deleteMode()) this.openIntakeDialog(index)
+    else {
+      const intakeIdList: (undefined | number)[] = intakes.map(intake => intake.id)
+      this.apiIntakeService.deleteIntakesByIdList(intakeIdList.filter(intake => intake !== undefined))
+        .then(() => this.nutritionService.loadIntakeJoinIngredientList())
+    }
   }
 
   public openIntakeDialog(currentIndex: number): void {
