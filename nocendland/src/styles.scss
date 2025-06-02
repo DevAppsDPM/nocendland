@@ -1,5 +1,6 @@
 @use "sass:meta";
-@import '@angular/material/prebuilt-themes/magenta-violet.css';
+
+@import 'styles/themes';
 
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';

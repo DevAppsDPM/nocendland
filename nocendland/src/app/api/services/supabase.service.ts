@@ -36,6 +36,7 @@ export class SupabaseService {
   protected constructor(private router: Router, private logger: LoggerService) {
     this.client = createClient(environment.supabaseUrl, environment.supabaseKey)
     this.logger.setConfig(SupabaseService.name, '#3ecf8e')
+    this.onAuthStateChangeSubscription()
   }
 
   /* UTILS */
@@ -162,6 +163,16 @@ export class SupabaseService {
 
   public readImages(path: string): Promise<{data: FileObject[], error: null} | {data: null, error: StorageError}> {
     return this.client.storage.from(this.storageName).list(path)
+  }
+
+  private onAuthStateChangeSubscription(): void {
+    this.client.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change', event, session)
+      // if (event === 'SIGNED_OUT' || !session) {
+      //   // Aquí puedes redirigir al login o mostrar un mensaje
+      //   this.router.navigateByUrl('/auth')
+      // }
+    })
   }
 }
 

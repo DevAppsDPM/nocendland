@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(), provideAnimationsAsync(), provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
-          })
+          }), provideAnimationsAsync()
     // {
     //   provide: APP_INITIALIZER,
     //   useFactory: initializeApp,

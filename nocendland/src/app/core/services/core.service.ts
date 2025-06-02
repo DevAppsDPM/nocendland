@@ -1,10 +1,17 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {LOGGER_COLORS, LoggerService} from "@core/services/logger.service"
+import {IntervalService} from "@core/services/interval.service"
+import {OverlayService} from "@core/services/overlay.service"
+import {UtilService} from "@core/services/util.service"
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoreService {
+
+  public interval: IntervalService = inject(IntervalService)
+  public overlay: OverlayService = inject(OverlayService)
+  public util: UtilService = inject(UtilService)
 
   constructor(private logger: LoggerService) {
     this.logger.setConfig(CoreService.name, LOGGER_COLORS.CORE)

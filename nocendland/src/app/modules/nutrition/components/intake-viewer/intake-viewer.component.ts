@@ -11,6 +11,7 @@ import {NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT} from "@dat
 import {MAT_DIALOG_DATA} from "@angular/material/dialog"
 import {Debounce} from "@core/decorators/Debounce"
 import {CardDataComponent} from "@core/components/card-data/card-data.component"
+import {CoreService} from "@core/services/core.service"
 
 @Component({
   selector: 'app-intake-viewer',
@@ -34,7 +35,8 @@ export class IntakeViewerComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     protected nutritionService: NutritionService,
-    private apiNutritionIntakeService: ApiNutritionIntakeService
+    private apiNutritionIntakeService: ApiNutritionIntakeService,
+    private core: CoreService
   ) {
     this.currentIndex.set(this.data.currentIndex) // Asignamos el currentIndex
     this.effectCurrentIndex()
@@ -67,15 +69,16 @@ export class IntakeViewerComponent {
       : this.currentIndex() + 1)
   }
 
-  @Debounce(500)
   saveChanges() {
-    let intakeJoinNutrition: any = structuredClone(this.currentIntakeJoinIngredient)
-    intakeJoinNutrition.ingredient = intakeJoinNutrition.nutrition_ingredient.id
-    delete intakeJoinNutrition.nutrition_ingredient; // Elimina la propiedad
-    let intake: NUTRITION_INTAKE = intakeJoinNutrition
+    this.core.util.debounce(() => {
+      let intakeJoinNutrition: any = structuredClone(this.currentIntakeJoinIngredient)
+      intakeJoinNutrition.ingredient = intakeJoinNutrition.nutrition_ingredient.id
+      delete intakeJoinNutrition.nutrition_ingredient; // Elimina la propiedad
+      let intake: NUTRITION_INTAKE = intakeJoinNutrition
 
-    this.apiNutritionIntakeService.saveIntake(intake)
-      .then(() => this.nutritionService.loadIntakeJoinIngredientList())
+      this.apiNutritionIntakeService.saveIntake(intake)
+        .then(() => this.nutritionService.loadIntakeJoinIngredientList())
+    }, 1000)
   }
 
   private selectInputQuantity(): void {

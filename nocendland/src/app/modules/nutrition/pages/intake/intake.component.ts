@@ -108,7 +108,7 @@ export class IntakeComponent {
 
   public openIntakeDialog(currentIndex: number): void {
     const dialogConfig = {
-      width: '400px',  // Tamaño del dialogo
+      width: '400px',  // Tamaño del diálogo
       data: {
         currentIndex: currentIndex,  // Pasar el currentIndex como dato
       }
