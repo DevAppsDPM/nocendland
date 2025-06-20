@@ -1,0 +1,10 @@
+﻿@use '@angular/material' as mat;
+@use 'themes' as themes;
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:root {
+  @include mat.toolbar-overrides((
+    //container-background-color: mat.get-theme-color(themes.$default-dark-theme, primary),
+    //container-text-color: mat.get-theme-color(themes.$default-dark-theme, tertiary),
+  ));
+}

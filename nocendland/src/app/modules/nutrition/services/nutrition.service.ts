@@ -1,9 +1,8 @@
 import {effect, Injectable, signal, untracked, WritableSignal} from '@angular/core';
-import {ROUTES} from "@data/constants/ROUTES"
-import {IngredientService} from "@modules/nutrition/services/ingredient.service"
 import {
   NUTRITION_INGREDIENT,
-  NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT, NUTRITION_OBJECTIVE,
+  NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT,
+  NUTRITION_OBJECTIVE,
   NUTRITION_OBJETIVES_TOTALS
 } from "@data/types/llimbro"
 import {ApiNutritionObjectiveTotalsService} from "@api/services/api-nutrition-objective-totals.service"
@@ -25,6 +24,7 @@ export class NutritionService {
   // Intakes
   public intakeJoinIngredientList: WritableSignal<NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT[]> = signal([])
   public loadingIntakeJoinIngredientList: WritableSignal<boolean> = signal(false)
+  public savingIntakeJoinIngredientList: WritableSignal<boolean> = signal(false)
 
   // Objectives
   public objectiveList: WritableSignal<NUTRITION_OBJECTIVE[]> = signal([])
@@ -43,9 +43,11 @@ export class NutritionService {
     this.loadObjectiveList()
   }
 
-  public reloadDateSelectedDependent(): void {
-    this.loadObjectiveSumByDate()
-    this.loadIntakeJoinIngredientList()
+  public async reloadDateSelectedDependent(): Promise<void> {
+    await Promise.all([
+      this.loadObjectiveSumByDate(),
+      this.loadIntakeJoinIngredientList()
+    ])
   }
 
   /* INGREDIENTS */
@@ -58,9 +60,9 @@ export class NutritionService {
   }
 
   /* INTAKES */
-  public loadIntakeJoinIngredientList(): void {
+  public async loadIntakeJoinIngredientList(): Promise<void> {
     this.loadingIntakeJoinIngredientList.set(true)
-    this.apiNutritionIntake.readIntakesJoinIngredientByDate(this.dateSelected())
+    return this.apiNutritionIntake.readIntakesJoinIngredientByDate(this.dateSelected())
       .then((intakeList: NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT[]) => this.intakeJoinIngredientList.set(intakeList))
       .finally(() => this.loadingIntakeJoinIngredientList.set(false))
   }

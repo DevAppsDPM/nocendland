@@ -3,6 +3,7 @@ import {LOGGER_COLORS, LoggerService} from "@core/services/logger.service"
 import {IntervalService} from "@core/services/interval.service"
 import {OverlayService} from "@core/services/overlay.service"
 import {UtilService} from "@core/services/util.service"
+import {MathService} from "@core/services/math.service"
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import {UtilService} from "@core/services/util.service"
 export class CoreService {
 
   public interval: IntervalService = inject(IntervalService)
+  public math: MathService = inject(MathService)
   public overlay: OverlayService = inject(OverlayService)
   public util: UtilService = inject(UtilService)
 
@@ -30,13 +32,7 @@ export class CoreService {
     return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
   }
 
-  public mathGetPercentage(partialValue: number, totalValue: number): number {
-    if (totalValue === 0) {
-      this.logger.warn("Total value cannot be zero.");
-      return 0
-    }
-    return (partialValue / totalValue) * 100
-  }
+
 
   public inputSelect(event: FocusEvent) {
     (event.target as HTMLInputElement).select();

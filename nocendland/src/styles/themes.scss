@@ -10,11 +10,22 @@
 @include mat.core();
 
 // Define the theme object.
-$nocendland-theme: mat.define-theme((
+$default-light-theme: mat.define-theme((
   color: (
-    theme-type: dark,
+    theme-type: light,
     primary: mat.$azure-palette,
     tertiary: mat.$blue-palette,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+$default-dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$magenta-palette,
+    tertiary: mat.$violet-palette,
   ),
   density: (
     scale: 0,
@@ -25,7 +36,8 @@ $nocendland-theme: mat.define-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 :root {
-  @include mat.all-component-themes($nocendland-theme);
+  @include mat.all-component-themes($default-light-theme);
+  @include mat.all-component-themes($default-dark-theme);
 }
 
 // Comment out the line below if you want to use the pre-defined typography utility classes.
@@ -36,6 +48,7 @@ $nocendland-theme: mat.define-theme((
 // @include mat.color-variants-backwards-compatibility($nocendland-theme);
 
 html {
-  @include mat.all-component-themes($nocendland-theme);
+  @include mat.all-component-themes($default-light-theme);
+  @include mat.all-component-themes($default-dark-theme);
   //@include mat.color-variants-backwards-compatibility($nocendland-theme);
 }

@@ -1,10 +1,41 @@
 <main>
-  <!-- FILTER -->
-  <mat-form-field appearance="outline">
-    <mat-label>Buscar</mat-label>
-    <input matInput [(ngModel)]="listingService.filter">
-    <mat-icon matSuffix>search</mat-icon>
-  </mat-form-field>
+
+  <!-- HERRAMIENTAS -->
+<!--  <header class="grid gap-1 items-center p-4 rounded-3xl border-slate-100 border" [ngClass]="{'header-2-items': !!config().actions?.reload}">-->
+  <header class="grid gap-1 items-center" [ngClass]="{'header-2-items': !!config().actions?.reload}">
+    <!-- FILTER -->
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Buscar</mat-label>
+      <input matInput [(ngModel)]="listingService.filter">
+
+      @if (listingService.filter().length > 0) {
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="listingService.clearFilter()"
+          [attr.aria-label]="'Clean filter'"
+        >
+          <mat-icon>{{ 'close' }}</mat-icon>
+        </button>
+      } @else {
+        <mat-icon matSuffix>search</mat-icon>
+      }
+
+    </mat-form-field>
+
+    @if (!!config().actions?.reload) {
+      <button
+        mat-icon-button
+        (click)="config().actions!.reload!()"
+        [attr.aria-label]="'Refresh'"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    }
+
+  </header>
+
+<!--  <mat-progress-bar/>-->
 
   <article class="h-full overflow-auto">
     <div *ngIf="listingService.filteredItems().length === 0">No hay elementos</div>
@@ -18,13 +49,13 @@
           (click)="confirm(item, index)"
         >
           <img
-            *ngIf="!!item[config.columnConfig.image?.src]"
+            *ngIf="!!item[config().columnConfig.image?.src]"
             matListItemAvatar
-            [src]="item[config.columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
-            [alt]="config.columnConfig.image?.alt"
+            [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
+            [alt]="config().columnConfig.image?.alt"
           />
-          <div matListItemTitle>{{ core.getNestedProperty(item, config.columnConfig.title) }}</div>
-          <div matListItemLine *ngFor="let line of config.columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
+          <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
+          <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
         </mat-list-option>
       </mat-selection-list>
     </div>
@@ -37,23 +68,23 @@
           [value]="item"
         >
           <img
-            *ngIf="!!item[config.columnConfig.image?.src]"
+            *ngIf="!!item[config().columnConfig.image?.src]"
             matListItemAvatar
-            [src]="item[config.columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
-            [alt]="config.columnConfig.image?.alt"
+            [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
+            [alt]="config().columnConfig.image?.alt"
           />
-          <div matListItemTitle>{{ core.getNestedProperty(item, config.columnConfig.title) }}</div>
-          <div matListItemLine *ngFor="let line of config.columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
+          <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
+          <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
         </mat-list-option>
       </mat-selection-list>
     </div>
 
   </article>
 
-  <footer *ngIf="config.activateConfirm && (!!config.multiSelection && config.multiSelection())" class="flex justify-end h-full pt-4 pr-4">
+  <footer *ngIf="config().activateConfirm && (!!config().multiSelection && config().multiSelection!())" class="flex justify-end h-full pt-4 pr-4">
     <button mat-fab [disabled]="listMultiSelect!.selectedOptions.selected.length === 0"
             (click)="confirm(listMultiSelect!.selectedOptions.selected)">
-      <mat-icon>{{ config.iconConfirm || 'done' }}</mat-icon>
+      <mat-icon>{{ config().iconConfirm || 'done' }}</mat-icon>
     </button>
   </footer>
 

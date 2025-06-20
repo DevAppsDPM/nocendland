@@ -36,6 +36,7 @@ export class IngredientsComponent {
       lines: ['calories_per_100']
     },
     actions: {
+      reload: () => this.nutritionService.loadIngredientList(),
       confirm: (ingredients) => this.ingredientsEmitted(ingredients)
     },
     multiSelection: this.deleteMode,

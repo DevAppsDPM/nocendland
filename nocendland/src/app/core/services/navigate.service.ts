@@ -108,6 +108,7 @@ export class NavigateService {
     localStorage.setItem(this.getLocalStorageKey(module), JSON.stringify(lastPath));
   }
 
+  // Obtiene el último path almacenado en localStorage para un módulo específico.
   private getLastModulePath(module: string): string[] | undefined {
     const pathItem: string | null = localStorage.getItem(this.getLocalStorageKey(module))
     if (!pathItem) return undefined

@@ -1,11 +1,15 @@
 <mat-card>
   <mat-card-header>
     <mat-card-title-group>
-      <img
-        matCardAvatar
-        [src]="currentIntakeJoinIngredient.nutrition_ingredient.image"
-        [alt]="'Image of ' + currentIntakeJoinIngredient.nutrition_ingredient.name"
-      />
+<!--      @if (nutritionService.savingIntakeJoinIngredientList()) {-->
+<!--        <mat-progress-spinner [diameter]="20" matCardAvatar/>-->
+<!--      } @else {-->
+        <img
+          matCardAvatar
+          [src]="currentIntakeJoinIngredient.nutrition_ingredient.image"
+          [alt]="'Image of ' + currentIntakeJoinIngredient.nutrition_ingredient.name"
+        />
+<!--      }-->
       <mat-card-title class="text-white">
         {{ currentIntakeJoinIngredient.nutrition_ingredient.name }}
       </mat-card-title>
@@ -23,10 +27,10 @@
     <br />
 
     <div class="grid gap-1 grid-cols-4">
-      <app-card-data [data]="{ name: 'Calorías', value: (currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0) * parseInt(inputQuantity.value)}"/>
-      <app-card-data [data]="{ name: 'Proteínas', value: (currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0) * parseInt(inputQuantity.value)}"/>
-      <app-card-data [data]="{ name: 'Hidratos', value: (currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0) * parseInt(inputQuantity.value)}"/>
-      <app-card-data [data]="{ name: 'Grasas', value: (currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0) * parseInt(inputQuantity.value)}"/>
+      <app-card-data [data]="{ name: 'Calorías', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0), parseInt(inputQuantity.value)))}"/>
+      <app-card-data [data]="{ name: 'Proteínas', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0), parseInt(inputQuantity.value)))}"/>
+      <app-card-data [data]="{ name: 'Hidratos', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0), parseInt(inputQuantity.value)))}"/>
+      <app-card-data [data]="{ name: 'Grasas', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0), parseInt(inputQuantity.value)))}"/>
     </div>
 <!--    <button mat-raised-button color="primary" (click)="saveChanges()">Guardar</button>-->
   </mat-card-content>

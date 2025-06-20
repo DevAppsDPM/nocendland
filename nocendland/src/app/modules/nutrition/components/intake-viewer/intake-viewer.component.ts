@@ -1,4 +1,15 @@
-import {Component, effect, ElementRef, Inject, input, Signal, signal, viewChild, WritableSignal} from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  Inject,
+  input,
+  OnDestroy,
+  Signal,
+  signal,
+  viewChild,
+  WritableSignal
+} from '@angular/core';
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {MatCardModule} from "@angular/material/card"
 import {MatInputModule} from "@angular/material/input"
@@ -9,7 +20,6 @@ import {MatIcon} from "@angular/material/icon"
 import {ApiNutritionIntakeService} from "@api/services/api-nutrition-intake.service"
 import {NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT} from "@data/types/llimbro"
 import {MAT_DIALOG_DATA} from "@angular/material/dialog"
-import {Debounce} from "@core/decorators/Debounce"
 import {CardDataComponent} from "@core/components/card-data/card-data.component"
 import {CoreService} from "@core/services/core.service"
 
@@ -27,7 +37,7 @@ import {CoreService} from "@core/services/core.service"
   templateUrl: './intake-viewer.component.html',
   styleUrl: './intake-viewer.component.scss'
 })
-export class IntakeViewerComponent {
+export class IntakeViewerComponent implements OnDestroy {
   protected currentIndex: WritableSignal<number> = signal(0)
 
   protected inputQuantity: Signal<ElementRef | undefined> = viewChild<ElementRef>('inputQuantity')
@@ -36,11 +46,15 @@ export class IntakeViewerComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     protected nutritionService: NutritionService,
     private apiNutritionIntakeService: ApiNutritionIntakeService,
-    private core: CoreService
+    protected core: CoreService
   ) {
     this.currentIndex.set(this.data.currentIndex) // Asignamos el currentIndex
     this.effectCurrentIndex()
     this.effectInputQuantity()
+  }
+
+  ngOnDestroy(): void {
+    this.core.util.cancelDebounce()
   }
 
   get currentIntakeJoinIngredient(): NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT {
@@ -76,12 +90,18 @@ export class IntakeViewerComponent {
       delete intakeJoinNutrition.nutrition_ingredient; // Elimina la propiedad
       let intake: NUTRITION_INTAKE = intakeJoinNutrition
 
+      this.nutritionService.savingIntakeJoinIngredientList.set(true)
       this.apiNutritionIntakeService.saveIntake(intake)
-        .then(() => this.nutritionService.loadIntakeJoinIngredientList())
+        .finally(() => {
+          setTimeout(() => this.nutritionService.savingIntakeJoinIngredientList.set(false), 1000)
+        })
     }, 1000)
   }
 
   private selectInputQuantity(): void {
+    // Si la cantidad es mayor a 0, no seleccionamos el input
+    if (!!this.currentIntakeJoinIngredient.quantity_in_grams && this.currentIntakeJoinIngredient.quantity_in_grams > 0) return
+
     setTimeout(() => {
       this.inputQuantity()?.nativeElement.focus()
       this.inputQuantity()?.nativeElement.select()

@@ -14,6 +14,10 @@ export class DPMlistingService {
     this.effectItems()
   }
 
+  public clearFilter(): void {
+    this.filter.set('')
+  }
+
   private filterItems(): void {
     // Setear en filteredItems los items filtrados a partir de filter
     const filterValue = this.filter().toLowerCase().trim()

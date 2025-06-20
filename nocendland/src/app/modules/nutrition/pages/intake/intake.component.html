@@ -24,11 +24,17 @@
   </section>
 
   <section class="h-full overflow-auto relative pt-1">
+
     <!-- INGREDIENT LIST -->
-    <dpm-listing *ngIf="selectingIngredients()" [config]="selectIngredientListConfig" [items]="nutritionService.ingredientList()"/>
+    @if (selectingIngredients()) {
+        <dpm-listing [config]="selectIngredientListConfig" [items]="nutritionService.ingredientList()"/>
+    }
 
     <!-- INTAKE LIST -->
-    <dpm-listing *ngIf="!selectingIngredients()" [config]="intakeListConfig" [items]="nutritionService.intakeJoinIngredientList()"/>
+    @if (!selectingIngredients()) {
+        <dpm-listing [config]="intakeListConfig" [items]="nutritionService.intakeJoinIngredientList()"/>
+    }
+
   </section>
 
 </main>

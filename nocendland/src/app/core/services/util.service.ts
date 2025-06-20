@@ -8,22 +8,58 @@ export class UtilService {
   // Debounce
   private interval: any = undefined
   private timer: number = 0
-
-  constructor() { }
+  private pendingFunc: (() => void) | null = null
 
   /* DEBOUNCE */
+
+  /**
+   * Ejecuta una función después de un tiempo de espera especificado.
+   * Si se llama a debounce nuevamente antes de que se complete el tiempo de espera, se reinicia el temporizador.
+   * @param func Función a ejecutar después del tiempo de espera.
+   * @param wait Tiempo en milisegundos a esperar antes de ejecutar la función.
+   */
   public debounce(func: () => void, wait: number) {
     this.timer = wait
+    this.pendingFunc = func
 
     if (!!this.interval) clearInterval(this.interval)
 
     this.interval = setInterval(() => {
       if (this.timer === 0) {
         func()
-        clearInterval(this.interval)
+        this.clearDebounce()
       }
       this.timer -= 100
     }, 100)
+  }
+
+  /**
+   * Cancela el debounce actual, si existe.
+   * Si hay una función pendiente, se ejecuta inmediatamente.
+   */
+  public cancelDebounce() {
+    if (this.interval) {
+      clearInterval(this.interval)
+      this.interval = undefined
+    }
+    if (this.pendingFunc) {
+      this.pendingFunc()
+      this.pendingFunc = null
+    }
+    this.timer = 0
+  }
+
+  /**
+   * Cancela el debounce actual sin ejecutar la función pendiente.
+   * @private
+   */
+  private clearDebounce() {
+    if (this.interval) {
+      clearInterval(this.interval)
+      this.interval = undefined
+    }
+    this.pendingFunc = null
+    this.timer = 0
   }
 
   /* OBJECTS */

@@ -7,9 +7,8 @@ import {MatIcon} from "@angular/material/icon"
 import {MatIconButton} from "@angular/material/button"
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {DPMlistingComponent, DPMlistingConfig} from "@shared/components/dpmlisting/dpmlisting.component"
-import {NgIf} from "@angular/common"
 import {ApiNutritionIntakeService} from "@api/services/api-nutrition-intake.service"
-import {NUTRITION_INGREDIENT, NUTRITION_INTAKE} from "@data/types/llimbro"
+import {NUTRITION_INGREDIENT, NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT} from "@data/types/llimbro"
 import {CoreService} from "@core/services/core.service"
 import {IntakeViewerComponent} from "@modules/nutrition/components/intake-viewer/intake-viewer.component"
 import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog"
@@ -25,7 +24,6 @@ import {MatExpansionModule} from "@angular/material/expansion"
     MatIcon,
     MatIconButton,
     DPMlistingComponent,
-    NgIf,
     MatExpansionModule,
   ],
   templateUrl: './intake.component.html',
@@ -45,6 +43,7 @@ export class IntakeComponent {
       title: 'name',
     },
     actions: {
+      reload: () => this.reloadIngredientList(),
       confirm: (intakes) => this.saveIntakes(intakes)
     },
     multiSelection: this.multiSelection,
@@ -58,6 +57,7 @@ export class IntakeComponent {
       lines: ['quantity_in_grams']
     },
     actions: {
+      reload: () => this.reloadIntakeJoinIngredientList(),
       confirm: (intakes, index) => this.getIntakeListConfirmationMethod(intakes, index || 0)
     },
     multiSelection: this.deleteMode,
@@ -76,7 +76,15 @@ export class IntakeComponent {
     setTimeout(() => this.nutritionService.dateSelected.set(dateSelected))
   }
 
-  private saveIntakes(ingredients: NUTRITION_INGREDIENT[]) {
+  private reloadIngredientList(): void {
+    this.nutritionService.loadIngredientList()
+  }
+
+  private reloadIntakeJoinIngredientList(): void {
+    this.nutritionService.loadIntakeJoinIngredientList()
+  }
+
+  private async saveIntakes(ingredients: NUTRITION_INGREDIENT[]) {
     let intakes: NUTRITION_INTAKE[] = ingredients.map(ingredient => {
       let intake: NUTRITION_INTAKE = {
         date: this.core.getDateStringForDB(this.nutritionService.dateSelected()),
@@ -86,10 +94,20 @@ export class IntakeComponent {
       return intake
     })
 
-    this.apiIntakeService.saveIntakeList(intakes)
-      .then(() => this.nutritionService.reloadDateSelectedDependent())
-      .finally(() => this.selectingIngredients.set(false))
-      .finally(() => this.nutritionService.loadIntakeJoinIngredientList())
+    const intakesSaved = await this.apiIntakeService.saveIntakeList(intakes)
+    await this.nutritionService.reloadDateSelectedDependent()
+    console.warn(intakesSaved)
+
+    this.selectingIngredients.set(false)
+    await this.nutritionService.loadIntakeJoinIngredientList()
+
+    // Si solo hay un intake, lo abrimos directamente.
+    if (intakesSaved.length === 1) {
+      const newIntakeIndex: number = this.nutritionService.intakeJoinIngredientList().findIndex((intake: NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT): boolean => intake.id === intakesSaved[0].id)
+      console.warn(newIntakeIndex)
+      if (newIntakeIndex < 0) return
+      this.openIntakeDialog(newIntakeIndex)
+    }
   }
 
   /**
@@ -114,7 +132,9 @@ export class IntakeComponent {
       }
     };
 
-    this.dialog.open(IntakeViewerComponent, dialogConfig);
+    this.dialog.open(IntakeViewerComponent, dialogConfig).afterClosed().subscribe(() =>{
+      this.nutritionService.loadIntakeJoinIngredientList()
+    })
   }
 
 }

@@ -16,6 +16,7 @@ import {RESOURCES} from '@data/constants/RESOURCES';
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {DeviceService} from "@core/services/device.service"
 import {ApiNutritionIngredientService} from "@api/services/api-nutrition-ingredient.service"
+import {NavigateService} from "@core/services/navigate.service"
 
 @Component({
     selector: 'app-ingredient-form',
@@ -50,11 +51,11 @@ export class IngredientFormComponent implements AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
-    protected location: Location,
     private confirmDialog: ConfirmDialogService,
     private nutritionService: NutritionService,
     protected device: DeviceService,
     protected apiNutritionIngredientService: ApiNutritionIngredientService,
+    protected navigate: NavigateService,
     public ingredientService: IngredientService,
   ) {
     this.getUrlParam()
@@ -63,7 +64,7 @@ export class IngredientFormComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    document.getElementById('name')?.focus()
+    if (this.new) document.getElementById('name')?.focus()
   }
 
   private getUrlParam(): void {
@@ -125,7 +126,7 @@ export class IngredientFormComponent implements AfterViewInit {
     this.confirmDialog.open(config).subscribe((deleted: boolean) => {
       if (deleted) this.apiNutritionIngredientService.deleteIngredients([this.ingredientForm?.value])
         .then(() => this.nutritionService.loadIngredientList())
-        .then(() => this.location.back())
+        .then(() => this.navigate.to('nutrition', 'ingredients'))
     })
   }
 
