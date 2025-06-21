@@ -5,6 +5,7 @@ import {routes} from './app-routing.module';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {SupabaseService} from "@api/services/supabase.service";
 import {provideServiceWorker} from '@angular/service-worker';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(), provideAnimationsAsync(), provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
-          }), provideAnimationsAsync()
+          }), provideAnimationsAsync(), provideCharts(withDefaultRegisterables())
     // {
     //   provide: APP_INITIALIZER,
     //   useFactory: initializeApp,

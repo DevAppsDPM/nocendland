@@ -21,6 +21,7 @@ import {FormsModule} from "@angular/forms"
 import {LOGGER_COLORS, LoggerService} from "@core/services/logger.service"
 import {CoreService} from "@core/services/core.service"
 import {MatProgressBar} from "@angular/material/progress-bar"
+import {MatCard} from "@angular/material/card"
 
 @Component({
   selector: 'dpm-listing',
@@ -38,6 +39,7 @@ import {MatProgressBar} from "@angular/material/progress-bar"
     MatSuffix,
     NgClass,
     MatProgressBar,
+    MatCard,
   ],
   templateUrl: './dpmlisting.component.html',
   styleUrl: './dpmlisting.component.scss',
@@ -66,6 +68,7 @@ export class DPMlistingComponent implements OnInit {
   ) {
     this.logger.setConfig(DPMlistingService.name, LOGGER_COLORS.DPM_COMPONENT)
     this.effectConfig()
+    this.effectFilteredItems()
   }
 
   ngOnInit(): void {
@@ -86,6 +89,24 @@ export class DPMlistingComponent implements OnInit {
     else this.config().actions!.confirm!(items, index)
   }
 
+  protected onSelectionChange(event: any): void {
+    this.listingService.selectedItems.set(event.source.selectedOptions.selected.map((option: any) => option.value))
+  }
+
+  /**
+   * Restaura los elementos seleccionados en el multiselect.
+   * @private
+   */
+  private restoreSelectedItems(): void {
+    if (this.listMultiSelect) {
+      console.log('Restaurando elementos seleccionados en el multiselect')
+      // Setear las opciones del multiselect
+      this.listMultiSelect.options.forEach(option => {
+        option.selected = this.listingService.selectedItems().includes(option.value)
+      })
+    }
+  }
+
   /* EFFECTS */
 
   private effectConfig(): void {
@@ -93,6 +114,13 @@ export class DPMlistingComponent implements OnInit {
     //   this.config()
     //   this.listingService.items.set(this.config().items)
     // })
+  }
+
+  private effectFilteredItems(): void {
+    effect(() => {
+      this.listingService.filteredItems()
+      setTimeout(() => this.restoreSelectedItems())
+    })
   }
 
   private effectMultiselecction(): void {
@@ -111,6 +139,7 @@ export declare type DPMlistingConfig = {
   multiSelection?: WritableSignal<boolean>
   activateConfirm?: boolean
   iconConfirm?: string
+  loading?: () => boolean
 }
 
 declare type DPMlistingActions = {

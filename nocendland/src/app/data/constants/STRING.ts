@@ -1,4 +1,19 @@
 ﻿export const STRING = {
+  COMMON: {
+    ACTIONS: {
+      ADD: 'Añadir',
+      EDIT: 'Editar',
+      DELETE: 'Eliminar',
+      SAVE: 'Guardar',
+      CANCEL: 'Cancelar',
+      CLOSE: 'Cerrar',
+      SEARCH: 'Buscar',
+      SELECT: 'Seleccionar',
+      CLEAR: 'Limpiar',
+      SUBMIT: 'Enviar'
+    },
+    LOADING: 'Cargando... ',
+  },
   MODULES: {
     LLIMBRO: {
       NAME: '',
@@ -8,8 +23,9 @@
           COMPONENTS: {
             INGREDIENT: {
               NAME: 'Alimentos',
-              FORM_TITLE_NEW: 'Editar alimento',
-              FORM_TITLE_EDIT: 'Nuevo alimento',
+              FORM_TITLE_NEW: 'Nuevo alimento',
+              FORM_TITLE_EDIT: 'Editar alimento',
+              FORM_TITLE_VIEW: 'Alimento',
               FORM_ADD_PHOTO: 'Subir foto',
               LIST_TITLE: 'Lista de alimentos',
               SELECT_INGREDIENTS: 'Selecciona los alimentos de hoy',
@@ -21,7 +37,8 @@
                 FATS: 'Grasas',
                 CARBOHYDRATES: 'Hidratos',
                 PICTURE: 'Foto',
-                DESCRIPTION: 'Descripción'
+                DESCRIPTION: 'Descripción',
+                GRAMS_PER_UNIT: 'Gramos por unidad',
               }
             },
             INTAKE: {

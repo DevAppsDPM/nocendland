@@ -49,6 +49,7 @@ export class IntakeComponent {
     multiSelection: this.multiSelection,
     activateConfirm: true,
     iconConfirm: 'add',
+    loading: () => this.nutritionService.loadingIngredientList()
   }
 
   protected intakeListConfig: DPMlistingConfig = {
@@ -63,6 +64,7 @@ export class IntakeComponent {
     multiSelection: this.deleteMode,
     activateConfirm: true,
     iconConfirm: 'delete',
+    loading: () => this.nutritionService.loadingIntakeJoinIngredientList()
   }
 
   constructor(

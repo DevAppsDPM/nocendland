@@ -1,41 +1,45 @@
 <main>
 
   <!-- HERRAMIENTAS -->
-<!--  <header class="grid gap-1 items-center p-4 rounded-3xl border-slate-100 border" [ngClass]="{'header-2-items': !!config().actions?.reload}">-->
-  <header class="grid gap-1 items-center" [ngClass]="{'header-2-items': !!config().actions?.reload}">
-    <!-- FILTER -->
-    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-      <mat-label>Buscar</mat-label>
-      <input matInput [(ngModel)]="listingService.filter">
+  <mat-card>
+    <div class="grid gap-x-1 items-center justify-items-center p-4 tools-rows-2" [ngClass]="{'tools-column-2': !!config().actions?.reload}">
+      <!-- FILTER -->
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Buscar</mat-label>
+        <input matInput [(ngModel)]="listingService.filter">
 
-      @if (listingService.filter().length > 0) {
+        @if (listingService.filter().length > 0) {
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="listingService.clearFilter()"
+            [attr.aria-label]="'Clean filter'"
+          >
+            <mat-icon>{{ 'close' }}</mat-icon>
+          </button>
+        } @else {
+          <mat-icon matSuffix>search</mat-icon>
+        }
+
+      </mat-form-field>
+
+      @if (!!config().actions?.reload) {
         <button
           mat-icon-button
-          matSuffix
-          (click)="listingService.clearFilter()"
-          [attr.aria-label]="'Clean filter'"
+          (click)="config().actions!.reload!()"
+          [attr.aria-label]="'Refresh'"
         >
-          <mat-icon>{{ 'close' }}</mat-icon>
+          <mat-icon>refresh</mat-icon>
         </button>
-      } @else {
-        <mat-icon matSuffix>search</mat-icon>
       }
 
-    </mat-form-field>
+      @if (!!config().loading && config().loading!()) {
+        <mat-progress-bar mode="indeterminate"/>
+      }
 
-    @if (!!config().actions?.reload) {
-      <button
-        mat-icon-button
-        (click)="config().actions!.reload!()"
-        [attr.aria-label]="'Refresh'"
-      >
-        <mat-icon>refresh</mat-icon>
-      </button>
-    }
+    </div>
 
-  </header>
-
-<!--  <mat-progress-bar/>-->
+  </mat-card>
 
   <article class="h-full overflow-auto">
     <div *ngIf="listingService.filteredItems().length === 0">No hay elementos</div>
@@ -43,39 +47,39 @@
     <!-- SINGLE -->
     <div [hidden]="multiselect">
       <mat-selection-list #list [multiple]="false" hideSingleSelectionIndicator>
-        <mat-list-option
-          *ngFor="let item of listingService.filteredItems(); let index = index"
-          [value]="item"
-          (click)="confirm(item, index)"
-        >
-          <img
-            *ngIf="!!item[config().columnConfig.image?.src]"
-            matListItemAvatar
-            [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
-            [alt]="config().columnConfig.image?.alt"
-          />
-          <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
-          <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
-        </mat-list-option>
+        @for (item of listingService.filteredItems(); track item; let index = $index) {
+          <mat-list-option
+            [value]="item"
+            (click)="confirm(item, index)"
+          >
+            <img
+              *ngIf="!!item[config().columnConfig.image?.src]"
+              matListItemAvatar
+              [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
+              [alt]="config().columnConfig.image?.alt"
+            />
+            <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
+            <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
+          </mat-list-option>
+        }
       </mat-selection-list>
     </div>
     <!-- TODO: HACER QUE ESTE CÓDIGO NO ESTÉ REPETIDO -->
     <!-- MULTI -->
     <div [hidden]="!multiselect">
-      <mat-selection-list #listMultiSelect [multiple]="true" hideSingleSelectionIndicator>
-        <mat-list-option
-          *ngFor="let item of listingService.filteredItems()"
-          [value]="item"
-        >
-          <img
-            *ngIf="!!item[config().columnConfig.image?.src]"
-            matListItemAvatar
-            [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
-            [alt]="config().columnConfig.image?.alt"
-          />
-          <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
-          <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
-        </mat-list-option>
+      <mat-selection-list #listMultiSelect [multiple]="true" hideSingleSelectionIndicator (selectionChange)="onSelectionChange($event)">
+        @for (item of listingService.filteredItems(); track item) {
+          <mat-list-option [value]="item">
+            <img
+              *ngIf="!!item[config().columnConfig.image?.src]"
+              matListItemAvatar
+              [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
+              [alt]="config().columnConfig.image?.alt"
+            />
+            <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
+            <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
+          </mat-list-option>
+        }
       </mat-selection-list>
     </div>
 

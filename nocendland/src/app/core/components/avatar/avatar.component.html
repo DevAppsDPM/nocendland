@@ -1,0 +1,7 @@
+<main class="h-32 w-32 rounded-full mx-auto my-4">
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" [diameter]="128"/>
+  } @else {
+    <img class="h-32 w-32 rounded-full mx-auto my-4" [src]="image() || defaultImage()" alt="">
+  }
+</main>

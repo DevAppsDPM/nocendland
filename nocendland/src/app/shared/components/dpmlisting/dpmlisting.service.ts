@@ -7,6 +7,7 @@ export class DPMlistingService {
 
   public items: WritableSignal<Record<string, any>[]> = signal([])
   public filteredItems: WritableSignal<Record<string, any>[]> = signal([])
+  public selectedItems: WritableSignal<Record<string, any>[]> = signal([])
   public filter: WritableSignal<string> = signal('')
 
   constructor() {
@@ -18,23 +19,28 @@ export class DPMlistingService {
     this.filter.set('')
   }
 
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
   private filterItems(): void {
-    // Setear en filteredItems los items filtrados a partir de filter
-    const filterValue = this.filter().toLowerCase().trim()
+    const filterValue = this.normalizeText(this.filter().trim());
 
     if (!filterValue) {
       this.filteredItems.set(this.items());
-      return
+      return;
     }
 
-    // TODO: Mejorar el filtro para que tenga en cuenta también las columnas configuradas
     const filtered = this.items().filter(item =>
       Object.values(item).some(value =>
-        String(value).toLowerCase().includes(filterValue)
+        this.normalizeText(String(value)).includes(filterValue)
       )
-    )
+    );
 
-    this.filteredItems.set(filtered)
+    this.filteredItems.set(filtered);
   }
 
   private effectItems(): void {

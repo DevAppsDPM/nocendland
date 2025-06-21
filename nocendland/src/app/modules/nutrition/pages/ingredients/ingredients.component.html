@@ -6,10 +6,6 @@
     <button mat-icon-button (click)="navigateToIngredientForm('new')"><mat-icon>add</mat-icon></button>
   </header>
 
-  <section class="h-px col-span-2">
-    <mat-progress-bar *ngIf="nutritionService.loadingIngredientList()"></mat-progress-bar>
-  </section>
-
   <!-- LISTA DE ALIMENTOS -->
   <section class="col-span-2">
     <dpm-listing [config]="ingredientListConfig" [items]="nutritionService.ingredientList()"/>

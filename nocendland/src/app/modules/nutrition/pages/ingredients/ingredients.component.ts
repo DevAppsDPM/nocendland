@@ -1,9 +1,7 @@
 import {Component, EventEmitter, Output, signal, WritableSignal} from '@angular/core';
-import {NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {STRING} from "@data/constants/STRING";
-import {MatProgressBar} from "@angular/material/progress-bar";
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {NUTRITION_INGREDIENT} from '@data/types/llimbro';
 import {NavigateService} from "@core/services/navigate.service"
@@ -16,10 +14,8 @@ import {DPMlistingComponent, DPMlistingConfig} from "@shared/components/dpmlisti
 @Component({
     selector: 'app-ingredients',
   imports: [
-    NgIf,
     MatIcon,
     MatIconButton,
-    MatProgressBar,
     DPMlistingComponent
   ],
     templateUrl: './ingredients.component.html',
@@ -42,6 +38,7 @@ export class IngredientsComponent {
     multiSelection: this.deleteMode,
     activateConfirm: true,
     iconConfirm: 'delete',
+    loading: () => this.nutritionService.loadingIngredientList()
   }
 
   @Output() ingredientSelected: EventEmitter<NUTRITION_INGREDIENT> = new EventEmitter<NUTRITION_INGREDIENT>

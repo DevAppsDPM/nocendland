@@ -1,11 +1,11 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Signal, viewChild, ViewChild} from '@angular/core';
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
-import {Location, NgIf} from "@angular/common";
+import {NgIf} from "@angular/common";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {STRING} from "@data/constants/STRING";
-import {MatFabButton, MatIconButton} from "@angular/material/button";
+import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {ActivatedRoute} from "@angular/router";
 import {IngredientService} from "@modules/nutrition/services/ingredient.service";
@@ -17,6 +17,11 @@ import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {DeviceService} from "@core/services/device.service"
 import {ApiNutritionIngredientService} from "@api/services/api-nutrition-ingredient.service"
 import {NavigateService} from "@core/services/navigate.service"
+import {AvatarComponent} from "@core/components/avatar/avatar.component"
+import {BaseChartDirective} from "ng2-charts"
+import {Chart, ChartConfiguration, ChartData} from 'chart.js';
+import ChartDataLabels from "chartjs-plugin-datalabels"
+import {MatCard, MatCardContent, MatCardHeader, MatCardTitle, MatCardTitleGroup} from "@angular/material/card"
 
 @Component({
     selector: 'app-ingredient-form',
@@ -30,7 +35,14 @@ import {NavigateService} from "@core/services/navigate.service"
     MatIconButton,
     MatIcon,
     MatDivider,
-    MatFabButton
+    MatButton,
+    AvatarComponent,
+    BaseChartDirective,
+    MatCard,
+    MatCardTitleGroup,
+    MatCardTitle,
+    MatCardContent,
+    MatCardHeader
   ],
     templateUrl: './ingredient-form.component.html',
     styleUrl: './ingredient-form.component.scss'
@@ -42,8 +54,10 @@ export class IngredientFormComponent implements AfterViewInit {
   protected ingredientForm: FormGroup | undefined
   private ingredientId: number = 0
   protected image: string | null = null
+  protected defaultImage: string = ''
 
   protected new: boolean = false
+  protected editing: boolean = false
 
   @ViewChild('imageInput') imageInput!: ElementRef
   @ViewChild('name') nameField!: ElementRef
@@ -58,6 +72,7 @@ export class IngredientFormComponent implements AfterViewInit {
     protected navigate: NavigateService,
     public ingredientService: IngredientService,
   ) {
+    Chart.register(ChartDataLabels)
     this.getUrlParam()
     this.buildForm()
     if (!this.new) this.apiNutritionIngredientService.readIngredientById(this.ingredientId).then(ingredient => this.setValues(ingredient))
@@ -81,6 +96,7 @@ export class IngredientFormComponent implements AfterViewInit {
       fats_per_100: [0],
       carbohydrates_per_100: [0],
       description: [''],
+      grams_per_unit: [0],
       ...(!this.new && {id: [this.ingredientId, Validators.required]})
     })
   }
@@ -89,6 +105,9 @@ export class IngredientFormComponent implements AfterViewInit {
     if (!ingredient) return
     // Formulario
     this.setFormValues(ingredient)
+
+    // Gráfico
+    this.updateChartData()
 
     // Imagen
     this.setImage()
@@ -104,6 +123,15 @@ export class IngredientFormComponent implements AfterViewInit {
       if (!data.data) return
       this.image = URL.createObjectURL(data.data)
     })
+      .then(() => {
+        // Si no hay imagen, se asigna una imagen por defecto aleatoria de default-ingredients.
+        if (!this.image) {
+          console.log('Imagen no encontrada, asignando imagen por defecto')
+          const randomIndex: number = Math.floor(Math.random() * RESOURCES.DEFAULT_INGREDIENTS.length)
+          this.defaultImage = RESOURCES.DEFAULT_INGREDIENTS[randomIndex]
+          console.log(this.defaultImage)
+        }
+      })
   }
 
   public saveIngredient(): void {
@@ -144,5 +172,64 @@ export class IngredientFormComponent implements AfterViewInit {
       ?.then(() => this.setImage())
   }
 
+  protected goBack(): void {
+    // Si es un nuevo ingrediente o no se está editando, se navega a la lista de ingredientes.
+    if (this.new || (!this.new && !this.editing)) {
+      this.navigate.to('nutrition', 'ingredients')
+    }
+
+    // Si se está editando, se cancela la edición.
+    if (this.editing) this.editing = false
+  }
+
+
+
+
+
+
+  private nutriendValuesEmojiList: string[] = ['🍗', '🥑', '🍚']
+  public chart: Signal<BaseChartDirective> = viewChild.required<BaseChartDirective>(BaseChartDirective)
+  public chartData: ChartData<'doughnut'> = {
+    labels: ['🍗 Proteínas', '🥑 Grasas', ' 🍚Hidratos'],
+    datasets: [
+      { data: [0, 0, 0] }
+    ],
+  }
+  protected chartType: ChartConfiguration<'doughnut'>['type'] = 'doughnut'
+  protected chartOptions: ChartConfiguration<'doughnut'>['options'] = {
+    cutout: '60%',
+    circumference: 180,
+    plugins: {
+      legend: { display: false }, // Oculta la leyenda
+      datalabels: {
+        formatter: (value, context) => {
+          const label = this.nutriendValuesEmojiList[context.dataIndex] || ''
+          return `${label} ${value} g`;
+        }
+      }
+    }
+
+  }
+
+  private updateChartData(): void {
+    if (!this.ingredientForm) return;
+
+    this.chartData.datasets = [
+      {
+        data: [
+          this.ingredientForm.value.proteins_per_100 || 0,
+          this.ingredientForm.value.fats_per_100 || 0,
+          this.ingredientForm.value.carbohydrates_per_100 || 0
+        ],
+        borderWidth: 0,
+        backgroundColor: ['#90E39A', '#DDF093', '#46B1C9'],
+        rotation: 270
+      },
+    ]
+
+    this.chart().update()
+  }
+
   protected readonly STRING = STRING
+  protected readonly ChartDataLabels = ChartDataLabels
 }
