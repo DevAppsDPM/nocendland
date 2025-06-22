@@ -42,7 +42,10 @@
               }
             },
             INTAKE: {
-              NAME: 'Ingesta'
+              NAME: 'Ingesta',
+              VIEWER: {
+                EXPLANATION_UNITS: 'Este valor calculará los gramos en base a los gramos por unidad del alimento seleccionado. No es necesario introducirlo.',
+              }
             },
             OBJECTIVES: {
               NAME: 'Objetivos'

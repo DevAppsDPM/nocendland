@@ -22,6 +22,8 @@ import {NUTRITION_INTAKE, NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT} from "@dat
 import {MAT_DIALOG_DATA} from "@angular/material/dialog"
 import {CardDataComponent} from "@core/components/card-data/card-data.component"
 import {CoreService} from "@core/services/core.service"
+import {MatTooltip} from "@angular/material/tooltip"
+import {STRING} from "@data/constants/STRING"
 
 @Component({
   selector: 'app-intake-viewer',
@@ -32,7 +34,8 @@ import {CoreService} from "@core/services/core.service"
     FormsModule,
     MatCardModule,
     MatIcon,
-    CardDataComponent
+    CardDataComponent,
+    MatTooltip
   ],
   templateUrl: './intake-viewer.component.html',
   styleUrl: './intake-viewer.component.scss'
@@ -108,6 +111,16 @@ export class IntakeViewerComponent implements OnDestroy {
     })
   }
 
+  protected calculateQuantityInGrams(): void {
+    const units: number | undefined = this.currentIntakeJoinIngredient.units
+    if (!units) return
+
+    console.log('Calculando cantidad en gramos...', units)
+
+    this.currentIntakeJoinIngredient.quantity_in_grams = (this.currentIntakeJoinIngredient.nutrition_ingredient.grams_per_unit || 0) * units
+    this.saveChanges()
+  }
+
   /* EFFECTS */
   private effectCurrentIndex(): void {
     effect(() => {
@@ -125,4 +138,5 @@ export class IntakeViewerComponent implements OnDestroy {
 
   protected readonly input = input
   protected readonly parseInt = parseInt
+  protected readonly STRING = STRING
 }

@@ -20,19 +20,38 @@
   </mat-card-header>
 
   <mat-card-content>
-    <mat-form-field appearance="outline">
-      <mat-label>Cantidad (g)</mat-label>
-      <input #inputQuantity matInput type="number" [(ngModel)]="currentIntakeJoinIngredient.quantity_in_grams" (ngModelChange)="saveChanges()">
-    </mat-form-field>
-    <br />
 
-    <div class="grid gap-1 grid-cols-4">
-      <app-card-data [data]="{ name: 'Calorías', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-      <app-card-data [data]="{ name: 'Proteínas', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-      <app-card-data [data]="{ name: 'Hidratos', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-      <app-card-data [data]="{ name: 'Grasas', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-    </div>
-<!--    <button mat-raised-button color="primary" (click)="saveChanges()">Guardar</button>-->
+    <article class="grid gap-1 grid-cols-2 py-1">
+      <!-- CANTIDAD -->
+      <mat-form-field appearance="outline">
+        <mat-label>Cantidad (g)</mat-label>
+        <input #inputQuantity matInput type="number" [(ngModel)]="currentIntakeJoinIngredient.quantity_in_grams" (ngModelChange)="saveChanges()">
+      </mat-form-field>
+
+      <!-- UNIDADES -->
+      <mat-form-field appearance="outline">
+        <mat-label>Unidades</mat-label>
+        <input #inputUnit matInput type="number" [(ngModel)]="currentIntakeJoinIngredient.units" (ngModelChange)="calculateQuantityInGrams()">
+        <button
+          mat-icon-button
+          matSuffix
+          #tooltip="matTooltip"
+          [matTooltip]="STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.INTAKE.VIEWER.EXPLANATION_UNITS"
+          (click)="tooltip.show(); $event.stopPropagation()"
+        >
+          <mat-icon>info</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="grid gap-1 grid-cols-4 col-span-2">
+        <app-card-data [data]="{ name: 'Calorías', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0), parseInt(inputQuantity.value)))}"/>
+        <app-card-data [data]="{ name: 'Proteínas', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0), parseInt(inputQuantity.value)))}"/>
+        <app-card-data [data]="{ name: 'Hidratos', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0), parseInt(inputQuantity.value)))}"/>
+        <app-card-data [data]="{ name: 'Grasas', value: (core.math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0), parseInt(inputQuantity.value)))}"/>
+      </div>
+
+    </article>
+
   </mat-card-content>
 
   <mat-card-actions align="end">

@@ -29,7 +29,8 @@ export class IngredientsComponent {
   protected ingredientListConfig: DPMlistingConfig = {
     columnConfig: {
       title: 'name',
-      lines: ['calories_per_100']
+      lines: ['calories_per_100'],
+      image: 'image'
     },
     actions: {
       reload: () => this.nutritionService.loadIngredientList(),

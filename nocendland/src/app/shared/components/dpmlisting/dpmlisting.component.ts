@@ -164,5 +164,5 @@ declare type DPMlistingImage = {
 declare type DPMlistingDataConfig = {
   title: string
   lines?: string[]
-  image?: DPMlistingImage
+  image?: string
 }

@@ -8,10 +8,9 @@ import {STRING} from "@data/constants/STRING";
 import {MatButton, MatIconButton} from "@angular/material/button";
 import {MatIcon} from "@angular/material/icon";
 import {ActivatedRoute} from "@angular/router";
-import {IngredientService} from "@modules/nutrition/services/ingredient.service";
 import {ConfirmDialogService, DIALOG_CONFIRM} from "@shared/services/confirm-dialog.service"
 import {MatDivider} from "@angular/material/divider"
-import {NUTRITION_INGREDIENT} from "@data/types/llimbro"
+import {NUTRITION_INGREDIENT, NUTRITION_INGREDIENT_IMAGE} from "@data/types/llimbro"
 import {RESOURCES} from '@data/constants/RESOURCES';
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
 import {DeviceService} from "@core/services/device.service"
@@ -22,6 +21,7 @@ import {BaseChartDirective} from "ng2-charts"
 import {Chart, ChartConfiguration, ChartData} from 'chart.js';
 import ChartDataLabels from "chartjs-plugin-datalabels"
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle, MatCardTitleGroup} from "@angular/material/card"
+import {ResourcesService} from "@core/services/resources.service"
 
 @Component({
     selector: 'app-ingredient-form',
@@ -67,10 +67,9 @@ export class IngredientFormComponent implements AfterViewInit {
     private route: ActivatedRoute,
     private confirmDialog: ConfirmDialogService,
     private nutritionService: NutritionService,
-    protected device: DeviceService,
+    private resources: ResourcesService,
     protected apiNutritionIngredientService: ApiNutritionIngredientService,
     protected navigate: NavigateService,
-    public ingredientService: IngredientService,
   ) {
     Chart.register(ChartDataLabels)
     this.getUrlParam()
@@ -97,6 +96,7 @@ export class IngredientFormComponent implements AfterViewInit {
       carbohydrates_per_100: [0],
       description: [''],
       grams_per_unit: [0],
+      image: [null],
       ...(!this.new && {id: [this.ingredientId, Validators.required]})
     })
   }
@@ -119,19 +119,18 @@ export class IngredientFormComponent implements AfterViewInit {
   }
 
   private setImage(): void {
-    this.ingredientService.readImage(this.ingredientForm?.value).then(data => {
-      if (!data.data) return
-      this.image = URL.createObjectURL(data.data)
-    })
-      .then(() => {
-        // Si no hay imagen, se asigna una imagen por defecto aleatoria de default-ingredients.
-        if (!this.image) {
-          console.log('Imagen no encontrada, asignando imagen por defecto')
-          const randomIndex: number = Math.floor(Math.random() * RESOURCES.DEFAULT_INGREDIENTS.length)
-          this.defaultImage = RESOURCES.DEFAULT_INGREDIENTS[randomIndex]
-          console.log(this.defaultImage)
-        }
-      })
+    // Obtener la imagen del ingrediente si existe.
+    const ingredientImage: string = this.nutritionService.ingredientList().find((ingredientImage: NUTRITION_INGREDIENT) => ingredientImage.id == this.ingredientId)?.image || ''
+    if (!!ingredientImage) {
+      this.image = ingredientImage
+    } else {
+      // Si no hay imagen, se asigna una imagen por defecto aleatoria de default-ingredients.
+      if (!this.image) {
+        console.log('Imagen no encontrada, asignando imagen por defecto')
+        this.defaultImage = this.resources.getRandomDefaultImageForIngredient()
+        console.log(this.defaultImage)
+      }
+    }
   }
 
   public saveIngredient(): void {
@@ -168,7 +167,9 @@ export class IngredientFormComponent implements AfterViewInit {
 
     if (!file) return
 
-    this.ingredientService.uploadImage(this.ingredientForm?.value, file)
+    this.ingredientForm!.value['image'] = URL.createObjectURL(file)
+    this.saveIngredient()
+    this.apiNutritionIngredientService.saveIngredientImage(this.ingredientForm?.value, file)
       ?.then(() => this.setImage())
   }
 

@@ -9,7 +9,6 @@ import {
   SupabaseClient,
   UserResponse,
 } from '@supabase/supabase-js'
-import { FileObject, StorageError } from '@supabase/storage-js'
 import {environment} from '../../../environments/environment'
 import {Router} from "@angular/router";
 import {LOCAL_STORAGE_PROPERTIES} from "@data/constants/LOCAL_STORAGE_PROPERTIES"
@@ -23,7 +22,7 @@ import {LoggerService} from "@core/services/logger.service"
 export class SupabaseService {
   public client: SupabaseClient
   _session: AuthSession | null = null
-  protected storageName: string = 'nocendland'
+  public storageName: string = 'nocendland'
 
   public user: WritableSignal<USER | undefined> = signal(undefined)
 
@@ -129,40 +128,6 @@ export class SupabaseService {
     }
 
     return this.client.from('profiles').upsert(update)
-  }
-
-  downLoadImage(path: string) {
-    return this.client.storage.from('avatars').download(path)
-  }
-
-  uploadAvatar(filePath: string, file: File) {
-    return this.client.storage.from('avatars').upload(filePath, file)
-  }
-
-  /* STORAGE */
-  public uploadImage(path: string, file: File): Promise<{data: {id: string, path: string, fullPath: string}, error: null} | {data: null, error: StorageError}> {
-    const reader = new FileReader()
-
-    const onloadEvent = reader.onload = () => {
-      // Convertir a ArrayBuffer
-      const arrayBuffer = reader.result as ArrayBuffer
-
-      const byteArray = new Uint8Array(arrayBuffer)
-
-      return this.client.storage.from(this.storageName).upload(path, byteArray, { contentType: file.type, upsert: true })
-    }
-
-    reader.readAsArrayBuffer(file)
-
-    return onloadEvent()
-  }
-
-  public readImage(path: string): Promise<{data: Blob, error: null} | {data: null, error: StorageError}> {
-    return this.client.storage.from(this.storageName).download(path)
-  }
-
-  public readImages(path: string): Promise<{data: FileObject[], error: null} | {data: null, error: StorageError}> {
-    return this.client.storage.from(this.storageName).list(path)
   }
 
   private onAuthStateChangeSubscription(): void {

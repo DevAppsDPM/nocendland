@@ -18,6 +18,7 @@ export type Database = {
           grams_per_unit: number | null
           id: number
           id_user: string
+          image: string | null
           name: string
           proteins_per_100: number | null
         }
@@ -29,6 +30,7 @@ export type Database = {
           grams_per_unit?: number | null
           id?: number
           id_user: string
+          image?: string | null
           name: string
           proteins_per_100?: number | null
         }
@@ -40,6 +42,7 @@ export type Database = {
           grams_per_unit?: number | null
           id?: number
           id_user?: string
+          image?: string | null
           name?: string
           proteins_per_100?: number | null
         }
@@ -60,6 +63,7 @@ export type Database = {
           id_user: string
           ingredient: number
           quantity_in_grams: number | null
+          units: number | null
         }
         Insert: {
           date?: string
@@ -67,6 +71,7 @@ export type Database = {
           id_user: string
           ingredient: number
           quantity_in_grams?: number | null
+          units?: number | null
         }
         Update: {
           date?: string
@@ -74,6 +79,7 @@ export type Database = {
           id_user?: string
           ingredient?: number
           quantity_in_grams?: number | null
+          units?: number | null
         }
         Relationships: [
           {

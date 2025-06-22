@@ -52,12 +52,14 @@
             [value]="item"
             (click)="confirm(item, index)"
           >
-            <img
-              *ngIf="!!item[config().columnConfig.image?.src]"
-              matListItemAvatar
-              [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
-              [alt]="config().columnConfig.image?.alt"
-            />
+
+            @if (!!config().columnConfig.image && !!item[config().columnConfig.image!]) {
+              <img
+                matListItemAvatar
+                [src]="item[config().columnConfig.image!] || RESOURCES.DEFAULT_IMAGE"
+                [alt]="config().columnConfig.image!"
+              />
+            }
             <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
             <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
           </mat-list-option>
@@ -70,12 +72,13 @@
       <mat-selection-list #listMultiSelect [multiple]="true" hideSingleSelectionIndicator (selectionChange)="onSelectionChange($event)">
         @for (item of listingService.filteredItems(); track item) {
           <mat-list-option [value]="item">
-            <img
-              *ngIf="!!item[config().columnConfig.image?.src]"
-              matListItemAvatar
-              [src]="item[config().columnConfig.image?.src] || RESOURCES.DEFAULT_IMAGE"
-              [alt]="config().columnConfig.image?.alt"
-            />
+            @if (!!config().columnConfig.image && !!item[config().columnConfig.image!]) {
+              <img
+                matListItemAvatar
+                [src]="item[config().columnConfig.image!] || RESOURCES.DEFAULT_IMAGE"
+                [alt]="config().columnConfig.image!"
+              />
+            }
             <div matListItemTitle>{{ core.getNestedProperty(item, config().columnConfig.title) }}</div>
             <div matListItemLine *ngFor="let line of config().columnConfig.lines">{{ core.getNestedProperty(item, line) }}</div>
           </mat-list-option>

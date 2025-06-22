@@ -55,7 +55,8 @@ export class IntakeComponent {
   protected intakeListConfig: DPMlistingConfig = {
     columnConfig: {
       title: 'nutrition_ingredient.name',
-      lines: ['quantity_in_grams']
+      lines: ['quantity_in_grams'],
+      image: 'nutrition_ingredient.image',
     },
     actions: {
       reload: () => this.reloadIntakeJoinIngredientList(),
@@ -98,7 +99,6 @@ export class IntakeComponent {
 
     const intakesSaved = await this.apiIntakeService.saveIntakeList(intakes)
     await this.nutritionService.reloadDateSelectedDependent()
-    console.warn(intakesSaved)
 
     this.selectingIngredients.set(false)
     await this.nutritionService.loadIntakeJoinIngredientList()
@@ -106,7 +106,6 @@ export class IntakeComponent {
     // Si solo hay un intake, lo abrimos directamente.
     if (intakesSaved.length === 1) {
       const newIntakeIndex: number = this.nutritionService.intakeJoinIngredientList().findIndex((intake: NUTRITION_INTAKE_JOIN_NUTRITION_INGREDIENT): boolean => intake.id === intakesSaved[0].id)
-      console.warn(newIntakeIndex)
       if (newIntakeIndex < 0) return
       this.openIntakeDialog(newIntakeIndex)
     }
