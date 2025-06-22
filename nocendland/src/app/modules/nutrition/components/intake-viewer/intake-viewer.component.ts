@@ -47,8 +47,8 @@ export class IntakeViewerComponent implements OnDestroy {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    protected nutritionService: NutritionService,
     private apiNutritionIntakeService: ApiNutritionIntakeService,
+    protected nutritionService: NutritionService,
     protected core: CoreService
   ) {
     this.currentIndex.set(this.data.currentIndex) // Asignamos el currentIndex

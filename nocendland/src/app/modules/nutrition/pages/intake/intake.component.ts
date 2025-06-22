@@ -41,6 +41,7 @@ export class IntakeComponent {
   protected selectIngredientListConfig: DPMlistingConfig = {
     columnConfig: {
       title: 'name',
+      image: 'image'
     },
     actions: {
       reload: () => this.reloadIngredientList(),

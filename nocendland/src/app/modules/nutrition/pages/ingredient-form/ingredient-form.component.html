@@ -78,7 +78,7 @@
       <mat-card-content class="max-w-96 mx-auto my-4 p-4">
         <div class="text-center my-4">
           <!-- IMAGEN -->
-          <app-avatar [image]="image" [defaultImage]="defaultImage" [loading]="apiNutritionIngredientService.savingIngredientImage()"/>
+          <app-avatar [image]="ingredientForm?.value['image']" [defaultImage]="defaultImage" [loading]="apiNutritionIngredientService.savingIngredientImage()"/>
           <input #imageInput (change)="onFileSelected($event)" type="file" accept="image/*" capture="environment" hidden />
           <div class="py-2">
 

@@ -96,7 +96,7 @@ export class IngredientFormComponent implements AfterViewInit {
       carbohydrates_per_100: [0],
       description: [''],
       grams_per_unit: [0],
-      image: [null],
+      image: [this.resources.getRandomDefaultImageForIngredient()],
       ...(!this.new && {id: [this.ingredientId, Validators.required]})
     })
   }
@@ -161,17 +161,29 @@ export class IngredientFormComponent implements AfterViewInit {
     this.imageInput.nativeElement.click()
   }
 
-  public onFileSelected(event: any): void {
+  public async onFileSelected(event: any) {
     console.log('File selected', event)
     const file: File = event.target.files[0]
 
     if (!file) return
 
-    this.ingredientForm!.value['image'] = URL.createObjectURL(file)
+    const base64Image: string = await this.blobToBase64(file)
+    this.ingredientForm!.value['image'] = `data:${file.type};base64,${base64Image}`
     this.saveIngredient()
-    this.apiNutritionIngredientService.saveIngredientImage(this.ingredientForm?.value, file)
-      ?.then(() => this.setImage())
+    // this.apiNutritionIngredientService.saveIngredientImage(this.ingredientForm?.value, file)
+    //   ?.then(() => this.setImage())
   }
+
+  // TODO MOVER A CORE
+  blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result!.toString().split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
 
   protected goBack(): void {
     // Si es un nuevo ingrediente o no se está editando, se navega a la lista de ingredientes.

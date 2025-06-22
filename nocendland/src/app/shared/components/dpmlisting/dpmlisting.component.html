@@ -53,10 +53,10 @@
             (click)="confirm(item, index)"
           >
 
-            @if (!!config().columnConfig.image && !!item[config().columnConfig.image!]) {
+            @if (!!config().columnConfig.image) {
               <img
                 matListItemAvatar
-                [src]="item[config().columnConfig.image!] || RESOURCES.DEFAULT_IMAGE"
+                [src]="core.getNestedProperty(item, config().columnConfig.image!) || RESOURCES.DEFAULT_IMAGE"
                 [alt]="config().columnConfig.image!"
               />
             }
@@ -72,10 +72,10 @@
       <mat-selection-list #listMultiSelect [multiple]="true" hideSingleSelectionIndicator (selectionChange)="onSelectionChange($event)">
         @for (item of listingService.filteredItems(); track item) {
           <mat-list-option [value]="item">
-            @if (!!config().columnConfig.image && !!item[config().columnConfig.image!]) {
+            @if (!!config().columnConfig.image) {
               <img
                 matListItemAvatar
-                [src]="item[config().columnConfig.image!] || RESOURCES.DEFAULT_IMAGE"
+                [src]="core.getNestedProperty(item, config().columnConfig.image!) || RESOURCES.DEFAULT_IMAGE"
                 [alt]="config().columnConfig.image!"
               />
             }
