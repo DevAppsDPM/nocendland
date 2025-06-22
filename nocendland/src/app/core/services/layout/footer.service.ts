@@ -51,6 +51,10 @@ export class FooterService {
    * @param url
    */
   public setButtonsByUrl(url: string): void {
+    // TODO: HACER EN CONDICIONES
+    this._nutritionButtons[0].active = url.includes('ingredients')
+    this._nutritionButtons[1].active = url.includes('intakes')
+    this._nutritionButtons[2].active = url.includes('objectives')
     // Nutrition
     if (url.includes(NAVIGATION_ROUTES.nutrition.module)) return this.buttons.set(this._nutritionButtons)
 

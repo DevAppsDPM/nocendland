@@ -1,10 +1,10 @@
 <mat-drawer-container class="h-full w-full" autosize>
   <mat-drawer #drawer class="sidenav" mode="side" [opened]="sideNavService.sideNapOpened()">
     <!-- INFORMACIÓN DEL USUARIO -->
-    <app-user-info></app-user-info>
+    <app-user-info/>
 
     <!-- SIDE MENU -->
-    <app-side-nav-menu></app-side-nav-menu>
+    <app-side-nav-menu/>
 
     <div class="absolute bottom-0">v{{ environment.version }}</div>
 
@@ -22,7 +22,7 @@
 
     </article>
 
-    <app-footer></app-footer>
+    <app-footer/>
   </main>
 
 </mat-drawer-container>

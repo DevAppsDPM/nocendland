@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {MatDrawer, MatDrawerContainer} from "@angular/material/sidenav";
 import {Router, RouterOutlet} from "@angular/router";
 import {SupabaseService} from "@api/services/supabase.service";
@@ -11,6 +11,7 @@ import {
   ColumnCenterContainerComponent
 } from "@shared/components/column-center-container/column-center-container.component"
 import {environment} from "../../../environments/environment"
+import {NavigateService} from "@core/services/navigate.service"
 
 @Component({
     selector: 'app-mainpage',
@@ -29,14 +30,54 @@ import {environment} from "../../../environments/environment"
 })
 export class MainpageComponent {
 
+  private touchStartX = 0;
+  private touchEndX = 0;
+
   constructor(
     private router: Router,
     public supabase: SupabaseService,
     public sideNavService: SideNavService,
+    private navigate: NavigateService
   ) {}
 
   public verSession(): void {
     console.log('session', this.supabase.session)
+  }
+
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.changedTouches[0].screenX;
+  }
+
+  @HostListener('touchend', ['$event'])
+  onTouchEnd(event: TouchEvent) {
+    this.touchEndX = event.changedTouches[0].screenX;
+    this.handleSwipeGesture();
+  }
+
+  private handleSwipeGesture() {
+    const deltaX = this.touchEndX - this.touchStartX;
+    if (Math.abs(deltaX) > 100) { // Umbral mínimo para considerar swipe
+      if (deltaX > 0) {
+        // Deslizó a la derecha
+        if (this.router.url.includes('nutrition')) this.nutritionSwipeGesture('right')
+      } else {
+        // Deslizó a la izquierda
+        if (this.router.url.includes('nutrition')) this.nutritionSwipeGesture('left')
+      }
+    }
+  }
+
+  private nutritionSwipeGesture(direction: 'left' | 'right'): void {
+    const currentRoute = this.router.url;
+
+    if (currentRoute.includes('nutrition/ingredients')) {
+      this.navigate.to('nutrition', direction === 'right' ? 'objectives' : 'intakes');
+    } else if (currentRoute.includes('nutrition/intakes')) {
+      this.navigate.to('nutrition', direction === 'right' ? 'ingredients' : 'objectives');
+    } else if (currentRoute.includes('nutrition/objectives')) {
+      this.navigate.to('nutrition', direction === 'right' ? 'intakes' : 'ingredients');
+    }
   }
 
   protected readonly environment = environment
