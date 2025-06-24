@@ -13,7 +13,6 @@ import {MatDivider} from "@angular/material/divider"
 import {NUTRITION_INGREDIENT, NUTRITION_INGREDIENT_IMAGE} from "@data/types/llimbro"
 import {RESOURCES} from '@data/constants/RESOURCES';
 import {NutritionService} from "@modules/nutrition/services/nutrition.service"
-import {DeviceService} from "@core/services/device.service"
 import {ApiNutritionIngredientService} from "@api/services/api-nutrition-ingredient.service"
 import {NavigateService} from "@core/services/navigate.service"
 import {AvatarComponent} from "@core/components/avatar/avatar.component"
@@ -122,7 +121,7 @@ export class IngredientFormComponent implements AfterViewInit {
 
   private setImage(): void {
     // Obtener la imagen del ingrediente si existe.
-    const ingredientImage: string = this.nutritionService.ingredientList().find((ingredientImage: NUTRITION_INGREDIENT) => ingredientImage.id == this.ingredientId)?.image_route || ''
+    const ingredientImage: any = this.nutritionService.ingredientImageList().find((ingredientImage: NUTRITION_INGREDIENT_IMAGE) => ingredientImage.ingredientId == this.ingredientId)
     if (!!ingredientImage) {
       this.image = ingredientImage
     } else {
@@ -169,11 +168,11 @@ export class IngredientFormComponent implements AfterViewInit {
 
     if (!file) return
 
-    const base64Image: string = await this.blobToBase64(file)
-    this.ingredientForm!.value['image'] = `data:${file.type};base64,${base64Image}`
-    this.saveIngredient()
-    // this.apiNutritionIngredientService.saveIngredientImage(this.ingredientForm?.value, file)
-    //   ?.then(() => this.setImage())
+    // const base64Image: string = await this.blobToBase64(file)
+    // this.ingredientForm!.value['image'] = `data:${file.type};base64,${base64Image}`
+    // this.saveIngredient()
+    this.apiNutritionIngredientService.saveIngredientImage(this.ingredientForm?.value, file)
+      ?.then(() => this.setImage())
   }
 
   // TODO MOVER A CORE
@@ -202,12 +201,12 @@ export class IngredientFormComponent implements AfterViewInit {
 
 
 
-  private nutriendValuesEmojiList: string[] = ['🍗', '🥑', '🍚']
+  private nutriendValuesEmojiList: string[] = ['⚡', '🍗', '🥑', '🍚']
   public chart: Signal<BaseChartDirective> = viewChild.required<BaseChartDirective>(BaseChartDirective)
   public chartData: ChartData<'doughnut'> = {
-    labels: ['🍗 Proteínas', '🥑 Grasas', ' 🍚Hidratos'],
+    labels: ['⚡ Calorías', '🍗 Proteínas', '🥑 Grasas', ' 🍚Hidratos'],
     datasets: [
-      { data: [0, 0, 0] }
+      { data: [0, 0, 0, 0] }
     ],
   }
   protected chartType: ChartConfiguration<'doughnut'>['type'] = 'doughnut'
@@ -220,7 +219,12 @@ export class IngredientFormComponent implements AfterViewInit {
         formatter: (value, context) => {
           const label = this.nutriendValuesEmojiList[context.dataIndex] || ''
           return `${label} ${value} g`;
-        }
+        },
+        font: {
+          size: 12,
+          weight: 'bold',
+        },
+        color: '#000'
       }
     }
 
@@ -232,12 +236,13 @@ export class IngredientFormComponent implements AfterViewInit {
     this.chartData.datasets = [
       {
         data: [
+          this.ingredientForm.value.calories_per_100 || 0,
           this.ingredientForm.value.proteins_per_100 || 0,
           this.ingredientForm.value.fats_per_100 || 0,
           this.ingredientForm.value.carbohydrates_per_100 || 0
         ],
         borderWidth: 0,
-        backgroundColor: ['#90E39A', '#DDF093', '#46B1C9'],
+        backgroundColor: ['#A5243D', '#90E39A', '#DDF093', '#46B1C9'],
         rotation: 270
       },
     ]

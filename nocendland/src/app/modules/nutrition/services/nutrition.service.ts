@@ -60,66 +60,66 @@ export class NutritionService {
     this.loadingIngredientList.set(true)
     this.apiNutritionIngredient.readAllIngredients()
       .then((ingredientList: NUTRITION_INGREDIENT[]) => this.ingredientList.set(ingredientList))
-      // .then(() => this.syncIngredientImageList())
+      .then(() => this.syncIngredientImageList())
       .finally(() => this.loadingIngredientList.set(false))
   }
 
-  // private async syncIngredientImageList(): Promise<void> {
-  //   // Carga la lista de imágenes desde la API
-  //   const loadedImages: any[] = await this.apiNutritionIngredient.readIngredientImageList();
-  //   const currentList = this.ingredientImageList();
-  //   let updatedList: NUTRITION_INGREDIENT_IMAGE[] = [...currentList];
-  //
-  //   // Añade los nuevos elementos que no existen en ingredientImageList
-  //   loadedImages.forEach(loaded => {
-  //     const exists = currentList.some(img => img.ingredientId === loaded.name);
-  //     if (!exists) {
-  //       updatedList.push({
-  //         ingredientId: loaded.name,
-  //         lastModified: loaded.metadata.lastModified,
-  //         src: undefined // Se cargará después si es necesario
-  //       });
-  //     }
-  //   });
-  //
-  //   // Array de promesas para cargar imágenes en paralelo
-  //   const promises = updatedList.map(async img => {
-  //     const loaded = loadedImages.find(l => l.name === img.ingredientId);
-  //     if (!loaded) return img;
-  //
-  //     if (!img.src || img.lastModified !== loaded.metadata.lastModified) {
-  //       const src = await this.apiNutritionIngredient.readIngredientImageById(img.ingredientId);
-  //       return {
-  //         ...img,
-  //         src,
-  //         lastModified: loaded.metadata.lastModified
-  //       };
-  //     }
-  //     return img;
-  //   });
-  //
-  //   updatedList = await Promise.all(promises);
-  //
-  //   this.ingredientImageList.set(updatedList);
-  //   this.updateIngredientListWithImages()
-  // }
-  //
-  // private updateIngredientListWithImages(): void {
-  //   // Recuperar la lista de ingredientes y la lista de imágenes
-  //   const ingredients = this.ingredientList();
-  //   const images = this.ingredientImageList();
-  //
-  //   // Actualizar la lista de ingredientes con las imágenes correspondientes
-  //   const updatedList = ingredients.map(ingredient => {
-  //     const imageObj = images.find(img => img.ingredientId == ingredient.id);
-  //     return {
-  //       ...ingredient,
-  //       image: imageObj?.src ? URL.createObjectURL(imageObj.src) : this.resources.getRandomDefaultImageForIngredient()
-  //     };
-  //   });
-  //
-  //   this.ingredientList.set(updatedList);
-  // }
+  private async syncIngredientImageList(): Promise<void> {
+    // Carga la lista de imágenes desde la API
+    const loadedImages: any[] = await this.apiNutritionIngredient.readIngredientImageList();
+    const currentList = this.ingredientImageList();
+    let updatedList: NUTRITION_INGREDIENT_IMAGE[] = [...currentList];
+
+    // Añade los nuevos elementos que no existen en ingredientImageList
+    loadedImages.forEach(loaded => {
+      const exists = currentList.some(img => img.ingredientId === loaded.name);
+      if (!exists) {
+        updatedList.push({
+          ingredientId: loaded.name,
+          lastModified: loaded.metadata.lastModified,
+          src: undefined // Se cargará después si es necesario
+        });
+      }
+    });
+
+    // Array de promesas para cargar imágenes en paralelo
+    const promises = updatedList.map(async img => {
+      const loaded = loadedImages.find(l => l.name === img.ingredientId);
+      if (!loaded) return img;
+
+      if (!img.src || img.lastModified !== loaded.metadata.lastModified) {
+        const src = await this.apiNutritionIngredient.readIngredientImageById(img.ingredientId);
+        return {
+          ...img,
+          src,
+          lastModified: loaded.metadata.lastModified
+        };
+      }
+      return img;
+    });
+
+    updatedList = await Promise.all(promises);
+
+    this.ingredientImageList.set(updatedList);
+    this.updateIngredientListWithImages()
+  }
+
+  private updateIngredientListWithImages(): void {
+    // Recuperar la lista de ingredientes y la lista de imágenes
+    const ingredients = this.ingredientList();
+    const images = this.ingredientImageList();
+
+    // Actualizar la lista de ingredientes con las imágenes correspondientes
+    const updatedList = ingredients.map(ingredient => {
+      const imageObj = images.find(img => img.ingredientId == ingredient.id);
+      return {
+        ...ingredient,
+        image: imageObj?.src ? URL.createObjectURL(imageObj.src) : this.resources.getRandomDefaultImageForIngredient()
+      };
+    });
+
+    this.ingredientList.set(updatedList);
+  }
 
   /* INTAKES */
   public async loadIntakeJoinIngredientList(): Promise<void> {
