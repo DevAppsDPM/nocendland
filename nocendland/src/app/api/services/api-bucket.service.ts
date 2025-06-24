@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import {SupabaseService} from "@api/services/supabase.service"
 import {LOGGER_COLORS, LoggerService} from "@core/services/logger.service"
 import {FileObject, StorageError} from "@supabase/storage-js"
+import {RESOURCES} from "@data/constants/RESOURCES"
+import {BUCKET_ROUTES} from "@data/constants/BUCKET_ROUTES"
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +37,13 @@ export class ApiBucketService {
 
   public readImages(path: string): Promise<{data: FileObject[], error: null} | {data: null, error: StorageError}> {
     return this.supabase.client.storage.from(this.supabase.storageName).list(path)
+  }
+
+  public getRandomDefaultImageRouteForIngredient(): string {
+    console.log('Obteniendo imagen aleatoria de ingredientes...')
+    const randomRoute: string = `${BUCKET_ROUTES.NUTRITION_INGREDIENT.DEFAULT}/${Math.floor(Math.random() * 7)}.png`
+    console.log(randomRoute)
+    return randomRoute
   }
 
   // public downLoadImage(path: string) {

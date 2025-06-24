@@ -22,6 +22,7 @@ import {Chart, ChartConfiguration, ChartData} from 'chart.js';
 import ChartDataLabels from "chartjs-plugin-datalabels"
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle, MatCardTitleGroup} from "@angular/material/card"
 import {ResourcesService} from "@core/services/resources.service"
+import {ApiBucketService} from "@api/services/api-bucket.service"
 
 @Component({
     selector: 'app-ingredient-form',
@@ -70,6 +71,7 @@ export class IngredientFormComponent implements AfterViewInit {
     private resources: ResourcesService,
     protected apiNutritionIngredientService: ApiNutritionIngredientService,
     protected navigate: NavigateService,
+    private bucket: ApiBucketService
   ) {
     Chart.register(ChartDataLabels)
     this.getUrlParam()
@@ -96,7 +98,7 @@ export class IngredientFormComponent implements AfterViewInit {
       carbohydrates_per_100: [0],
       description: [''],
       grams_per_unit: [0],
-      image: [this.resources.getRandomDefaultImageForIngredient()],
+      image_route: [this.bucket.getRandomDefaultImageRouteForIngredient()],
       ...(!this.new && {id: [this.ingredientId, Validators.required]})
     })
   }
@@ -120,7 +122,7 @@ export class IngredientFormComponent implements AfterViewInit {
 
   private setImage(): void {
     // Obtener la imagen del ingrediente si existe.
-    const ingredientImage: string = this.nutritionService.ingredientList().find((ingredientImage: NUTRITION_INGREDIENT) => ingredientImage.id == this.ingredientId)?.image || ''
+    const ingredientImage: string = this.nutritionService.ingredientList().find((ingredientImage: NUTRITION_INGREDIENT) => ingredientImage.id == this.ingredientId)?.image_route || ''
     if (!!ingredientImage) {
       this.image = ingredientImage
     } else {

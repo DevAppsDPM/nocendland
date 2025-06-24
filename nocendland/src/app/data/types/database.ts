@@ -18,7 +18,7 @@ export type Database = {
           grams_per_unit: number | null
           id: number
           id_user: string
-          image: string | null
+          image_route: string | null
           name: string
           proteins_per_100: number | null
         }
@@ -30,7 +30,7 @@ export type Database = {
           grams_per_unit?: number | null
           id?: number
           id_user: string
-          image?: string | null
+          image_route?: string | null
           name: string
           proteins_per_100?: number | null
         }
@@ -42,7 +42,7 @@ export type Database = {
           grams_per_unit?: number | null
           id?: number
           id_user?: string
-          image?: string | null
+          image_route?: string | null
           name?: string
           proteins_per_100?: number | null
         }
