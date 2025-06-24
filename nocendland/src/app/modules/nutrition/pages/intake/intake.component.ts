@@ -57,7 +57,7 @@ export class IntakeComponent {
     columnConfig: {
       title: 'nutrition_ingredient.name',
       lines: ['quantity_in_grams'],
-      image: 'nutrition_ingredient.image',
+      image: 'nutrition_ingredient.image_route',
     },
     actions: {
       reload: () => this.reloadIntakeJoinIngredientList(),
