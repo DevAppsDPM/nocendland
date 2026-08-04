@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "angular",
-  "installCommand": "pnpm install --frozen-lockfile",
+  "installCommand": "corepack prepare pnpm@10.33.2 --activate && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm run build"
 }
