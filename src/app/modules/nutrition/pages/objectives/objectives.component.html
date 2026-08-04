@@ -1,0 +1,10 @@
+<header class="col-span-2 flex items-center">
+  <div class="text-2xl w-full">{{ STRING.MODULES.LLIMBRO.CHILDREN.NUTRITION.COMPONENTS.OBJECTIVES.NAME }}</div>
+  <button mat-icon-button (click)="openDialogObjectiveConfig()"><mat-icon>settings</mat-icon></button>
+</header>
+
+<article class="grid gap-1 p-1">
+  @for (progressConfig of progressConfigList; track progressConfig) {
+    <dpm-progress-viewer [config]="progressConfig"/>
+  }
+</article>

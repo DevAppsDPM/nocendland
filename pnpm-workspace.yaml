@@ -1,0 +1,41 @@
+# Security policy: dependencies are denied install-time execution unless they
+# appear in allowBuilds after manual review.
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+# Legacy Angular 19 dependencies predate widespread provenance adoption.
+# Keep strict trust checks for anything published during the last year.
+trustPolicyIgnoreAfter: 525600
+blockExoticSubdeps: true
+
+strictDepBuilds: true
+allowBuilds:
+  esbuild@0.25.1: true
+  # Angular builders used during the reviewed 20 -> 21 -> 22 migration.
+  esbuild@0.25.9: true
+  esbuild@0.27.3: true
+  esbuild@0.28.1: true
+  '@parcel/watcher': false
+  fsevents: false
+  lmdb: false
+  # Required by @angular/build 20.3.32; reviewed install script only.
+  lmdb@3.4.2: true
+  msgpackr-extract: false
+
+verifyStoreIntegrity: true
+strictStorePkgContentCheck: true
+verifyDepsBeforeRun: error
+
+# Angular 22 requires Node ^22.22.3 (or a newer supported major). pnpm keeps
+# the runtime local to the project instead of relying on the machine default.
+useNodeVersion: 22.22.3
+nodeVersion: 22.22.3
+engineStrict: true
+
+packageManagerStrict: true
+packageManagerStrictVersion: true
+managePackageManagerVersions: false
+
+savePrefix: ''
+preferFrozenLockfile: true
+lockfileIncludeTarballUrl: true
+auditLevel: high

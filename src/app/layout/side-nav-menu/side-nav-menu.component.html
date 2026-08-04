@@ -1,0 +1,15 @@
+<mat-selection-list hideSingleSelectionIndicator multiple="false">
+  @for (items of menuItems; track items; let last =  $last) {
+    <div mat-subheader>{{ items.title }}</div>
+    @for (button of items.buttons; track button) {
+      <mat-list-option (click)="button.action()">
+        <span matListItemIcon><mat-icon>{{ button.icon }}</mat-icon></span>
+        <span matListItemTitle>{{ button.title }}</span>
+        <span matListItemLine>{{ button.description }}</span>
+      </mat-list-option>
+    }
+    @if (!last) {
+      <mat-divider></mat-divider>
+    }
+  }
+</mat-selection-list>

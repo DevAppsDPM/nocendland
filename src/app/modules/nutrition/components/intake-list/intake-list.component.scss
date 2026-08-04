@@ -1,0 +1,7 @@
+.item {
+    grid-template-columns: auto 1fr 120px;
+}
+
+.two-rows {
+  grid-template-rows: 1fr auto;
+}

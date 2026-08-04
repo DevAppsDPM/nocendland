@@ -1,0 +1,12 @@
+@if (footerService.showingFooter()) {
+  <footer class="flex justify-center items-center h-12 gap-4 w-full border-t border-white/20">
+    @for (button of footerService.buttons(); track button) {
+      <mat-icon (click)="footerService.onClickButton(button)">{{ button.icon }}</mat-icon>
+      <div [class]="!button.active ? 'hidden' : ''" [style.width]="button.active ? getTextWidth(button.text) : 0">
+        @if (button.active) {
+          <span class="fade-in">{{ button.text }}</span>
+        }
+      </div>
+    }
+  </footer>
+}
