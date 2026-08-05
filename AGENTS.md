@@ -33,6 +33,17 @@ Este archivo contiene instrucciones obligatorias para cualquier agente que traba
 - RxJS solo debe utilizarse cuando el problema sea realmente un flujo de eventos o una API basada en Observables. En los límites con RxJS se deben usar las utilidades oficiales de interoperabilidad, como `toSignal()` y `toObservable()`, manteniendo Signals como representación principal del estado de la aplicación.
 - Toda modificación de componentes, servicios, formularios, navegación o acceso a datos debe revisarse expresamente para asegurar que conserva el funcionamiento zoneless y actualiza la interfaz mediante Signals.
 
+### 3. Todo push debe incrementar la versión de la aplicación
+
+- **Antes de cada `git push` se debe incrementar obligatoriamente la versión de `package.json`. No se puede hacer push si la versión no ha cambiado desde el último push.**
+- El incremento debe seguir Semantic Versioning y elegirse según el alcance real del cambio:
+  - `patch` para correcciones, mantenimiento, refactors compatibles y cambios internos sin nuevas capacidades públicas.
+  - `minor` para funcionalidades nuevas compatibles con versiones anteriores.
+  - `major` para cambios incompatibles, eliminaciones o migraciones que requieran adaptación.
+- Se debe utilizar exclusivamente `pnpm version patch|minor|major --no-git-tag-version`; siguen prohibidos `npm version` y cualquier uso de npm.
+- El cambio de versión debe incluirse en el mismo commit o conjunto de commits que se va a desplegar y verificarse antes del push.
+- Si un push anterior falló antes de llegar al remoto y no generó despliegue, no es necesario volver a incrementar la versión para reintentar exactamente el mismo conjunto de commits.
+
 ## Evolución de estas instrucciones
 
 Estas son las reglas iniciales. El propósito y la arquitectura definitiva del proyecto se documentarán aquí después de la migración a Angular 22 y del refactor planificado. No se debe asumir que la arquitectura actual es la arquitectura objetivo.

@@ -1,14 +1,9 @@
-@use "sass:meta";
+@use 'styles/themes';
+@use 'styles/animations';
 
-@import 'styles/themes';
-//@import 'styles/material-override';
-
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-@import 'tailwindcss/tailwind.css';
-
-@include meta.load-css("styles/animations");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: black }
