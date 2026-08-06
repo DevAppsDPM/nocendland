@@ -1,0 +1,106 @@
+<main>
+
+  <!-- HERRAMIENTAS -->
+  <mat-card>
+    <div class="grid gap-x-1 items-center justify-items-center p-4 tools-rows-2" [ngClass]="{'tools-column-2': !!config().actions?.reload}">
+      <!-- FILTER -->
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Buscar</mat-label>
+        <input matInput [(ngModel)]="listingService.filter">
+
+        @if (listingService.filter().length > 0) {
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="listingService.clearFilter()"
+            [attr.aria-label]="'Clean filter'"
+            >
+            <mat-icon>{{ 'close' }}</mat-icon>
+          </button>
+        } @else {
+          <mat-icon matSuffix>search</mat-icon>
+        }
+
+      </mat-form-field>
+
+      @if (!!config().actions?.reload) {
+        <button
+          mat-icon-button
+          (click)="config().actions!.reload!()"
+          [attr.aria-label]="'Refresh'"
+          >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      }
+
+      @if (!!config().loading && config().loading!()) {
+        <mat-progress-bar mode="indeterminate"/>
+      }
+
+    </div>
+
+  </mat-card>
+
+  <article class="h-full overflow-auto">
+    @if (listingService.filteredItems().length === 0) {
+      <div>No hay elementos</div>
+    }
+
+    <!-- SINGLE -->
+    <div [hidden]="multiselect">
+      <mat-selection-list #list [multiple]="false" hideSingleSelectionIndicator>
+        @for (item of listingService.filteredItems(); track item; let index = $index) {
+          <mat-list-option
+            [value]="item"
+            (click)="confirm(item, index)"
+            >
+
+            @if (!!config().columnConfig.image) {
+              <img
+                matListItemAvatar
+                [src]="getNestedProperty(item, config().columnConfig.image!) || defaultImagePath"
+                [alt]="config().columnConfig.image!"
+                />
+              }
+              <div matListItemTitle>{{ getNestedProperty(item, config().columnConfig.title) }}</div>
+              @for (line of config().columnConfig.lines; track line) {
+                <div matListItemLine>{{ getNestedProperty(item, line) }}</div>
+              }
+            </mat-list-option>
+          }
+        </mat-selection-list>
+      </div>
+      <!-- TODO: HACER QUE ESTE CÓDIGO NO ESTÉ REPETIDO -->
+      <!-- MULTI -->
+      <div [hidden]="!multiselect">
+        <mat-selection-list #listMultiSelect [multiple]="true" hideSingleSelectionIndicator (selectionChange)="onSelectionChange($event)">
+          @for (item of listingService.filteredItems(); track item) {
+            <mat-list-option [value]="item">
+              @if (!!config().columnConfig.image) {
+                <img
+                  matListItemAvatar
+                  [src]="getNestedProperty(item, config().columnConfig.image!) || defaultImagePath"
+                  [alt]="config().columnConfig.image!"
+                  />
+                }
+                <div matListItemTitle>{{ getNestedProperty(item, config().columnConfig.title) }}</div>
+                @for (line of config().columnConfig.lines; track line) {
+                  <div matListItemLine>{{ getNestedProperty(item, line) }}</div>
+                }
+              </mat-list-option>
+            }
+          </mat-selection-list>
+        </div>
+
+      </article>
+
+      @if (config().activateConfirm && (!!config().multiSelection && config().multiSelection!())) {
+        <footer class="flex justify-end h-full pt-4 pr-4">
+          <button mat-fab [disabled]="listMultiSelect!.selectedOptions.selected.length === 0"
+            (click)="confirm(listMultiSelect!.selectedOptions.selected)">
+            <mat-icon>{{ config().iconConfirm || 'done' }}</mat-icon>
+          </button>
+        </footer>
+      }
+
+    </main>

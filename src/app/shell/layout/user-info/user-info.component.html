@@ -1,0 +1,22 @@
+<mat-card appearance="outlined">
+
+  <!-- CARGANDO INFORMACIÓN DEL USUARIO -->
+  @if (!auth.user()) {
+    <div class="flex justify-center">
+      <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+    </div>
+  }
+
+  @if (!!auth.user()) {
+    <mat-card-header>
+      <mat-card-title>{{ auth.user()?.user_name }}</mat-card-title>
+      <mat-card-subtitle>{{ auth.user()?.email }}</mat-card-subtitle>
+      <img [src]="$safeNavigationMigration(auth.user()?.avatar_url)" alt="Avatar del usuario" mat-card-avatar>
+    </mat-card-header>
+  }
+
+  <!-- ACCIONES -->
+  <mat-card-actions align="end">
+    <button mat-button color="warn" (click)="auth.signOut()"><mat-icon>logout</mat-icon>Salir</button>
+  </mat-card-actions>
+</mat-card>

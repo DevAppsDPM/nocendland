@@ -1,0 +1,84 @@
+filters:
+  and:
+    - file.inFolder("Tareas")
+    - file.ext == "md"
+    - Estado != null
+properties:
+  file.name:
+    displayName: Tarea
+  Estado:
+    displayName: Estado
+  Resumen:
+    displayName: Resumen
+  Decisiones:
+    displayName: Decisiones
+  Bloqueada:
+    displayName: Bloqueada por
+  note["Fecha de creación"]:
+    displayName: Creada
+  note["Última modificación"]:
+    displayName: Modificada
+views:
+  - type: table
+    name: Todo
+    order:
+      - file.name
+      - Estado
+      - Resumen
+      - Decisiones
+      - Bloqueada
+      - note["Fecha de creación"]
+      - note["Última modificación"]
+  - type: table
+    name: Planificando
+    filters:
+      and:
+        - Estado == "Planificando"
+    order:
+      - file.name
+      - Resumen
+      - Decisiones
+      - Bloqueada
+      - note["Última modificación"]
+  - type: table
+    name: Pendiente
+    filters:
+      and:
+        - Estado == "Pendiente"
+    order:
+      - file.name
+      - Resumen
+      - Decisiones
+      - Bloqueada
+      - note["Última modificación"]
+  - type: table
+    name: En curso
+    filters:
+      and:
+        - Estado == "En curso"
+    order:
+      - file.name
+      - Resumen
+      - Decisiones
+      - Bloqueada
+      - note["Última modificación"]
+  - type: table
+    name: Hecha
+    filters:
+      and:
+        - Estado == "Hecha"
+    order:
+      - file.name
+      - Resumen
+      - Decisiones
+      - note["Última modificación"]
+  - type: table
+    name: Archivada
+    filters:
+      and:
+        - Estado == "Archivada"
+    order:
+      - file.name
+      - Resumen
+      - Decisiones
+      - note["Última modificación"]

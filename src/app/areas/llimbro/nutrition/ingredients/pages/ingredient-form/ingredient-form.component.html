@@ -1,0 +1,153 @@
+<header class="col-span-2 flex items-center">
+
+  <!-- BOTÓN VOLVER -->
+  <button mat-icon-button (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+
+  <div class="text-2xl w-full">
+    {{
+    new ?
+    text.ingredients.formTitleNew :
+    editing ?
+    text.ingredients.formTitleEdit :
+    text.ingredients.formTitleView
+    }}
+  </div>
+  @if (nutritionStore.savingIngredient()) {
+    <mat-progress-spinner [diameter]="30" mode="indeterminate"/>
+  }
+  @if (!new) {
+    <button mat-icon-button color="warn" (click)="deleteIngredient()"><mat-icon>delete</mat-icon></button>
+  }
+</header>
+
+<!--<section class="h-full overflow-auto">-->
+@if (new || editing) {
+  <!-- FORMULARIO DE INGREDIENTE -->
+  @if (!!ingredientForm) {
+    <form [formGroup]="ingredientForm" class="grid grid-cols-2 gap-4 py-1" (change)="saveIngredient()">
+      <!-- NOMBRE -->
+      <mat-form-field appearance="outline" class="col-span-2">
+        <mat-label>{{ formLabels.name }}</mat-label>
+        <input id="name" matInput formControlName="name" />
+      </mat-form-field>
+      <!-- DESCRIPCIÓN -->
+      <mat-form-field appearance="outline" class="col-span-2 row-span-2">
+        <mat-label>{{ formLabels.description }}</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+      <mat-divider class="col-span-2"></mat-divider>
+      <div class="col-span-2 text-lg">Por cada 100 g</div>
+      <!-- CALORÍAS -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ formLabels.calories }}</mat-label>
+        <input #calories matInput type="number" formControlName="calories_per_100" (focus)="calories.select()"/>
+      </mat-form-field>
+      <!-- PROTEÍNAS -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ formLabels.proteins }}</mat-label>
+        <input #proteins matInput type="number" formControlName="proteins_per_100" (focus)="proteins.select()"/>
+      </mat-form-field>
+      <!-- GRASAS -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ formLabels.fats }}</mat-label>
+        <input #fats matInput type="number" formControlName="fats_per_100" (focus)="fats.select()"/>
+      </mat-form-field>
+      <!-- HIDRATOS -->
+      <mat-form-field appearance="outline">
+        <mat-label>{{ formLabels.carbohydrates }}</mat-label>
+        <input #carbohydrates matInput type="number" formControlName="carbohydrates_per_100" (focus)="carbohydrates.select()"/>
+      </mat-form-field>
+      <mat-divider class="col-span-2"></mat-divider>
+      <div class="col-span-2 text-lg">Otras configuraciones</div>
+      <!-- GRAMOS POR UNIDAD -->
+      <mat-form-field appearance="outline" class="col-span-2">
+        <mat-label>{{ formLabels.gramsPerUnit }}</mat-label>
+        <input #gramsPerUnit matInput type="number" formControlName="grams_per_unit" (focus)="gramsPerUnit.select()"/>
+      </mat-form-field>
+    </form>
+  }
+} @else {
+
+  <!-- INFORMACIÓN DEL ALIMENTO -->
+  <mat-card class="my-4" appearance="raised">
+    <mat-card-content class="max-w-96 mx-auto my-4 p-4">
+      <div class="text-center my-4">
+        <!-- IMAGEN -->
+        <app-avatar [image]="$safeNavigationMigration(ingredientForm?.value['image'])" [defaultImage]="defaultImage" [loading]="nutritionStore.savingIngredientImage()"/>
+        <input #imageInput (change)="onFileSelected($event)" type="file" accept="image/*" capture="environment" hidden />
+        <div class="py-2">
+
+          <!-- NOMBRE -->
+          <h3 class="font-bold text-2xl text-gray-800 dark:text-white mb-1">
+            {{ ingredientForm?.value['name'] || text.common.loading }}
+          </h3>
+
+          <!-- DESCRIPCIÓN -->
+          <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+            {{ ingredientForm?.value['description'] }}
+          </div>
+
+        </div>
+      </div>
+      <div class="flex gap-2 px-2 justify-center items-center">
+        <!-- SUBIR FOTO -->
+        <button
+          mat-raised-button
+          (click)="selectImage()"
+          [disabled]="new"
+          >
+          <mat-icon>add_a_photo</mat-icon>
+          {{ text.ingredients.formAddPhoto }}
+        </button>
+        <button
+          mat-raised-button
+          (click)="editing = true"
+          >
+          <mat-icon>edit</mat-icon>
+          {{ text.common.actions.edit }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-divider/>
+
+  <!-- GRÁFICO DE NUTRIENTES -->
+  <mat-card class="my-4" appearance="raised">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>Valor nutricional</mat-card-title>
+      </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content class="max-w-96 mx-auto my-4 p-4">
+      <canvas
+        baseChart
+        [data]="chartData"
+        [type]="chartType"
+        [options]="chartOptions"
+        [plugins]="[ChartDataLabels]"
+        [legend]="true"
+      ></canvas>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-divider/>
+
+  <!-- OTROS -->
+  <mat-card class="my-4" appearance="raised">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>Otros</mat-card-title>
+      </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content class="max-w-96 mx-auto my-4 p-4">
+      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white mb-8 shadow-lg transform transition duration-500 hover:scale-[1.01] card-hover animate-fadeIn" style="animation-delay: 0.2s">
+        <h2 class="text-lg font-medium mb-1">Gramos por unidad</h2>
+        <p class="text-3xl font-bold mb-4" id="earnings-counter">{{ this.ingredientForm?.value['grams_per_unit'] || 0 }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+<!--</section>-->

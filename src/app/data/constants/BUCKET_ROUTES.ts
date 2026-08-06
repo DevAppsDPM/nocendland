@@ -1,8 +1,0 @@
-﻿const NUTRITION_INGREDIENT_ROUTE = 'nutrition_ingredient';
-
-export const BUCKET_ROUTES = {
-  NUTRITION_INGREDIENT: {
-    ROUTE: NUTRITION_INGREDIENT_ROUTE,
-    DEFAULT: NUTRITION_INGREDIENT_ROUTE + '/default',
-  }
-}

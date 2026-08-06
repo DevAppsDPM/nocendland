@@ -1,6 +1,6 @@
 import {Component, HostListener, ChangeDetectionStrategy} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {DeviceService} from "@core/services/device.service"
+import {DeviceService} from "@platform/browser/device.service"
 
 @Component({
     selector: 'app-root',

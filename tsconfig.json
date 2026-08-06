@@ -26,12 +26,12 @@
     ],
     "paths": {
       "@app/*": ["./src/app/*"],
-      "@api/*": ["./src/app/api/*"],
-      "@core/*": ["./src/app/core/*"],
-      "@data/*": ["./src/app/data/*"],
-      "@layout/*": ["./src/app/layout/*"],
-      "@modules/*": ["./src/app/modules/*"],
+      "@areas/*": ["./src/app/areas/*"],
+      "@environments/*": ["./src/environments/*"],
+      "@platform/*": ["./src/app/platform/*"],
+      "@shell/*": ["./src/app/shell/*"],
       "@shared/*": ["./src/app/shared/*"],
+      "@testing/*": ["./src/testing/*"],
     }
   },
   "angularCompilerOptions": {
