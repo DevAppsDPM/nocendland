@@ -1,36 +1,23 @@
-import {Component, signal, WritableSignal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Injector, signal, WritableSignal} from '@angular/core';
 import {ReactiveFormsModule} from "@angular/forms"
-import {MatSelectModule} from '@angular/material/select';
 import {CalendarComponent} from "@shared/ui/calendar/calendar.component"
-import {MatDivider} from "@angular/material/divider"
-import {MatIcon} from "@angular/material/icon"
-import {MatIconButton} from "@angular/material/button"
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {DataListComponent, DataListConfig} from "@shared/ui/data-list/data-list.component"
 import {NutritionIngredient, NutritionIntake, NutritionIntakeWithIngredient} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {formatDateForDatabase, formatDateForDisplay} from "@shared/utilities/date.utils"
 import {IntakeViewerComponent} from '@areas/llimbro/nutrition/intakes/ui/intake-viewer/intake-viewer.component';
-import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog"
-import {MatExpansionModule} from "@angular/material/expansion"
+import {DialogService} from '@shared/ui/dialog/dialog.service'
 
 @Component({
   selector: 'app-intake',
   imports: [
     ReactiveFormsModule,
-    MatSelectModule,
     CalendarComponent,
-    MatDivider,
-    MatIcon,
-    MatIconButton,
     DataListComponent,
-    MatExpansionModule,
   ],
   templateUrl: './intake.component.html',
   styleUrl: './intake.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    { provide: MAT_DIALOG_DATA, useValue: '' },
-  ]
 })
 export class IntakeComponent {
 
@@ -70,7 +57,8 @@ export class IntakeComponent {
   }
 
   constructor(
-    private dialog: MatDialog,
+    private dialog: DialogService,
+    private injector: Injector,
     protected nutritionStore: NutritionStore,
   ) { }
 
@@ -125,14 +113,11 @@ export class IntakeComponent {
   protected readonly formatDateForDisplay = formatDateForDisplay
 
   public openIntakeDialog(currentIndex: number): void {
-    const dialogConfig = {
-      width: '400px',  // Tamaño del diálogo
-      data: {
-        currentIndex: currentIndex,  // Pasar el currentIndex como dato
-      }
-    };
-
-    this.dialog.open(IntakeViewerComponent, dialogConfig).afterClosed().subscribe(() =>{
+    this.dialog.open<IntakeViewerComponent, {currentIndex: number}>(IntakeViewerComponent, {
+      width: 'min(40rem, calc(100vw - 2rem))',
+      data: {currentIndex},
+      injector: this.injector,
+    }).afterClosed.subscribe(() => {
       this.nutritionStore.loadIntakeJoinIngredientList()
     })
   }

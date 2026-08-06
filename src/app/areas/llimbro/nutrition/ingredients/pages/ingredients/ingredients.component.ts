@@ -1,6 +1,4 @@
 import {Component, EventEmitter, Output, signal, WritableSignal, ChangeDetectionStrategy} from '@angular/core';
-import {MatIcon} from "@angular/material/icon";
-import {MatIconButton} from "@angular/material/button";
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants";
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {NutritionIngredient} from '@areas/llimbro/nutrition/models/nutrition.models';
@@ -13,8 +11,6 @@ import {DataListComponent, DataListConfig} from "@shared/ui/data-list/data-list.
 @Component({
     selector: 'app-ingredients',
   imports: [
-    MatIcon,
-    MatIconButton,
     DataListComponent
   ],
     templateUrl: './ingredients.component.html',

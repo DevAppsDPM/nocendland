@@ -1,32 +1,37 @@
-<h1 mat-dialog-title>Configuración de objetivos</h1>
+<section class="objective-dialog" role="dialog" aria-modal="true" aria-labelledby="objective-dialog-title">
+  <header>
+    <div>
+      <p>Nutrición · parámetros</p>
+      <h1 id="objective-dialog-title">Configuración de objetivos</h1>
+    </div>
+    <button class="ui-icon-button" type="button" aria-label="Cerrar configuración" (click)="dialogRef.close()">
+      <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#close"/></svg>
+    </button>
+  </header>
 
-<mat-dialog-content>
-  @for (objectiveConfigForm of objectiveConfigFormList; track objectiveConfigForm) {
-    @if (!!objectiveConfigFormList) {
-      <form [formGroup]="objectiveConfigForm" [class]="device.isMobile() ? 'grid-cols-1' : 'grid-cols-4'" class="grid gap-4" (change)="saveObjectiveConfig()">
-        <!-- LEVEL -->
-        <h3 [class]="device.isMobile() ? '' : 'col-span-4'">{{ objectiveConfigForm.controls['level'].value }}</h3>
-        <!-- NOMBRE -->
-        <mat-form-field appearance="outline">
-          <mat-label>{{ text.ingredients.formLabels.calories }}</mat-label>
-          <input id="calories" matInput formControlName="calories" type="number" (focus)="selectInputContent($event)" />
-        </mat-form-field>
-        <!-- NOMBRE -->
-        <mat-form-field appearance="outline">
-          <mat-label>{{ text.ingredients.formLabels.proteins }}</mat-label>
-          <input id="proteins" matInput formControlName="proteins" type="number" (focus)="selectInputContent($event)" />
-        </mat-form-field>
-        <!-- NOMBRE -->
-        <mat-form-field appearance="outline">
-          <mat-label>{{ text.ingredients.formLabels.carbohydrates }}</mat-label>
-          <input id="carbohydrates" matInput formControlName="carbohydrates" type="number" (focus)="selectInputContent($event)" />
-        </mat-form-field>
-        <!-- NOMBRE -->
-        <mat-form-field appearance="outline">
-          <mat-label>{{ text.ingredients.formLabels.fats }}</mat-label>
-          <input id="fats" matInput formControlName="fats" type="number" (focus)="selectInputContent($event)" />
-        </mat-form-field>
+  <div class="objective-dialog__levels">
+    @for (objectiveConfigForm of objectiveConfigFormList; track objectiveConfigForm) {
+      <form class="objective-level" [formGroup]="objectiveConfigForm" (change)="saveObjectiveConfig()">
+        <h2>{{ objectiveConfigForm.controls['level'].value }}</h2>
+        <div class="objective-level__fields">
+          <label class="ui-field">
+            {{ text.ingredients.formLabels.calories }}
+            <input class="ui-input" formControlName="calories" type="number" (focus)="selectInputContent($event)">
+          </label>
+          <label class="ui-field">
+            {{ text.ingredients.formLabels.proteins }}
+            <input class="ui-input" formControlName="proteins" type="number" (focus)="selectInputContent($event)">
+          </label>
+          <label class="ui-field">
+            {{ text.ingredients.formLabels.carbohydrates }}
+            <input class="ui-input" formControlName="carbohydrates" type="number" (focus)="selectInputContent($event)">
+          </label>
+          <label class="ui-field">
+            {{ text.ingredients.formLabels.fats }}
+            <input class="ui-input" formControlName="fats" type="number" (focus)="selectInputContent($event)">
+          </label>
+        </div>
       </form>
     }
-  }
-</mat-dialog-content>
+  </div>
+</section>

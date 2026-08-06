@@ -1,12 +1,4 @@
-<mat-card appearance="outlined">
-  <mat-card-header>
-    <mat-card-title-group>
-      <mat-card-title class="text-white">
-        {{ data().value }}
-      </mat-card-title>
-      <mat-card-subtitle>
-        {{ data().name }}
-      </mat-card-subtitle>
-    </mat-card-title-group>
-  </mat-card-header>
-</mat-card>
+<article class="metric-card ui-card">
+  <strong>{{ data().value }}</strong>
+  <span>{{ data().name }}</span>
+</article>

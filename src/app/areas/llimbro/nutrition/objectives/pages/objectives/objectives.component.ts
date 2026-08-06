@@ -1,30 +1,23 @@
-import {Component, computed, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, Injector} from '@angular/core';
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {
   ProgressViewerConfig,
   ProgressViewerComponent
 } from "@shared/ui/progress-viewer/progress-viewer.component"
-import {MatIcon} from "@angular/material/icon"
-import {MatIconButton} from "@angular/material/button"
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
-import {MAT_DIALOG_DATA, MatDialog} from "@angular/material/dialog"
 import {NavigationService} from "@shell/navigation/navigation.service"
 import {ObjectiveConfigComponent} from '@areas/llimbro/nutrition/objectives/ui/objective-config/objective-config.component';
 import {NutritionObjective} from "@areas/llimbro/nutrition/models/nutrition.models"
+import {DialogService} from '@shared/ui/dialog/dialog.service'
 
 @Component({
   selector: 'app-objectives',
   imports: [
     ProgressViewerComponent,
-    MatIcon,
-    MatIconButton
   ],
   templateUrl: './objectives.component.html',
   styleUrl: './objectives.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [
-    { provide: MAT_DIALOG_DATA, useValue: '' },
-  ]
 })
 export class ObjectivesComponent {
 
@@ -45,11 +38,12 @@ export class ObjectivesComponent {
   constructor(
     protected nutritionStore: NutritionStore,
     protected navigation: NavigationService,
-    private dialog: MatDialog,
+    private dialog: DialogService,
+    private injector: Injector,
   ) {}
 
   protected openDialogObjectiveConfig(): void {
-    this.dialog.open(ObjectiveConfigComponent, {})
+    this.dialog.open(ObjectiveConfigComponent, {injector: this.injector})
   }
 
   protected readonly text = NUTRITION_TEXT

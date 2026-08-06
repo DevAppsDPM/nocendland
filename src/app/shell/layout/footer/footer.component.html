@@ -1,12 +1,16 @@
 @if (footerService.showingFooter()) {
-  <footer class="flex justify-center items-center h-12 gap-4 w-full border-t border-white/20">
-    @for (button of footerService.buttons(); track button) {
-      <mat-icon (click)="footerService.onClickButton(button)">{{ button.icon }}</mat-icon>
-      <div [class]="!button.active ? 'hidden' : ''" [style.width]="button.active ? getTextWidth(button.text) : 0">
-        @if (button.active) {
-          <span class="fade-in">{{ button.text }}</span>
-        }
-      </div>
+  <nav class="area-navigation" aria-label="Navegación de Nutrición">
+    @for (button of footerService.buttons(); track button.text) {
+      <button
+        class="area-navigation__item"
+        type="button"
+        [class.area-navigation__item--active]="button.active"
+        [attr.aria-current]="button.active ? 'page' : null"
+        (click)="footerService.onClickButton(button)"
+      >
+        <svg class="ui-icon" aria-hidden="true"><use [attr.href]="'icons/atlas-icons.svg#' + button.icon"/></svg>
+        <span>{{ button.text }}</span>
+      </button>
     }
-  </footer>
+  </nav>
 }

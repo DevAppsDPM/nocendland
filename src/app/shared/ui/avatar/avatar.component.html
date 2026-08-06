@@ -1,7 +1,7 @@
-<main class="h-32 w-32 rounded-full mx-auto my-4">
+<div class="avatar" [class.avatar--loading]="loading()">
   @if (loading()) {
-    <mat-progress-spinner mode="indeterminate" [diameter]="128"/>
+    <span class="ui-spinner avatar__spinner" role="status" aria-label="Cargando imagen"></span>
   } @else {
-    <img class="h-32 w-32 rounded-full mx-auto my-4" [src]="imageSource()" alt="">
+    <img class="avatar__image" [src]="imageSource()" alt="">
   }
-</main>
+</div>

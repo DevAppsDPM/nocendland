@@ -1,15 +1,9 @@
-import {afterNextRender, Component, ElementRef, Signal, viewChild, ViewChild, ChangeDetectionStrategy} from '@angular/core';
-import {MatFormField, MatLabel} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
-import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {afterNextRender, ChangeDetectionStrategy, Component, effect, ElementRef, inject, Signal, viewChild, ViewChild} from '@angular/core';
 
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants";
-import {MatButton, MatIconButton} from "@angular/material/button";
-import {MatIcon} from "@angular/material/icon";
 import {ActivatedRoute} from "@angular/router";
-import {ConfirmDialogService, DIALOG_CONFIRM} from "@shared/ui/services/confirm-dialog.service"
-import {MatDivider} from "@angular/material/divider"
+import {ConfirmDialogService, DialogConfirm} from "@shared/ui/services/confirm-dialog.service"
 import {NutritionIngredient, NutritionIngredientImage} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {NavigationService} from "@shell/navigation/navigation.service"
@@ -17,34 +11,24 @@ import {AvatarComponent} from "@shared/ui/avatar/avatar.component"
 import {BaseChartDirective} from "ng2-charts"
 import {Chart, ChartConfiguration, ChartData} from 'chart.js';
 import ChartDataLabels from "chartjs-plugin-datalabels"
-import {MatCard, MatCardContent, MatCardHeader, MatCardTitle, MatCardTitleGroup} from "@angular/material/card"
 import {NutritionResourcesService} from "@areas/llimbro/nutrition/services/nutrition-resources.service"
+import {CssTokenService} from '@shared/ui/theme/css-token.service'
+import {ThemeService} from '@shared/ui/theme/theme.service'
 
 @Component({
     selector: 'app-ingredient-form',
   imports: [
-    MatFormField,
-    MatInput,
-    MatLabel,
-    MatProgressSpinner,
     ReactiveFormsModule,
-    MatIconButton,
-    MatIcon,
-    MatDivider,
-    MatButton,
     AvatarComponent,
     BaseChartDirective,
-    MatCard,
-    MatCardTitleGroup,
-    MatCardTitle,
-    MatCardContent,
-    MatCardHeader
 ],
     templateUrl: './ingredient-form.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './ingredient-form.component.scss'
 })
 export class IngredientFormComponent {
+  private readonly cssTokens = inject(CssTokenService)
+  private readonly theme = inject(ThemeService)
   protected readonly formLabels = NUTRITION_TEXT.ingredients.formLabels
 
   protected ingredientForm: FormGroup | undefined
@@ -72,6 +56,10 @@ export class IngredientFormComponent {
     if (!this.new) this.nutritionStore.readIngredient(this.ingredientId).then(ingredient => this.setValues(ingredient))
     afterNextRender(() => {
       if (this.new) document.getElementById('name')?.focus()
+    })
+    effect(() => {
+      this.theme.theme()
+      this.updateChartData()
     })
   }
 
@@ -137,10 +125,10 @@ export class IngredientFormComponent {
   }
 
   public deleteIngredient(): void {
-    const config: DIALOG_CONFIRM = {
+    const config: DialogConfirm = {
       title: 'Eliminar alimento',
       message: `Se va a eliminar el alimento ${this.ingredientForm?.value['name']}`,
-      acceptButton: { text: 'Eliminar', show: false , color: 'warn' },
+      acceptButton: {text: 'Eliminar', show: true, intent: 'danger'},
     }
 
     this.confirmDialog.open(config).subscribe((deleted: boolean) => {
@@ -180,7 +168,7 @@ export class IngredientFormComponent {
 
 
   private nutriendValuesEmojiList: string[] = ['⚡', '🍗', '🥑', '🍚']
-  public chart: Signal<BaseChartDirective> = viewChild.required<BaseChartDirective>(BaseChartDirective)
+  public chart: Signal<BaseChartDirective | undefined> = viewChild<BaseChartDirective>(BaseChartDirective)
   public chartData: ChartData<'doughnut'> = {
     labels: ['⚡ Calorías', '🍗 Proteínas', '🥑 Grasas', ' 🍚Hidratos'],
     datasets: [
@@ -202,7 +190,7 @@ export class IngredientFormComponent {
           size: 12,
           weight: 'bold',
         },
-        color: '#000'
+        color: () => this.cssTokens.get('--color-text')
       }
     }
 
@@ -220,12 +208,17 @@ export class IngredientFormComponent {
           this.ingredientForm.value.carbohydrates_per_100 || 0
         ],
         borderWidth: 0,
-        backgroundColor: ['#A5243D', '#90E39A', '#DDF093', '#46B1C9'],
+        backgroundColor: [
+          this.cssTokens.get('--chart-calories'),
+          this.cssTokens.get('--chart-proteins'),
+          this.cssTokens.get('--chart-fats'),
+          this.cssTokens.get('--chart-carbohydrates'),
+        ],
         rotation: 270
       },
     ]
 
-    this.chart().update()
+    this.chart()?.update()
   }
 
   protected readonly text = NUTRITION_TEXT

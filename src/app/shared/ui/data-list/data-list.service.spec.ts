@@ -6,7 +6,7 @@ describe('DataListService', () => {
   let service: DataListService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({providers: [DataListService]});
     service = TestBed.inject(DataListService);
   });
 

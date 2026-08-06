@@ -1,8 +1,8 @@
 ---
 Nombre: Definir sistema visual y retirar Angular Material
-Estado: Planificando
-Resumen: Trabajo pospuesto para buscar referencias con el usuario, definir la identidad visual de Nocendland y sustituir Angular Material por primitivas propias.
-Decisiones: Se retirarán los componentes de Angular Material; el usuario abordará esta tarea más adelante y entonces se decidirán la dirección visual y la posible conservación de Angular CDK.
+Estado: Hecha
+Resumen: Sistema visual «Atlas modular» implementado con temas claro y oscuro, perfiles diferenciados por área, tokens y primitivas propias; Angular Material y sus estilos se han retirado por completo.
+Decisiones: La dirección aprobada es «Atlas modular», con una gramática visual global y una expresión diferenciada por área; todos los colores se centralizan como tokens semánticos con variantes clara y oscura, sin valores hexadecimales dispersos; Angular Material y Angular Animations se retiraron; Angular CDK se conserva exclusivamente para overlay, portales y gestión accesible del foco en la primitiva de diálogo.
 Bloqueada: []
 Fecha de creación: 2026-08-06
 Última modificación: 2026-08-06
@@ -14,7 +14,11 @@ Fecha de creación: 2026-08-06
 
 Angular Material está presente en 24 archivos TypeScript y en el theming global. No es únicamente un cambio de dependencia: formularios, diálogos, drawer, listas, botones, iconos, tarjetas, progreso, selección, tooltips y navegación dependen de sus componentes.
 
-El usuario ha decidido posponer este trabajo hasta comprobar el refactor arquitectónico desplegado. Debe retomarse con él antes de realizar cambios visuales o retirar dependencias.
+El trabajo se retomó con el usuario el 2026-08-06. La inspección de la aplicación actual confirma una interfaz Material oscura, con poca jerarquía visual y sin una identidad propia que pueda distinguir áreas presentes y futuras.
+
+El inventario actualizado encuentra 21 archivos TypeScript con imports de Angular Material, 19 plantillas con elementos o directivas Material y 5 hojas SCSS acopladas a sus estilos. La dependencia abarca 16 paquetes de componentes: botones, tarjetas, diálogos, divisores, expansión, campos de formulario, iconos, inputs, listas, progreso, selección, navegación lateral, toolbar y tooltips.
+
+Angular CDK solo tiene un consumidor directo: `OverlayService`, basado en `portal` y `overlay`. Su conservación se decidirá al diseñar la primitiva de diálogo; no existe por ahora otro uso que justifique mantener toda la dependencia.
 
 ## Enfoque propuesto
 
@@ -25,9 +29,42 @@ El usuario ha decidido posponer este trabajo hasta comprobar el refactor arquite
 5. Sustituir progresivamente el resto de componentes Material.
 6. Eliminar `@angular/material` y su theming cuando ya no haya consumidores.
 
+## Dirección visual aprobada
+
+Nocendland utilizará un sistema «Atlas modular»: una gramática compartida mantiene reconocible la aplicación, mientras cada área adapta su acento, ritmo, geometría y recursos visuales al carácter de su dominio. La diferenciación no se limitará al color ni duplicará componentes; se expresará mediante tokens de área y variantes controladas de las primitivas comunes.
+
+Llimbro tendrá una expresión energética y orgánica, con mayor contraste, formas tensas y recursos inspirados en recorridos, progreso y movimiento. Las áreas futuras podrán declarar su propio perfil —por ejemplo, Finanzas con una composición más precisa, tabular y estructurada— dentro de la misma tipografía, escala espacial, accesibilidad y comportamiento de interacción.
+
+Los estilos se centralizarán mediante variables CSS en dos capas:
+
+1. Tokens base privados del sistema, con escalas tipográficas, espaciales, geométricas, de movimiento y paletas sin valores hexadecimales.
+2. Tokens semánticos consumidos por componentes, con variantes clara y oscura y sobrescrituras acotadas por área.
+
+Los componentes y páginas no podrán introducir colores literales. Una comprobación automática impedirá añadir valores hexadecimales fuera de la definición central del sistema.
+
 ## Consideración técnica
 
 La recomendación inicial es no conservar el sistema de theming de Material si se eliminan todos sus componentes. Los tokens propios mediante variables CSS evitan mantener la dependencia y permiten tematizar componentes propios. Angular CDK sí puede conservarse selectivamente para comportamientos sin estilos —por ejemplo overlay, gestión de foco o accesibilidad— si aporta valor y no condiciona la identidad visual.
+
+## Resultado
+
+- `tokens.scss` centraliza temas, paletas semánticas, tipografía, espacio, radios, tamaños, movimiento y perfiles de área mediante variables CSS.
+- La aplicación persiste la preferencia clara u oscura y actualiza también el color del navegador de la PWA.
+- Llimbro declara un perfil energético y orgánico; Finanzas dispone de un perfil estructurado de referencia para su futura implementación.
+- Bricolage Grotesque y Archivo se distribuyen localmente. La iconografía se sirve como sprite SVG propio y no depende de fuentes remotas.
+- Shell, autenticación, navegación, listas, formularios, calendario, tarjetas, progreso y diálogos utilizan primitivas propias.
+- `check:styles` impide valores hexadecimales y utilidades cromáticas directas fuera del sistema de tokens, y se ejecuta antes del build de producción.
+- `@angular/material`, su theming y `@angular/animations` se eliminaron. Angular CDK se mantiene porque la primitiva de diálogo usa overlay, portales y trampa de foco sin heredar apariencia visual.
+
+## Verificación
+
+- Build de producción correcto; la única advertencia restante es el presupuesto del bundle inicial, cubierto por la tarea independiente [[Reducir bundle inicial]].
+- 26 pruebas unitarias correctas en Chrome Headless.
+- No existen imports, elementos, directivas, estilos ni dependencia de Angular Material.
+- Temas claro y oscuro comprobados en ejecución.
+- Shell, navegación y diálogos comprobados en escritorio y en un viewport móvil de 390 × 844, sin desbordamiento horizontal.
+- El diálogo conserva los providers del límite lazy, atrapa el foco y lo devuelve al control que lo abrió al cerrarse.
+- `pnpm audit --audit-level high` continúa informando vulnerabilidades transitivas ya cubiertas por [[Revisar vulnerabilidades transitivas]]; no se aplicaron correcciones automáticas.
 
 ## Criterios de finalización
 

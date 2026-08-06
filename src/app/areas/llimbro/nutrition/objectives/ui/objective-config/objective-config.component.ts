@@ -1,36 +1,28 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {MatDialog, MatDialogModule} from "@angular/material/dialog"
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms"
 
-import {MatFormField, MatLabel} from "@angular/material/form-field"
-import {MatInput} from "@angular/material/input"
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
 import {NutritionObjective, NutritionObjectiveLevel} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {selectInputContent} from "@shared/utilities/input.utils"
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
-import {DeviceService} from "@platform/browser/device.service"
+import {DialogRef} from '@shared/ui/dialog/dialog-ref'
 
 @Component({
   selector: 'app-objective-config',
   imports: [
-    ReactiveFormsModule,
-    MatFormField,
-    MatInput,
-    MatLabel,
-    MatDialogModule
+    ReactiveFormsModule
 ],
   templateUrl: './objective-config.component.html',
   styleUrl: './objective-config.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [MatDialog]
 })
 export class ObjectiveConfigComponent {
+  protected readonly dialogRef = inject<DialogRef<void>>(DialogRef)
 
   private levels: NutritionObjectiveLevel[] = ['keep', 'good', 'top']
   protected objectiveConfigFormList: FormGroup[] = []
 
   constructor(
-    protected device: DeviceService,
     private formBuilder: FormBuilder,
     private nutritionStore: NutritionStore,
   ) {

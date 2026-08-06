@@ -1,71 +1,88 @@
-@use 'styles/themes';
+@use '@fontsource-variable/archivo';
+@use '@fontsource-variable/bricolage-grotesque';
+@use 'styles/tokens';
+@use 'styles/components';
 @use 'styles/animations';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-color: black }
-
-
-:root {
-
-  // Tamaño del footer
-  --standard-footer-height: 48px;
-
-  // Tamaño del header
-  --standard-toolbar-height: 64px;
-  --small-toolbar-height: 56px;
-
-  // Height con el offset toolbar
-  --offset-toolbar-height: var(--standard-toolbar-height);
-
-  @media(width < 600px) {
-    --offset-toolbar-height: var(--small-toolbar-height);
-  }
-
-  .container-100-with-offset-toolbar-height {
-    width: 100%;
-    height: var(--offset-toolbar-height);
-  }
-
-  // Height con el offset footer
-  .container-100-with-offset-footer-height {
-    width: 100%;
-    height: calc(100% - var(--standard-footer-height));
-  }
-
-  // Height offset con footer y toolbar
-  .container-100-with-offset-toolbar-and-footer-height {
-    width: 100%;
-    height: calc(100vh - (var(--offset-toolbar-height) + var(--standard-footer-height) + 1px));
-  }
-
-  // Scrollbar
-  ::-webkit-scrollbar-track
-  {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-    border-radius: 10px;
-  }
-
-  ::-webkit-scrollbar
-  {
-    width: 12px;
-  }
-
-  ::-webkit-scrollbar-thumb
-  {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-    background-color: #e5e7eb;
-  }
-
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  min-height: 100%;
+}
 
-.mdc-notched-outline__notch { // TODO: BUG DE MATERIAL 3 PROBAR DE QUITAR CUANDO ACTUALICE.
-  border-right: none;
+html {
+  background: var(--color-canvas);
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--color-canvas);
+  color: var(--color-text);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+  text-rendering: optimizeLegibility;
+  transition: background-color var(--duration-normal) var(--ease-standard), color var(--duration-normal) var(--ease-standard);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--area-accent-soft);
+  color: var(--area-accent-ink);
+}
+
+::-webkit-scrollbar {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-canvas-subtle);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 0.18rem solid var(--color-canvas-subtle);
+  border-radius: var(--radius-round);
+  background: var(--color-scrollbar);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-block-start: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-family-display);
+  line-height: var(--line-height-title);
+  letter-spacing: var(--area-heading-tracking);
 }

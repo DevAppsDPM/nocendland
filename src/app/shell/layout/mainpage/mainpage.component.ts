@@ -1,5 +1,5 @@
-import {Component, HostListener, ChangeDetectionStrategy} from '@angular/core';
-import {MatDrawer, MatDrawerContainer} from "@angular/material/sidenav";
+import {ChangeDetectionStrategy, Component, computed, HostListener, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {Router, RouterOutlet} from "@angular/router";
 import {SideNavService} from "@shell/state/side-nav.service";
 import {HeaderComponent} from "../header/header.component";
@@ -11,13 +11,12 @@ import {
 } from "@shared/ui/column-center-container/column-center-container.component"
 import {environment} from '@environments/environment';
 import {NavigationService} from "@shell/navigation/navigation.service"
+import {map} from 'rxjs';
 
 @Component({
     selector: 'app-mainpage',
     imports: [
         RouterOutlet,
-        MatDrawerContainer,
-        MatDrawer,
         HeaderComponent,
         UserInfoComponent,
         SideNavMenuComponent,
@@ -32,12 +31,15 @@ export class MainpageComponent {
 
   private touchStartX = 0;
   private touchEndX = 0;
+  private readonly router = inject(Router)
+  private readonly navigation = inject(NavigationService)
+  readonly sideNavService = inject(SideNavService)
+  private readonly navigationUrl = toSignal(
+    this.navigation.navigationEnd().pipe(map(event => event.urlAfterRedirects)),
+    {initialValue: this.router.url},
+  )
 
-  constructor(
-    private router: Router,
-    public sideNavService: SideNavService,
-    private navigation: NavigationService
-  ) {}
+  protected readonly activeArea = computed(() => this.navigationUrl().includes('/llimbro') ? 'llimbro' : 'home')
 
   @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent) {

@@ -1,20 +1,12 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import {MatIcon} from "@angular/material/icon";
-import {MatIconButton} from "@angular/material/button";
-import {MatToolbar} from "@angular/material/toolbar";
 import {SideNavService} from "@shell/state/side-nav.service";
 import {HeaderService} from "@shell/state/header.service"
-import {MatDivider} from "@angular/material/divider"
 import {NavigationService} from "@shell/navigation/navigation.service"
+import {ThemeService} from '@shared/ui/theme/theme.service';
 
 @Component({
     selector: 'app-header',
-    imports: [
-        MatIcon,
-        MatIconButton,
-        MatToolbar,
-        MatDivider
-    ],
+    imports: [],
     templateUrl: './header.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './header.component.scss'
@@ -25,6 +17,7 @@ export class HeaderComponent {
     protected sideNavService: SideNavService,
     protected headerService: HeaderService,
     protected navigation: NavigationService,
+    protected theme: ThemeService,
   ) {
   }
 }

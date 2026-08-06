@@ -1,5 +1,4 @@
 import {Component, input, InputSignal, ChangeDetectionStrategy} from '@angular/core';
-import {MatCardModule} from "@angular/material/card"
 
 export declare type CARD_DATA = {
   name: string
@@ -8,9 +7,7 @@ export declare type CARD_DATA = {
 
 @Component({
   selector: 'app-card-data',
-  imports: [
-    MatCardModule
-  ],
+  imports: [],
   templateUrl: './card-data.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './card-data.component.scss'

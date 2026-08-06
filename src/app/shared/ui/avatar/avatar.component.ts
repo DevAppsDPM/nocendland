@@ -1,12 +1,9 @@
 import {Component, computed, input, ChangeDetectionStrategy} from '@angular/core';
-import {MatProgressSpinner} from "@angular/material/progress-spinner"
 import {DEFAULT_IMAGE_PATH} from '@shared/ui/image/image.constants';
 
 @Component({
   selector: 'app-avatar',
-  imports: [
-    MatProgressSpinner
-  ],
+  imports: [],
   templateUrl: './avatar.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './avatar.component.scss'

@@ -1,68 +1,57 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title-group>
-<!--      @if (nutritionStore.savingIntakeJoinIngredientList()) {-->
-<!--        <mat-progress-spinner [diameter]="20" matCardAvatar/>-->
-<!--      } @else {-->
-        <img
-          matCardAvatar
-          [src]="currentIntakeJoinIngredient.nutrition_ingredient.image_route"
-          [alt]="'Image of ' + currentIntakeJoinIngredient.nutrition_ingredient.name"
-        />
-<!--      }-->
-      <mat-card-title class="text-white">
-        {{ currentIntakeJoinIngredient.nutrition_ingredient.name }}
-      </mat-card-title>
-      <mat-card-subtitle>
-        {{ currentIntakeJoinIngredient.nutrition_ingredient.description }}
-      </mat-card-subtitle>
-    </mat-card-title-group>
-  </mat-card-header>
+<section class="intake-dialog" role="dialog" aria-modal="true" aria-labelledby="intake-dialog-title">
+  <header class="intake-dialog__header">
+    <img
+      [src]="currentIntakeJoinIngredient.nutrition_ingredient.image_route"
+      [alt]="currentIntakeJoinIngredient.nutrition_ingredient.name"
+    >
+    <div>
+      <p>Detalle de ingesta</p>
+      <h1 id="intake-dialog-title">{{ currentIntakeJoinIngredient.nutrition_ingredient.name }}</h1>
+      <small>{{ currentIntakeJoinIngredient.nutrition_ingredient.description }}</small>
+    </div>
+    <button class="ui-icon-button" type="button" aria-label="Cerrar detalle" (click)="dialogRef.close()">
+      <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#close"/></svg>
+    </button>
+  </header>
 
-  <mat-card-content>
-
-    <article class="grid gap-1 grid-cols-2 py-1">
-      <!-- CANTIDAD -->
-      <mat-form-field appearance="outline">
-        <mat-label>Cantidad (g)</mat-label>
-        <input #inputQuantity matInput type="number" [(ngModel)]="currentIntakeJoinIngredient.quantity_in_grams" (ngModelChange)="saveChanges()">
-      </mat-form-field>
-
-      <!-- UNIDADES -->
-      <mat-form-field appearance="outline">
-        <mat-label>Unidades</mat-label>
-        <input #inputUnit matInput type="number" [(ngModel)]="currentIntakeJoinIngredient.units" (ngModelChange)="calculateQuantityInGrams()">
-        <button
-          mat-icon-button
-          matSuffix
-          #tooltip="matTooltip"
-          [matTooltip]="text.intakes.unitsExplanation"
-          (click)="tooltip.show(); $event.stopPropagation()"
+  <article class="intake-dialog__content">
+    <div class="intake-dialog__fields">
+      <label class="ui-field">
+        Cantidad (g)
+        <input
+          #inputQuantity
+          class="ui-input"
+          type="number"
+          [(ngModel)]="currentIntakeJoinIngredient.quantity_in_grams"
+          (ngModelChange)="saveChanges()"
         >
-          <mat-icon>info</mat-icon>
-        </button>
-      </mat-form-field>
+      </label>
 
-      <div class="grid gap-1 grid-cols-4 col-span-2">
-        <app-card-data [data]="{ name: 'Calorías', value: (math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-        <app-card-data [data]="{ name: 'Proteínas', value: (math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-        <app-card-data [data]="{ name: 'Hidratos', value: (math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-        <app-card-data [data]="{ name: 'Grasas', value: (math.calculateProportionalValue((currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0), parseInt(inputQuantity.value)))}"/>
-      </div>
+      <label class="ui-field">
+        <span>Unidades <span class="field-help" [attr.title]="text.intakes.unitsExplanation">?</span></span>
+        <input
+          class="ui-input"
+          type="number"
+          [(ngModel)]="currentIntakeJoinIngredient.units"
+          (ngModelChange)="calculateQuantityInGrams()"
+        >
+      </label>
+    </div>
 
-    </article>
+    <div class="intake-dialog__metrics">
+      <app-card-data [data]="{ name: 'Calorías', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+      <app-card-data [data]="{ name: 'Proteínas', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+      <app-card-data [data]="{ name: 'Hidratos', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+      <app-card-data [data]="{ name: 'Grasas', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+    </div>
+  </article>
 
-  </mat-card-content>
-
-  <mat-card-actions align="end">
-    <!-- PREV -->
-    <button mat-button (click)="prevIngredient()">
-      <mat-icon>arrow_left</mat-icon><span class="prev-next-name">{{ getPrevIngredientName() }}</span>
+  <footer class="intake-dialog__navigation">
+    <button class="ui-button ui-button--quiet" type="button" (click)="prevIngredient()">
+      <span aria-hidden="true">←</span><span>{{ getPrevIngredientName() }}</span>
     </button>
-
-    <!-- NEXT -->
-    <button mat-button (click)="nextIngredient()">
-      <span class="prev-next-name">{{ getNextIngredientName() }}</span><mat-icon iconPositionEnd>arrow_right</mat-icon>
+    <button class="ui-button ui-button--quiet" type="button" (click)="nextIngredient()">
+      <span>{{ getNextIngredientName() }}</span><span aria-hidden="true">→</span>
     </button>
-  </mat-card-actions>
-</mat-card>
+  </footer>
+</section>

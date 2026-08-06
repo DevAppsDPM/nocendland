@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '@platform/auth/auth.service';
 
 @Component({
   selector: 'app-callback',
-  imports: [MatProgressSpinner],
+  imports: [],
   templateUrl: './callback.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './callback.component.scss',

@@ -1,16 +1,11 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {MatIcon} from "@angular/material/icon";
-import {MatListModule} from "@angular/material/list";
 
 import {SideNavService} from "@shell/state/side-nav.service";
 import {NavigationService} from "@shell/navigation/navigation.service"
 
 @Component({
     selector: 'app-side-nav-menu',
-  imports: [
-    MatIcon,
-    MatListModule
-],
+  imports: [],
     templateUrl: './side-nav-menu.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './side-nav-menu.component.scss'

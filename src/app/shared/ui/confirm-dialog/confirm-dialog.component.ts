@@ -1,36 +1,22 @@
-import {Component, Inject, ChangeDetectionStrategy} from '@angular/core';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogActions,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle
-} from "@angular/material/dialog"
-import {DIALOG_CONFIRM} from "@shared/ui/services/confirm-dialog.service"
-import {MatButton} from "@angular/material/button"
-import {UI_TEXT} from '@shared/ui/ui-text.constants';
-
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core'
+import {DialogConfirm} from '@shared/ui/services/confirm-dialog.service'
+import {UI_TEXT} from '@shared/ui/ui-text.constants'
+import {DIALOG_DATA} from '@shared/ui/dialog/dialog.tokens'
+import {DialogRef} from '@shared/ui/dialog/dialog-ref'
 
 @Component({
-    selector: 'app-confirm-dialog',
-  imports: [
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatButton
-],
-    templateUrl: './confirm-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './confirm-dialog.component.scss'
+  selector: 'app-confirm-dialog',
+  imports: [],
+  templateUrl: './confirm-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
+  protected readonly data = inject(DIALOG_DATA) as DialogConfirm
+  protected readonly text = UI_TEXT
+  private readonly dialogRef = inject<DialogRef<boolean>>(DialogRef)
 
-  constructor(@Inject(MAT_DIALOG_DATA) protected data: DIALOG_CONFIRM, private dialogRef: MatDialogRef<ConfirmDialogComponent>) {
-  }
-
-  public close(accepted: boolean): void {
+  protected close(accepted: boolean): void {
     this.dialogRef.close(accepted)
   }
-
-  protected readonly text = UI_TEXT
 }

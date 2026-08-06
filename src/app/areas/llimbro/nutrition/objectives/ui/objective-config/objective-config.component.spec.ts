@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ObjectiveConfigComponent } from './objective-config.component';
 import {NutritionStore} from '@areas/llimbro/nutrition/state/nutrition.store';
 import {createNutritionStoreStub} from '@testing/nutrition-store.stub';
+import {DialogRef} from '@shared/ui/dialog/dialog-ref';
 
 describe('ObjectiveConfigComponent', () => {
   let component: ObjectiveConfigComponent;
@@ -11,7 +12,10 @@ describe('ObjectiveConfigComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ObjectiveConfigComponent],
-      providers: [{provide: NutritionStore, useFactory: createNutritionStoreStub}]
+      providers: [
+        {provide: NutritionStore, useFactory: createNutritionStoreStub},
+        {provide: DialogRef, useValue: {close: () => undefined}},
+      ]
     })
     .compileComponents();
 

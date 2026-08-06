@@ -1,62 +1,50 @@
-import {effect, Injectable, signal, untracked, WritableSignal} from '@angular/core';
+import {computed, Injectable, signal} from '@angular/core'
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DataListService {
+  private readonly itemsState = signal<Record<string, any>[]>([])
+  private readonly selectedItemsState = signal<Record<string, any>[]>([])
+  private readonly filterState = signal('')
 
-  public items: WritableSignal<Record<string, any>[]> = signal([])
-  public filteredItems: WritableSignal<Record<string, any>[]> = signal([])
-  public selectedItems: WritableSignal<Record<string, any>[]> = signal([])
-  public filter: WritableSignal<string> = signal('')
+  readonly filter = this.filterState.asReadonly()
+  readonly selectedItems = this.selectedItemsState.asReadonly()
+  readonly filteredItems = computed(() => {
+    const filterValue = this.normalizeText(this.filterState().trim())
+    if (!filterValue) return this.itemsState()
 
-  constructor() {
-    this.effectFilter()
-    this.effectItems()
+    return this.itemsState().filter(item =>
+      Object.values(item).some(value => this.normalizeText(String(value)).includes(filterValue)),
+    )
+  })
+
+  setItems(items: Record<string, any>[]): void {
+    this.itemsState.set(items)
+    this.selectedItemsState.update(selected => selected.filter(item => items.includes(item)))
   }
 
-  public clearFilter(): void {
-    this.filter.set('')
+  setFilter(filter: string): void {
+    this.filterState.set(filter)
+  }
+
+  clearFilter(): void {
+    this.filterState.set('')
+  }
+
+  clearSelection(): void {
+    this.selectedItemsState.set([])
+  }
+
+  isSelected(item: Record<string, any>): boolean {
+    return this.selectedItemsState().includes(item)
+  }
+
+  toggleSelection(item: Record<string, any>): void {
+    this.selectedItemsState.update(selected =>
+      selected.includes(item) ? selected.filter(selectedItem => selectedItem !== item) : [...selected, item],
+    )
   }
 
   private normalizeText(text: string): string {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-  }
-
-  private filterItems(): void {
-    const filterValue = this.normalizeText(this.filter().trim());
-
-    if (!filterValue) {
-      this.filteredItems.set(this.items());
-      return;
-    }
-
-    const filtered = this.items().filter(item =>
-      Object.values(item).some(value =>
-        this.normalizeText(String(value)).includes(filterValue)
-      )
-    );
-
-    this.filteredItems.set(filtered);
-  }
-
-  private effectItems(): void {
-    effect(() => {
-      this.items()
-
-      untracked(() => {
-        this.filteredItems.set(this.items())
-      })
-    })
-  }
-
-  private effectFilter(): void {
-    effect(() => {
-      this.filter()
-      this.filterItems()
-    });
+    return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   }
 }

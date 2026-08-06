@@ -1,0 +1,11 @@
+.content-frame {
+  width: 100%;
+  min-height: 100%;
+  padding: clamp(var(--space-4), 4vw, var(--space-10));
+}
+
+.content-frame__column {
+  width: min(100%, var(--content-width));
+  min-height: 100%;
+  margin-inline: auto;
+}

@@ -1,25 +1,27 @@
-<div class="calendar-container">
-  <div class="header">
-    <button (click)="prevMonth()">&#9664;</button>
-    <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
-    <button (click)="nextMonth()">&#9654;</button>
-  </div>
+<div class="calendar">
+  <header>
+    <button class="ui-icon-button" type="button" aria-label="Mes anterior" (click)="prevMonth()">←</button>
+    <strong>{{ monthNames[currentMonth] }} {{ currentYear }}</strong>
+    <button class="ui-icon-button" type="button" aria-label="Mes siguiente" (click)="nextMonth()">→</button>
+  </header>
 
-  <div class="days-container">
+  <div class="calendar__grid">
     @for (day of weekDays; track day) {
-      <div class="day-header">{{ day }}</div>
+      <span class="calendar__weekday">{{ day }}</span>
     }
-
-    <!-- Agrega días vacíos si el mes no empieza en lunes -->
     @for (empty of getEmptyDays(); track $index) {
-      <div class="day rounded-full"></div>
+      <span aria-hidden="true"></span>
     }
-
-    <!-- Muestra los días del mes -->
     @for (day of daysInMonth; track day) {
-      <div class="day rounded-full" [class]="isSelectedDay(day) ? 'bg-indigo-950' : ''" (click)="onDayClick(day)">
+      <button
+        class="calendar__day"
+        type="button"
+        [class.calendar__day--selected]="isSelectedDay(day)"
+        [attr.aria-pressed]="isSelectedDay(day)"
+        (click)="onDayClick(day)"
+      >
         {{ day }}
-      </div>
+      </button>
     }
   </div>
 </div>

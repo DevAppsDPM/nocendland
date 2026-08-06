@@ -1,28 +1,35 @@
-<mat-drawer-container class="h-full w-full" autosize>
-  <mat-drawer #drawer class="sidenav" mode="side" [opened]="sideNavService.isOpen()">
-    <!-- INFORMACIÓN DEL USUARIO -->
+<div class="app-shell" [attr.data-area]="activeArea()" [class.app-shell--nav-open]="sideNavService.isOpen()">
+  <button
+    class="app-shell__scrim"
+    type="button"
+    aria-label="Cerrar navegación"
+    [attr.aria-hidden]="!sideNavService.isOpen()"
+    (click)="sideNavService.close()"
+  ></button>
+
+  <aside id="primary-navigation" class="app-shell__navigation" [attr.aria-hidden]="!sideNavService.isOpen()">
+    <div class="app-shell__navigation-topline">
+      <span class="app-shell__atlas-mark">Atlas personal</span>
+      <button class="ui-icon-button" type="button" aria-label="Cerrar navegación" (click)="sideNavService.close()">
+        <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#close"/></svg>
+      </button>
+    </div>
+
     <app-user-info/>
-
-    <!-- SIDE MENU -->
     <app-side-nav-menu/>
+    <p class="app-shell__version">Nocendland · v{{ environment.version }}</p>
+  </aside>
 
-    <div class="absolute bottom-0">v{{ environment.version }}</div>
+  <main class="app-shell__main">
+    <app-header/>
 
-  </mat-drawer>
-
-  <main class="h-full w-full">
-    <app-header></app-header>
-
-    <article class="container-100-with-offset-toolbar-and-footer-height overflow-auto" (click)="sideNavService.close()">
-
+    <article class="app-shell__content" (click)="sideNavService.close()">
       <ng-template #templateRef>
-        <router-outlet></router-outlet>
+        <router-outlet/>
       </ng-template>
       <app-column-center-container [template]="templateRef"/>
-
     </article>
 
     <app-footer/>
   </main>
-
-</mat-drawer-container>
+</div>

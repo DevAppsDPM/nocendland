@@ -1,18 +1,9 @@
 import {Component, input, InputSignal, ChangeDetectionStrategy} from '@angular/core';
-import {MatCard, MatCardAvatar, MatCardHeader, MatCardTitle, MatCardTitleGroup} from "@angular/material/card"
-import {MatProgressBar} from "@angular/material/progress-bar"
 import {MathService} from "@shared/utilities/math.service"
 
 @Component({
   selector: 'app-progress-viewer',
-  imports: [
-    MatCard,
-    MatProgressBar,
-    MatCardTitle,
-    MatCardHeader,
-    MatCardTitleGroup,
-    MatCardAvatar
-  ],
+  imports: [],
   templateUrl: './progress-viewer.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './progress-viewer.component.scss'

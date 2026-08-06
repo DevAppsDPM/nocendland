@@ -1,30 +1,29 @@
-import { Injectable } from '@angular/core';
-import {Observable} from "rxjs"
-import {MatDialog} from "@angular/material/dialog"
-import {ConfirmDialogComponent} from "@shared/ui/confirm-dialog/confirm-dialog.component"
-import {ThemePalette} from "@angular/material/core"
+import {Injectable} from '@angular/core'
+import {Observable, map} from 'rxjs'
+import {ConfirmDialogComponent} from '@shared/ui/confirm-dialog/confirm-dialog.component'
+import {DialogService} from '@shared/ui/dialog/dialog.service'
 
-export type DIALOG_CONFIRM = {
+export type DialogConfirm = {
   title: string
   message: string
-  acceptButton?: DIALOG_CONFIRM_BUTTON
-  cancelButton?: DIALOG_CONFIRM_BUTTON
+  acceptButton?: DialogConfirmButton
+  cancelButton?: DialogConfirmButton
 }
 
-type DIALOG_CONFIRM_BUTTON = {
+type DialogConfirmButton = {
   text?: string
   show?: boolean
-  color?: ThemePalette
+  intent?: 'danger' | 'primary'
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({providedIn: 'root'})
 export class ConfirmDialogService {
+  constructor(private readonly dialog: DialogService) {}
 
-  constructor(private matDialog: MatDialog) { }
-
-  public open(config: DIALOG_CONFIRM): Observable<boolean> {
-    return this.matDialog.open(ConfirmDialogComponent, { data: config, autoFocus: false }).afterClosed()
+  open(config: DialogConfirm): Observable<boolean> {
+    return this.dialog
+      .open<ConfirmDialogComponent, DialogConfirm, boolean>(ConfirmDialogComponent, {data: config, width: 'min(30rem, calc(100vw - 2rem))'})
+      .afterClosed
+      .pipe(map(result => result ?? false))
   }
 }

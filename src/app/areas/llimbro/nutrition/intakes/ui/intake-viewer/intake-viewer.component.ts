@@ -2,7 +2,7 @@ import {
   Component,
   effect,
   ElementRef,
-  Inject,
+  inject,
   input,
   OnDestroy,
   Signal,
@@ -12,43 +12,33 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
-import {MatCardModule} from "@angular/material/card"
-import {MatInputModule} from "@angular/material/input"
-import {MatFormFieldModule} from "@angular/material/form-field"
-import {MatButtonModule} from "@angular/material/button"
 import {FormsModule} from "@angular/forms"
-import {MatIcon} from "@angular/material/icon"
 import {NutritionIntake, NutritionIntakeWithIngredient} from "@areas/llimbro/nutrition/models/nutrition.models"
-import {MAT_DIALOG_DATA} from "@angular/material/dialog"
 import {CardDataComponent} from "@shared/ui/card-data/card-data.component"
 import {UtilService} from "@shared/utilities/util.service"
 import {MathService} from "@shared/utilities/math.service"
-import {MatTooltip} from "@angular/material/tooltip"
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
+import {DIALOG_DATA} from '@shared/ui/dialog/dialog.tokens'
+import {DialogRef} from '@shared/ui/dialog/dialog-ref'
 
 @Component({
   selector: 'app-intake-viewer',
   imports: [
-    MatInputModule,
-    MatFormFieldModule,
-    MatButtonModule,
     FormsModule,
-    MatCardModule,
-    MatIcon,
     CardDataComponent,
-    MatTooltip
   ],
   templateUrl: './intake-viewer.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './intake-viewer.component.scss'
 })
 export class IntakeViewerComponent implements OnDestroy {
+  protected readonly data = inject(DIALOG_DATA) as {currentIndex: number}
+  protected readonly dialogRef = inject<DialogRef<void>>(DialogRef)
   protected currentIndex: WritableSignal<number> = signal(0)
 
   protected inputQuantity: Signal<ElementRef | undefined> = viewChild<ElementRef>('inputQuantity')
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
     protected nutritionStore: NutritionStore,
     private util: UtilService,
     protected math: MathService,
