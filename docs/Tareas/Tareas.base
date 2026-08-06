@@ -36,6 +36,7 @@ views:
         - Estado == "Planificando"
     order:
       - file.name
+      - Estado
       - Resumen
       - Decisiones
       - Bloqueada
@@ -47,6 +48,7 @@ views:
         - Estado == "Pendiente"
     order:
       - file.name
+      - Estado
       - Resumen
       - Decisiones
       - Bloqueada
@@ -58,6 +60,7 @@ views:
         - Estado == "En curso"
     order:
       - file.name
+      - Estado
       - Resumen
       - Decisiones
       - Bloqueada
@@ -69,6 +72,7 @@ views:
         - Estado == "Hecha"
     order:
       - file.name
+      - Estado
       - Resumen
       - Decisiones
       - note["Última modificación"]
@@ -79,6 +83,7 @@ views:
         - Estado == "Archivada"
     order:
       - file.name
+      - Estado
       - Resumen
       - Decisiones
       - note["Última modificación"]

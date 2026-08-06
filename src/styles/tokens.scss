@@ -37,7 +37,9 @@
   --control-height-md: 2.75rem;
   --control-height-lg: 3.25rem;
   --header-height: 4.5rem;
-  --footer-height: 4.25rem;
+  --feature-tab-bar-height: 4.25rem;
+  --feature-tab-bar-offset: var(--space-3);
+  --feature-tab-bar-width: 34rem;
   --content-width: 52rem;
   --navigation-width: min(21rem, calc(100vw - 2rem));
 
@@ -81,6 +83,10 @@
   --area-card-radius: var(--radius-lg);
   --area-card-tilt: 0deg;
   --area-heading-tracking: -0.035em;
+  --area-tab-bar-radius: var(--radius-xl);
+  --area-tab-active-radius: var(--radius-lg);
+  --area-tab-active-tilt: 0deg;
+  --area-tab-label-tracking: 0.01em;
 }
 
 :root[data-theme='dark'] {
@@ -127,6 +133,10 @@
   --area-card-radius: var(--radius-xl) var(--radius-sm) var(--radius-xl) var(--radius-sm);
   --area-card-tilt: -0.35deg;
   --area-heading-tracking: -0.055em;
+  --area-tab-bar-radius: var(--radius-xl) var(--radius-md) var(--radius-xl) var(--radius-md);
+  --area-tab-active-radius: var(--radius-lg) var(--radius-sm) var(--radius-lg) var(--radius-sm);
+  --area-tab-active-tilt: -0.65deg;
+  --area-tab-label-tracking: 0.025em;
 }
 
 :root[data-theme='dark'] [data-area='llimbro'] {
@@ -146,6 +156,10 @@
   --area-card-radius: var(--radius-sm);
   --area-card-tilt: 0deg;
   --area-heading-tracking: -0.025em;
+  --area-tab-bar-radius: var(--radius-md);
+  --area-tab-active-radius: var(--radius-sm);
+  --area-tab-active-tilt: 0deg;
+  --area-tab-label-tracking: 0em;
 }
 
 :root[data-theme='dark'] [data-area='finances'] {

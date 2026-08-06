@@ -1,8 +1,8 @@
 ---
 Nombre: Crear catálogo técnico reutilizable
-Estado: Planificando
-Resumen: Diseñar en la bóveda un índice compacto de APIs, servicios y componentes públicos reutilizables para evitar duplicación y reducir el contexto que necesitan consultar los agentes.
-Decisiones: El catálogo incluirá solo piezas públicas reutilizables y resumirá ruta, propósito, contrato, ámbito y estado; el código seguirá siendo la fuente de verdad y se evitará documentar manualmente cada detalle interno.
+Estado: En curso
+Resumen: El catálogo técnico ya publica y protege automáticamente la superficie común de shared UI; queda ampliar el mismo sistema a stores, utilidades y APIs reutilizables fuera de la capa visual.
+Decisiones: El catálogo incluye solo piezas públicas reutilizables y resume ruta, propósito, contrato y ámbito; los entrypoints @shared/ui/* son el acceso público a las primitivas visuales y permanecen separados para conservar los límites lazy; el build impide imports internos, any, rutas de propiedades como texto, redefiniciones de .ui-* y piezas sin catalogar; el código sigue siendo la fuente de verdad.
 Bloqueada: []
 Fecha de creación: 2026-08-06
 Última modificación: 2026-08-06
@@ -36,3 +36,12 @@ Permitir que una persona o agente descubra rápidamente qué piezas puede reutil
 - Un agente puede identificar de una pasada las superficies reutilizables relevantes y su ubicación.
 - Existe una política verificable para mantener sincronizados catálogo y código.
 - El contenido evita duplicar detalles que ya pertenecen al código fuente.
+
+## Progreso
+
+- [[../Catálogo técnico|El catálogo técnico]] está enlazado desde Inicio y documenta la superficie pública de `shared/ui`.
+- Los entrypoints `@shared/ui/*` actúan como única superficie de entrada para consumidores externos sin fusionar los chunks lazy.
+- `check:shared-ui` mantiene sincronizados el barrel, el catálogo y los contratos mínimos de tipado.
+- `DataListComponent<T>` recibe elementos de presentación tipados y ya no interpreta rutas de propiedades; `CardDataComponent` limita sus valores a texto o número.
+- Build de producción, 27 pruebas unitarias y búsqueda/selección múltiple de la lista verificados; el navegador no registró errores.
+- Queda inventariar las superficies reutilizables no visuales antes de marcar esta tarea como hecha.

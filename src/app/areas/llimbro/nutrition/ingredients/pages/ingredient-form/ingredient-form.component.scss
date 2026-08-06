@@ -69,8 +69,9 @@
   padding: var(--space-5);
 }
 
-.ingredient-chart canvas {
-  max-height: 18rem;
+.ingredient-chart apx-chart {
+  display: block;
+  min-height: 18rem;
 }
 
 .ingredient-unit {

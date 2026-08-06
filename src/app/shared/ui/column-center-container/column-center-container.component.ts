@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, TemplateRef} from '@angular/core'
 import { NgTemplateOutlet } from "@angular/common";
 
 /**
@@ -15,5 +15,5 @@ import { NgTemplateOutlet } from "@angular/common";
     styleUrl: './column-center-container.component.scss'
 })
 export class ColumnCenterContainerComponent {
-  @Input() template!: any
+  readonly template = input<TemplateRef<unknown> | null>(null)
 }

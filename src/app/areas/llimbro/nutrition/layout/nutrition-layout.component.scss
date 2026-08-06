@@ -1,0 +1,9 @@
+:host,
+.nutrition-layout {
+  display: block;
+  min-height: 100%;
+}
+
+.nutrition-layout {
+  padding-bottom: calc(var(--feature-tab-bar-height) + var(--feature-tab-bar-offset) + var(--space-6) + env(safe-area-inset-bottom));
+}

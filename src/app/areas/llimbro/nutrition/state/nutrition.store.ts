@@ -2,6 +2,7 @@ import {effect, Injectable, signal} from '@angular/core';
 import {
   NutritionIngredient,
   NutritionIngredientImage,
+  NutritionIngredientListItem,
   NutritionIntakeWithIngredient,
   NutritionObjective,
   NutritionObjectiveTotals
@@ -18,7 +19,7 @@ export class NutritionStore {
   private readonly dateSelectedState = signal(new Date())
 
   // Alimentos
-  private readonly ingredientListState = signal<NutritionIngredient[]>([])
+  private readonly ingredientListState = signal<NutritionIngredientListItem[]>([])
   private readonly ingredientImageListState = signal<NutritionIngredientImage[]>([])
   private readonly loadingIngredientListState = signal(false)
 

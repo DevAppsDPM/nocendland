@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ObjectiveConfigComponent } from './objective-config.component';
 import {NutritionStore} from '@areas/llimbro/nutrition/state/nutrition.store';
 import {createNutritionStoreStub} from '@testing/nutrition-store.stub';
-import {DialogRef} from '@shared/ui/dialog/dialog-ref';
+import {DialogRef} from '@shared/ui/dialog'
 
 describe('ObjectiveConfigComponent', () => {
   let component: ObjectiveConfigComponent;

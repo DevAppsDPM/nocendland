@@ -1,9 +1,31 @@
-import {ChangeDetectionStrategy, Component, computed, input, Input, InputSignal, WritableSignal} from '@angular/core'
+import {ChangeDetectionStrategy, Component, Signal, computed, input, linkedSignal, signal} from '@angular/core'
 import {FormsModule} from '@angular/forms'
 import {DEFAULT_IMAGE_PATH} from '@shared/ui/image/image.constants'
-import {DataListService} from '@shared/ui/data-list/data-list.service'
-import {LoggerService} from '@platform/logging/logger.service'
-import {getNestedProperty} from '@shared/utilities/object.utils'
+
+export type DataListItemId = string | number
+
+export interface DataListItem<TItem> {
+  id: DataListItemId
+  value: TItem
+  title: string
+  details?: readonly string[]
+  imageUrl?: string | null
+  searchText?: string
+}
+
+export interface DataListConfig<TItem> {
+  label: string
+  actions?: {
+    /** Elementos confirmados, siempre expresados como una colección homogénea. */
+    confirm?: (items: readonly TItem[]) => void
+    /** Solicita al consumidor que vuelva a cargar sus datos. */
+    reload?: () => void
+  }
+  multiple?: Signal<boolean>
+  showSelectionConfirmation?: boolean
+  confirmationIcon?: string
+  loading?: Signal<boolean>
+}
 
 @Component({
   selector: 'app-data-list',
@@ -11,62 +33,68 @@ import {getNestedProperty} from '@shared/utilities/object.utils'
   templateUrl: './data-list.component.html',
   styleUrl: './data-list.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
-  providers: [LoggerService, DataListService],
 })
-export class DataListComponent {
-  readonly config: InputSignal<DataListConfig> = input.required<DataListConfig>()
+export class DataListComponent<TItem = unknown> {
+  readonly config = input.required<DataListConfig<TItem>>()
+  readonly items = input.required<readonly DataListItem<TItem>[]>()
+
   protected readonly defaultImagePath = DEFAULT_IMAGE_PATH
-  protected readonly getNestedProperty = getNestedProperty
-  protected readonly multiselect = computed(() => this.config().multiSelection?.() ?? false)
+  protected readonly filter = signal('')
+  protected readonly multiple = computed(() => this.config().multiple?.() ?? false)
+  protected readonly filteredItems = computed(() => {
+    const filter = this.normalizeText(this.filter().trim())
+    if (!filter) return this.items()
 
-  @Input() set items(items: any[]) {
-    this.listingService.setItems(items)
-  }
+    return this.items().filter(item => this.normalizeText(
+      item.searchText ?? [item.title, ...(item.details ?? [])].join(' '),
+    ).includes(filter))
+  })
+  protected readonly selectedItems = linkedSignal<
+    {items: readonly DataListItem<TItem>[]; multiple: boolean},
+    readonly DataListItem<TItem>[]
+  >({
+    source: () => ({items: this.items(), multiple: this.multiple()}),
+    computation: ({items, multiple}, previous) => {
+      if (!multiple) return []
+      const selectedIds = new Set(previous?.value.map(item => item.id) ?? [])
+      return items.filter(item => selectedIds.has(item.id))
+    },
+  })
 
-  constructor(
-    protected readonly listingService: DataListService,
-    private readonly logger: LoggerService,
-  ) {}
-
-  protected activate(item: Record<string, any>, index: number): void {
-    if (this.multiselect()) {
-      this.listingService.toggleSelection(item)
+  protected activate(item: DataListItem<TItem>): void {
+    if (this.multiple()) {
+      this.toggleSelection(item)
       return
     }
 
-    this.confirm(item, index)
+    this.config().actions?.confirm?.([item.value])
   }
 
-  protected confirm(items: Record<string, any> | Record<string, any>[], index?: number): void {
-    const confirmAction = this.config().actions?.confirm
-    if (!confirmAction) {
-      this.logger.warn('La función de confirmación no está configurada. [DataListConfig.actions.confirm]')
-      return
-    }
-
-    confirmAction(items, index)
-    if (Array.isArray(items)) this.listingService.clearSelection()
+  protected clearFilter(): void {
+    this.filter.set('')
   }
-}
 
-export type DataListConfig = {
-  columnConfig: DataListColumnConfig
-  actions?: DataListActions
-  multiSelection?: WritableSignal<boolean>
-  activateConfirm?: boolean
-  iconConfirm?: string
-  loading?: () => boolean
-}
+  protected confirmSelection(): void {
+    this.config().actions?.confirm?.(this.selectedItems().map(item => item.value))
+    this.selectedItems.set([])
+  }
 
-type DataListActions = {
-  /** Función que se ejecuta al confirmar una selección. */
-  confirm?: (result: any | any[], index?: number) => void
-  /** Función que se ejecuta al pulsar el botón de refresco. */
-  reload?: () => void
-}
+  protected isSelected(item: DataListItem<TItem>): boolean {
+    return this.selectedItems().some(selectedItem => selectedItem.id === item.id)
+  }
 
-type DataListColumnConfig = {
-  title: string
-  lines?: string[]
-  image?: string
+  protected reload(): void {
+    this.config().actions?.reload?.()
+  }
+
+  private toggleSelection(item: DataListItem<TItem>): void {
+    this.selectedItems.update(selected => this.isSelected(item)
+      ? selected.filter(selectedItem => selectedItem.id !== item.id)
+      : [...selected, item],
+    )
+  }
+
+  private normalizeText(text: string): string {
+    return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  }
 }

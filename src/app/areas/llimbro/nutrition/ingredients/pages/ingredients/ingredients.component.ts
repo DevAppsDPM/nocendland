@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Output, signal, WritableSignal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core'
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants";
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
-import {NutritionIngredient} from '@areas/llimbro/nutrition/models/nutrition.models';
+import {NutritionIngredientListItem} from '@areas/llimbro/nutrition/models/nutrition.models'
 import {NavigationService} from "@shell/navigation/navigation.service"
-import {DataListComponent, DataListConfig} from "@shared/ui/data-list/data-list.component"
+import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
 
 /**
  * Página de alimentos.
@@ -19,39 +19,43 @@ import {DataListComponent, DataListConfig} from "@shared/ui/data-list/data-list.
 })
 export class IngredientsComponent {
 
-  public showList: boolean = true
-  public deleteMode: WritableSignal<boolean> = signal(false)
+  readonly nutritionStore = inject(NutritionStore)
+  private readonly navigate = inject(NavigationService)
+  protected readonly deleteMode = signal(false)
+  protected readonly ingredientListItems = computed<readonly DataListItem<NutritionIngredientListItem>[]>(() =>
+    this.nutritionStore.ingredientList().map(ingredient => ({
+      id: ingredient.id,
+      value: ingredient,
+      title: ingredient.name,
+      details: [`${ingredient.calories_per_100 ?? 0} kcal / 100 g`],
+      imageUrl: ingredient.image,
+    })),
+  )
 
-  protected ingredientListConfig: DataListConfig = {
-    columnConfig: {
-      title: 'name',
-      lines: ['calories_per_100'],
-      image: 'image'
-    },
+  protected readonly ingredientListConfig: DataListConfig<NutritionIngredientListItem> = {
+    label: 'Alimentos',
     actions: {
       reload: () => this.nutritionStore.loadIngredientList(),
-      confirm: (ingredients) => this.ingredientsEmitted(ingredients)
+      confirm: ingredients => this.handleIngredients(ingredients),
     },
-    multiSelection: this.deleteMode,
-    activateConfirm: true,
-    iconConfirm: 'delete',
-    loading: () => this.nutritionStore.loadingIngredientList()
+    multiple: this.deleteMode,
+    showSelectionConfirmation: true,
+    confirmationIcon: 'delete',
+    loading: this.nutritionStore.loadingIngredientList,
   }
 
-  @Output() ingredientSelected: EventEmitter<NutritionIngredient> = new EventEmitter<NutritionIngredient>
+  private handleIngredients(ingredients: readonly NutritionIngredientListItem[]): void {
+    if (this.deleteMode()) {
+      this.deleteIngredients(ingredients)
+      return
+    }
 
-  constructor(
-    public nutritionStore: NutritionStore,
-    private navigate: NavigationService,
-  ) { }
-
-  protected ingredientsEmitted(ingredients: NutritionIngredient | NutritionIngredient[]): void {
-    if (this.deleteMode()) this.deleteIngredients(ingredients as NutritionIngredient[])
-    else this.navigateToIngredientForm((ingredients as NutritionIngredient).id.toString())
+    const ingredient = ingredients[0]
+    if (ingredient) this.navigateToIngredientForm(ingredient.id.toString())
   }
 
-  private deleteIngredients(ingredients: NutritionIngredient[]): void {
-    this.nutritionStore.deleteIngredients(ingredients)
+  private deleteIngredients(ingredients: readonly NutritionIngredientListItem[]): void {
+    this.nutritionStore.deleteIngredients([...ingredients])
       .finally(() => this.toggleDeleteMode())
   }
 
@@ -60,9 +64,7 @@ export class IngredientsComponent {
   }
 
   protected toggleDeleteMode(): void {
-    this.showList = false
-    this.deleteMode.set(!this.deleteMode())
-    setTimeout(() => this.showList = true, 1);
+    this.deleteMode.update(enabled => !enabled)
   }
 
   protected readonly text = NUTRITION_TEXT;

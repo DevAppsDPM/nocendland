@@ -10,6 +10,10 @@ Este es el nexo de navegación de la memoria del proyecto.
 
 ![[Tareas/Tareas.base#Todo]]
 
+### Catálogo técnico
+
+[[Catálogo técnico|Consultar componentes, servicios y contratos reutilizables]]
+
 ## Próximos sistemas
 
 - Decisiones visuales y de estilos.

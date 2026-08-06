@@ -1,8 +1,8 @@
-import {Component, input, InputSignal, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core'
 
-export declare type CARD_DATA = {
-  name: string
-  value: any
+export interface CardData {
+  label: string
+  value: string | number
 }
 
 @Component({
@@ -13,6 +13,5 @@ export declare type CARD_DATA = {
   styleUrl: './card-data.component.scss'
 })
 export class CardDataComponent {
-
-  public data: InputSignal<CARD_DATA> = input.required<CARD_DATA>()
+  readonly data = input.required<CardData>()
 }

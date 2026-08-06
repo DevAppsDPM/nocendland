@@ -36,9 +36,9 @@
 
   <section class="intake-page__list">
     @if (selectingIngredients()) {
-      <app-data-list [config]="selectIngredientListConfig" [items]="nutritionStore.ingredientList()"/>
+      <app-data-list [config]="selectIngredientListConfig" [items]="ingredientListItems()"/>
     } @else {
-      <app-data-list [config]="intakeListConfig" [items]="nutritionStore.intakeJoinIngredientList()"/>
+      <app-data-list [config]="intakeListConfig" [items]="intakeListItems()"/>
     }
   </section>
 </main>

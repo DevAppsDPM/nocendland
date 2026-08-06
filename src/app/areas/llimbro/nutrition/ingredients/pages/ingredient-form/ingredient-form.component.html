@@ -87,14 +87,17 @@
           <p class="section-eyebrow">Distribución</p>
           <h2>Valor nutricional</h2>
         </header>
-        <canvas
-          baseChart
-          [data]="chartData"
-          [type]="chartType"
-          [options]="chartOptions"
-          [plugins]="[ChartDataLabels]"
-          [legend]="true"
-        ></canvas>
+        <apx-chart
+          [series]="chartSeries()"
+          [chart]="chart"
+          [labels]="chartLabels"
+          [colors]="chartColors()"
+          [dataLabels]="chartDataLabels"
+          [legend]="chartLegend"
+          [plotOptions]="chartPlotOptions"
+          [stroke]="chartStroke()"
+          [tooltip]="chartTooltip"
+        />
       </section>
 
       <section class="ingredient-unit ui-card">

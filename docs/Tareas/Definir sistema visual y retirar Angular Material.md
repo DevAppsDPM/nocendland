@@ -1,8 +1,8 @@
 ---
 Nombre: Definir sistema visual y retirar Angular Material
 Estado: Hecha
-Resumen: Sistema visual «Atlas modular» implementado y preparado para Vercel con una verificación de estilos independiente del binario pnpm del entorno.
-Decisiones: La dirección aprobada es «Atlas modular», con una gramática visual global y una expresión diferenciada por área; todos los colores se centralizan como tokens semánticos con variantes clara y oscura, sin valores hexadecimales dispersos; Angular Material y Angular Animations se retiraron; Angular CDK se conserva exclusivamente para overlay, portales y gestión accesible del foco en la primitiva de diálogo.
+Resumen: Sistema visual «Atlas modular» y navegación inferior reutilizable implementados, sin Angular Material y con temas, perfiles de área y controles automáticos centralizados.
+Decisiones: La dirección aprobada es «Atlas modular», con una gramática visual global y una expresión diferenciada por área; todos los colores se centralizan como tokens semánticos con variantes clara y oscura, sin valores hexadecimales dispersos; Angular Material y Angular Animations se retiraron; Angular CDK se conserva exclusivamente para overlay, portales y gestión accesible del foco en la primitiva de diálogo; la navegación principal de una feature utilizará una tab bar inferior flotante común cuya configuración y estado activo pertenecen a la feature.
 Bloqueada: []
 Fecha de creación: 2026-08-06
 Última modificación: 2026-08-06
@@ -55,14 +55,17 @@ La recomendación inicial es no conservar el sistema de theming de Material si s
 - Shell, autenticación, navegación, listas, formularios, calendario, tarjetas, progreso y diálogos utilizan primitivas propias.
 - `check:styles` impide valores hexadecimales y utilidades cromáticas directas fuera del sistema de tokens, y se ejecuta antes del build de producción.
 - `@angular/material`, su theming y `@angular/animations` se eliminaron. Angular CDK se mantiene porque la primitiva de diálogo usa overlay, portales y trampa de foco sin heredar apariencia visual.
+- `FeatureTabBarComponent` y `FeatureSwipeNavigationDirective` forman la primitiva tipada para navegar entre páginas primarias de una feature; Nutrición la configura desde su propio layout y la shell deja de conocer esas rutas hijas.
+- La barra utiliza posición flotante, área segura, estado activo accesible y los mismos tokens de tema y área que el resto del sistema.
 
 ## Verificación
 
 - Build de producción correcto; la única advertencia restante es el presupuesto del bundle inicial, cubierto por la tarea independiente [[Reducir bundle inicial]].
-- 26 pruebas unitarias correctas en Chrome Headless.
+- 27 pruebas unitarias correctas en Chrome Headless, incluido el estado activo y el gesto horizontal de la navegación de feature.
 - No existen imports, elementos, directivas, estilos ni dependencia de Angular Material.
 - Temas claro y oscuro comprobados en ejecución.
 - Shell, navegación y diálogos comprobados en escritorio y en un viewport móvil de 390 × 844, sin desbordamiento horizontal.
+- La navegación Alimentos/Ingesta/Objetivos se comprobó en claro y oscuro, escritorio y 390 × 844; conserva el destino activo en el formulario y no registra errores de consola.
 - El diálogo conserva los providers del límite lazy, atrapa el foco y lo devuelve al control que lo abrió al cerrarse.
 - `pnpm audit --audit-level high` continúa informando vulnerabilidades transitivas ya cubiertas por [[Revisar vulnerabilidades transitivas]]; no se aplicaron correcciones automáticas.
 
@@ -79,3 +82,9 @@ El comando de producción exacto configurado en Vercel, `corepack pnpm run build
 - No quedan componentes ni estilos internos de Angular Material.
 - La decisión de conservar o retirar cada parte de Angular CDK está justificada.
 - La identidad funciona en escritorio, móvil y como PWA.
+
+## Ampliación: navegación de feature
+
+El usuario aprobó sustituir el footer específico de Nutrición por una tab bar inferior flotante y reutilizable. La primitiva compartida no conocerá dominios ni rutas concretas: cada feature proporcionará sus destinos y resolverá el estado activo desde su configuración de rutas. Su geometría y expresión visual se adaptarán mediante los tokens del área sin duplicar el componente.
+
+La ampliación quedó implementada en el layout de ruta de Nutrición. Entrenamiento y futuras features de Finanzas podrán reutilizar el mismo contrato proporcionando su lista tipada de destinos, mientras sus perfiles visuales se resuelven exclusivamente con tokens de área.

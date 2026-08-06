@@ -7,18 +7,18 @@
         class="data-list__search-input"
         type="search"
         placeholder="Buscar"
-        [ngModel]="listingService.filter()"
-        (ngModelChange)="listingService.setFilter($event)"
+        [ngModel]="filter()"
+        (ngModelChange)="filter.set($event)"
       >
-      @if (listingService.filter()) {
-        <button class="ui-icon-button" type="button" aria-label="Limpiar búsqueda" (click)="listingService.clearFilter()">
+      @if (filter()) {
+        <button class="ui-icon-button" type="button" aria-label="Limpiar búsqueda" (click)="clearFilter()">
           <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#close"/></svg>
         </button>
       }
     </label>
 
     @if (config().actions?.reload) {
-      <button class="ui-icon-button" type="button" aria-label="Actualizar lista" (click)="config().actions!.reload!()">
+      <button class="ui-icon-button" type="button" aria-label="Actualizar lista" (click)="reload()">
         <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#refresh"/></svg>
       </button>
     }
@@ -29,34 +29,31 @@
   </header>
 
   <div class="data-list__content">
-    @if (listingService.filteredItems().length === 0) {
+    @if (filteredItems().length === 0) {
       <p class="data-list__empty">No hay elementos</p>
     } @else {
-      <ul class="data-list__items" [attr.aria-label]="config().columnConfig.title">
-        @for (item of listingService.filteredItems(); track item; let index = $index) {
+      <ul class="data-list__items" [attr.aria-label]="config().label">
+        @for (item of filteredItems(); track item.id) {
           <li>
             <button
               class="data-list__item"
               type="button"
-              [class.data-list__item--selected]="listingService.isSelected(item)"
-              [attr.aria-pressed]="multiselect() ? listingService.isSelected(item) : null"
-              (click)="activate(item, index)"
+              [class.data-list__item--selected]="isSelected(item)"
+              [attr.aria-pressed]="multiple() ? isSelected(item) : null"
+              (click)="activate(item)"
             >
-              @if (config().columnConfig.image) {
-                <img
-                  [src]="getNestedProperty(item, config().columnConfig.image!) || defaultImagePath"
-                  [alt]="getNestedProperty(item, config().columnConfig.title)"
-                >
+              @if (item.imageUrl !== undefined) {
+                <img [src]="item.imageUrl || defaultImagePath" [alt]="item.title">
               }
               <span class="data-list__copy">
-                <strong>{{ getNestedProperty(item, config().columnConfig.title) }}</strong>
-                @for (line of config().columnConfig.lines; track line) {
-                  <small>{{ getNestedProperty(item, line) }}</small>
+                <strong>{{ item.title }}</strong>
+                @for (detail of item.details; track detail) {
+                  <small>{{ detail }}</small>
                 }
               </span>
-              @if (multiselect()) {
+              @if (multiple()) {
                 <svg class="data-list__check ui-icon" aria-hidden="true">
-                  <use [attr.href]="'icons/atlas-icons.svg#' + (listingService.isSelected(item) ? 'check_circle' : 'radio_button_unchecked')"/>
+                  <use [attr.href]="'icons/atlas-icons.svg#' + (isSelected(item) ? 'check_circle' : 'radio_button_unchecked')"/>
                 </svg>
               } @else {
                 <span class="data-list__arrow" aria-hidden="true">→</span>
@@ -68,15 +65,15 @@
     }
   </div>
 
-  @if (config().activateConfirm && multiselect()) {
+  @if (config().showSelectionConfirmation && multiple()) {
     <footer class="data-list__footer">
       <button
         class="ui-button"
         type="button"
-        [disabled]="listingService.selectedItems().length === 0"
-        (click)="confirm(listingService.selectedItems())"
+        [disabled]="selectedItems().length === 0"
+        (click)="confirmSelection()"
       >
-        <svg class="ui-icon" aria-hidden="true"><use [attr.href]="'icons/atlas-icons.svg#' + (config().iconConfirm || 'done')"/></svg>
+        <svg class="ui-icon" aria-hidden="true"><use [attr.href]="'icons/atlas-icons.svg#' + (config().confirmationIcon || 'done')"/></svg>
         Confirmar selección
       </button>
     </footer>

@@ -14,12 +14,11 @@ import {
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {FormsModule} from "@angular/forms"
 import {NutritionIntake, NutritionIntakeWithIngredient} from "@areas/llimbro/nutrition/models/nutrition.models"
-import {CardDataComponent} from "@shared/ui/card-data/card-data.component"
+import {CardDataComponent} from '@shared/ui/card-data'
+import {DIALOG_DATA, DialogRef} from '@shared/ui/dialog'
 import {UtilService} from "@shared/utilities/util.service"
 import {MathService} from "@shared/utilities/math.service"
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
-import {DIALOG_DATA} from '@shared/ui/dialog/dialog.tokens'
-import {DialogRef} from '@shared/ui/dialog/dialog-ref'
 
 @Component({
   selector: 'app-intake-viewer',

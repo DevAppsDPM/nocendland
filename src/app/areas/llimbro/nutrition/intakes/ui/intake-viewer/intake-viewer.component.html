@@ -39,10 +39,10 @@
     </div>
 
     <div class="intake-dialog__metrics">
-      <app-card-data [data]="{ name: 'Calorías', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0, parseInt(inputQuantity.value)) }"/>
-      <app-card-data [data]="{ name: 'Proteínas', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0, parseInt(inputQuantity.value)) }"/>
-      <app-card-data [data]="{ name: 'Hidratos', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0, parseInt(inputQuantity.value)) }"/>
-      <app-card-data [data]="{ name: 'Grasas', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+      <app-card-data [data]="{ label: 'Calorías', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.calories_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+      <app-card-data [data]="{ label: 'Proteínas', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.proteins_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+      <app-card-data [data]="{ label: 'Hidratos', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.carbohydrates_per_100 || 0, parseInt(inputQuantity.value)) }"/>
+      <app-card-data [data]="{ label: 'Grasas', value: math.calculateProportionalValue(currentIntakeJoinIngredient.nutrition_ingredient.fats_per_100 || 0, parseInt(inputQuantity.value)) }"/>
     </div>
   </article>
 

@@ -146,6 +146,7 @@ src/app/
 - `provideZonelessChangeDetection()` activa la detección de cambios zoneless en la raíz.
 - Los stores basados en Signals son la fuente principal de estado de interfaz. Las páginas expresan intención mediante sus métodos y no escriben directamente en Signals ni repositorios.
 - Los aliases de TypeScript (`@areas`, `@platform`, `@shared`, `@shell`, entre otros) expresan la capa propietaria y evitan imports relativos que atraviesen límites.
+- La navegación entre páginas primarias de una feature pertenece a su layout de ruta. Se configura con primitivas tipadas de `shared/ui`; la shell no conoce ni replica las rutas hijas de cada feature.
 
 ### Datos y estado
 

@@ -10,6 +10,7 @@ export type NutritionIngredientImage = {
 }
 
 export type NutritionIngredient = Database['public']['Tables']['nutrition_ingredient']['Row']
+export type NutritionIngredientListItem = NutritionIngredient & {image?: string}
 export type NutritionIntake = Database['public']['Tables']['nutrition_intake']['Update']
 export type NutritionIntakeWithTotals = Database['public']['Views']['nutrition_intake_with_totals']['Row']
 export type NutritionObjectiveTotals = Database['public']['Views']['nutrition_objectives_totals']['Row']

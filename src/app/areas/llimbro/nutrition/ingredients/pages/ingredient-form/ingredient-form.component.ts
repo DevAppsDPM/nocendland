@@ -1,26 +1,32 @@
-import {afterNextRender, ChangeDetectionStrategy, Component, effect, ElementRef, inject, Signal, viewChild, ViewChild} from '@angular/core';
+import {afterNextRender, ChangeDetectionStrategy, Component, effect, ElementRef, inject, signal, ViewChild} from '@angular/core';
 
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants";
 import {ActivatedRoute} from "@angular/router";
-import {ConfirmDialogService, DialogConfirm} from "@shared/ui/services/confirm-dialog.service"
+import {AvatarComponent} from '@shared/ui/avatar'
+import {ConfirmDialogService, DialogConfirm} from '@shared/ui/confirm-dialog'
+import {CssTokenService, ThemeService} from '@shared/ui/theme'
 import {NutritionIngredient, NutritionIngredientImage} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {NavigationService} from "@shell/navigation/navigation.service"
-import {AvatarComponent} from "@shared/ui/avatar/avatar.component"
-import {BaseChartDirective} from "ng2-charts"
-import {Chart, ChartConfiguration, ChartData} from 'chart.js';
-import ChartDataLabels from "chartjs-plugin-datalabels"
+import {
+  ApexChart,
+  ApexDataLabels,
+  ApexLegend,
+  ApexNonAxisChartSeries,
+  ApexPlotOptions,
+  ApexStroke,
+  ApexTooltip,
+  ChartComponent,
+} from 'ng-apexcharts'
 import {NutritionResourcesService} from "@areas/llimbro/nutrition/services/nutrition-resources.service"
-import {CssTokenService} from '@shared/ui/theme/css-token.service'
-import {ThemeService} from '@shared/ui/theme/theme.service'
 
 @Component({
     selector: 'app-ingredient-form',
   imports: [
     ReactiveFormsModule,
     AvatarComponent,
-    BaseChartDirective,
+    ChartComponent,
 ],
     templateUrl: './ingredient-form.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -50,7 +56,6 @@ export class IngredientFormComponent {
     private resources: NutritionResourcesService,
     protected navigation: NavigationService,
   ) {
-    Chart.register(ChartDataLabels)
     this.getUrlParam()
     this.buildForm()
     if (!this.new) this.nutritionStore.readIngredient(this.ingredientId).then(ingredient => this.setValues(ingredient))
@@ -167,60 +172,59 @@ export class IngredientFormComponent {
 
 
 
-  private nutriendValuesEmojiList: string[] = ['⚡', '🍗', '🥑', '🍚']
-  public chart: Signal<BaseChartDirective | undefined> = viewChild<BaseChartDirective>(BaseChartDirective)
-  public chartData: ChartData<'doughnut'> = {
-    labels: ['⚡ Calorías', '🍗 Proteínas', '🥑 Grasas', ' 🍚Hidratos'],
-    datasets: [
-      { data: [0, 0, 0, 0] }
-    ],
+  protected readonly chartSeries = signal<ApexNonAxisChartSeries>([0, 0, 0, 0])
+  protected readonly chartLabels = ['⚡ Calorías', '🍗 Proteínas', '🥑 Grasas', '🍚 Hidratos']
+  protected readonly chart: ApexChart = {
+    type: 'donut',
+    height: 290,
+    toolbar: {show: false},
+    background: 'transparent',
   }
-  protected chartType: ChartConfiguration<'doughnut'>['type'] = 'doughnut'
-  protected chartOptions: ChartConfiguration<'doughnut'>['options'] = {
-    cutout: '60%',
-    circumference: 180,
-    plugins: {
-      legend: { display: false }, // Oculta la leyenda
-      datalabels: {
-        formatter: (value, context) => {
-          const label = this.nutriendValuesEmojiList[context.dataIndex] || ''
-          return `${label} ${value} g`;
-        },
-        font: {
-          size: 12,
-          weight: 'bold',
-        },
-        color: () => this.cssTokens.get('--color-text')
-      }
-    }
-
+  protected readonly chartPlotOptions: ApexPlotOptions = {
+    pie: {
+      startAngle: -90,
+      endAngle: 90,
+      expandOnClick: false,
+      donut: {size: '62%'},
+    },
   }
+  protected readonly chartDataLabels: ApexDataLabels = {
+    enabled: true,
+    formatter: value => `${Math.round(Number(value))} g`,
+    style: {fontSize: '12px', fontWeight: 700},
+    dropShadow: {enabled: false},
+  }
+  protected readonly chartLegend: ApexLegend = {
+    show: true,
+    position: 'bottom',
+    fontFamily: 'var(--font-family-body)',
+  }
+  protected readonly chartTooltip: ApexTooltip = {
+    y: {formatter: value => `${value} g`},
+  }
+  protected readonly chartColors = signal<string[]>([])
+  protected readonly chartStroke = signal<ApexStroke>({width: 0})
 
   private updateChartData(): void {
     if (!this.ingredientForm) return;
 
-    this.chartData.datasets = [
-      {
-        data: [
-          this.ingredientForm.value.calories_per_100 || 0,
-          this.ingredientForm.value.proteins_per_100 || 0,
-          this.ingredientForm.value.fats_per_100 || 0,
-          this.ingredientForm.value.carbohydrates_per_100 || 0
-        ],
-        borderWidth: 0,
-        backgroundColor: [
-          this.cssTokens.get('--chart-calories'),
-          this.cssTokens.get('--chart-proteins'),
-          this.cssTokens.get('--chart-fats'),
-          this.cssTokens.get('--chart-carbohydrates'),
-        ],
-        rotation: 270
-      },
-    ]
-
-    this.chart()?.update()
+    this.chartSeries.set([
+      this.ingredientForm.value.calories_per_100 || 0,
+      this.ingredientForm.value.proteins_per_100 || 0,
+      this.ingredientForm.value.fats_per_100 || 0,
+      this.ingredientForm.value.carbohydrates_per_100 || 0,
+    ])
+    this.chartColors.set([
+      this.cssTokens.get('--chart-calories'),
+      this.cssTokens.get('--chart-proteins'),
+      this.cssTokens.get('--chart-fats'),
+      this.cssTokens.get('--chart-carbohydrates'),
+    ])
+    this.chartStroke.set({
+      width: 2,
+      colors: [this.cssTokens.get('--color-surface')],
+    })
   }
 
   protected readonly text = NUTRITION_TEXT
-  protected readonly ChartDataLabels = ChartDataLabels
 }

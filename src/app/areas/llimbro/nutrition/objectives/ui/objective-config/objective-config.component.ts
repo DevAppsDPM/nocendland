@@ -5,7 +5,7 @@ import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
 import {NutritionObjective, NutritionObjectiveLevel} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {selectInputContent} from "@shared/utilities/input.utils"
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
-import {DialogRef} from '@shared/ui/dialog/dialog-ref'
+import {DialogRef} from '@shared/ui/dialog'
 
 @Component({
   selector: 'app-objective-config',

@@ -1,14 +1,11 @@
 import {ChangeDetectionStrategy, Component, computed, Injector} from '@angular/core';
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
-import {
-  ProgressViewerConfig,
-  ProgressViewerComponent
-} from "@shared/ui/progress-viewer/progress-viewer.component"
+import {DialogService} from '@shared/ui/dialog'
+import {ProgressViewerConfig, ProgressViewerComponent} from '@shared/ui/progress-viewer'
 import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
 import {NavigationService} from "@shell/navigation/navigation.service"
 import {ObjectiveConfigComponent} from '@areas/llimbro/nutrition/objectives/ui/objective-config/objective-config.component';
 import {NutritionObjective} from "@areas/llimbro/nutrition/models/nutrition.models"
-import {DialogService} from '@shared/ui/dialog/dialog.service'
 
 @Component({
   selector: 'app-objectives',

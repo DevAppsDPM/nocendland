@@ -14,12 +14,16 @@ describe('DataListComponent', () => {
 
     fixture = TestBed.createComponent(DataListComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('config', { columnConfig: { title: 'name' } });
-    fixture.componentRef.setInput('items', []);
+    fixture.componentRef.setInput('config', {label: 'Elementos'});
+    fixture.componentRef.setInput('items', [{id: 1, value: {id: 1}, title: 'Elemento'}]);
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should render the typed presentation item', () => {
+    expect(fixture.nativeElement.textContent).toContain('Elemento');
   });
 });

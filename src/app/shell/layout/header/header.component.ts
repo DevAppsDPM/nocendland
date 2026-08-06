@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {SideNavService} from "@shell/state/side-nav.service";
 import {HeaderService} from "@shell/state/header.service"
 import {NavigationService} from "@shell/navigation/navigation.service"
-import {ThemeService} from '@shared/ui/theme/theme.service';
+import {ThemeService} from '@shared/ui/theme'
 
 @Component({
     selector: 'app-header',

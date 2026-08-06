@@ -58,10 +58,6 @@ export class NavigationService {
     return this.router.url
   }
 
-  public isNutritionUrl(url: string): boolean {
-    return url.includes('/llimbro/nutrition') || url.startsWith('/nutrition')
-  }
-
   private rememberPath(route: AppRoute, path: string[]): void {
     localStorage.setItem(this.getStorageKey(route), JSON.stringify(path))
   }

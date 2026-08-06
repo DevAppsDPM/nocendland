@@ -1,12 +1,12 @@
-import {ChangeDetectionStrategy, Component, Injector, signal, WritableSignal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, Injector, signal} from '@angular/core'
 import {ReactiveFormsModule} from "@angular/forms"
-import {CalendarComponent} from "@shared/ui/calendar/calendar.component"
+import {CalendarComponent} from '@shared/ui/calendar'
+import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
+import {DialogService} from '@shared/ui/dialog'
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
-import {DataListComponent, DataListConfig} from "@shared/ui/data-list/data-list.component"
-import {NutritionIngredient, NutritionIntake, NutritionIntakeWithIngredient} from "@areas/llimbro/nutrition/models/nutrition.models"
+import {NutritionIngredientListItem, NutritionIntake, NutritionIntakeWithIngredient} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {formatDateForDatabase, formatDateForDisplay} from "@shared/utilities/date.utils"
 import {IntakeViewerComponent} from '@areas/llimbro/nutrition/intakes/ui/intake-viewer/intake-viewer.component';
-import {DialogService} from '@shared/ui/dialog/dialog.service'
 
 @Component({
   selector: 'app-intake',
@@ -21,46 +21,53 @@ import {DialogService} from '@shared/ui/dialog/dialog.service'
 })
 export class IntakeComponent {
 
-  protected multiSelection: WritableSignal<boolean> = signal(true)
-  protected deleteMode: WritableSignal<boolean> = signal(false)
-  protected selectingIngredients: WritableSignal<boolean> = signal(false)
+  private readonly dialog = inject(DialogService)
+  private readonly injector = inject(Injector)
+  protected readonly nutritionStore = inject(NutritionStore)
+  protected readonly multiSelection = signal(true)
+  protected readonly deleteMode = signal(false)
+  protected readonly selectingIngredients = signal(false)
+  protected readonly ingredientListItems = computed<readonly DataListItem<NutritionIngredientListItem>[]>(() =>
+    this.nutritionStore.ingredientList().map(ingredient => ({
+      id: ingredient.id,
+      value: ingredient,
+      title: ingredient.name,
+      imageUrl: ingredient.image,
+    })),
+  )
+  protected readonly intakeListItems = computed<readonly DataListItem<NutritionIntakeWithIngredient>[]>(() =>
+    this.nutritionStore.intakeJoinIngredientList().map(intake => ({
+      id: intake.id,
+      value: intake,
+      title: intake.nutrition_ingredient.name,
+      details: [`${intake.quantity_in_grams ?? 0} g`],
+      imageUrl: intake.nutrition_ingredient.image_route,
+    })),
+  )
 
-  protected selectIngredientListConfig: DataListConfig = {
-    columnConfig: {
-      title: 'name',
-      image: 'image'
-    },
+  protected readonly selectIngredientListConfig: DataListConfig<NutritionIngredientListItem> = {
+    label: 'Alimentos disponibles',
     actions: {
       reload: () => this.reloadIngredientList(),
-      confirm: (intakes) => this.saveIntakes(intakes)
+      confirm: ingredients => this.saveIntakes(ingredients),
     },
-    multiSelection: this.multiSelection,
-    activateConfirm: true,
-    iconConfirm: 'add',
-    loading: () => this.nutritionStore.loadingIngredientList()
+    multiple: this.multiSelection,
+    showSelectionConfirmation: true,
+    confirmationIcon: 'add',
+    loading: this.nutritionStore.loadingIngredientList,
   }
 
-  protected intakeListConfig: DataListConfig = {
-    columnConfig: {
-      title: 'nutrition_ingredient.name',
-      lines: ['quantity_in_grams'],
-      image: 'nutrition_ingredient.image_route',
-    },
+  protected readonly intakeListConfig: DataListConfig<NutritionIntakeWithIngredient> = {
+    label: 'Ingestas del día',
     actions: {
       reload: () => this.reloadIntakeJoinIngredientList(),
-      confirm: (intakes, index) => this.getIntakeListConfirmationMethod(intakes, index || 0)
+      confirm: intakes => this.handleIntakeSelection(intakes),
     },
-    multiSelection: this.deleteMode,
-    activateConfirm: true,
-    iconConfirm: 'delete',
-    loading: () => this.nutritionStore.loadingIntakeJoinIngredientList()
+    multiple: this.deleteMode,
+    showSelectionConfirmation: true,
+    confirmationIcon: 'delete',
+    loading: this.nutritionStore.loadingIntakeJoinIngredientList,
   }
-
-  constructor(
-    private dialog: DialogService,
-    private injector: Injector,
-    protected nutritionStore: NutritionStore,
-  ) { }
 
   protected dateSelected(dateSelected: Date): void {
     this.nutritionStore.selectDate(dateSelected)
@@ -74,7 +81,7 @@ export class IntakeComponent {
     this.nutritionStore.loadIntakeJoinIngredientList()
   }
 
-  private async saveIntakes(ingredients: NutritionIngredient[]) {
+  private async saveIntakes(ingredients: readonly NutritionIngredientListItem[]): Promise<void> {
     let intakes: NutritionIntake[] = ingredients.map(ingredient => {
       let intake: NutritionIntake = {
         date: formatDateForDatabase(this.nutritionStore.dateSelected()),
@@ -97,17 +104,16 @@ export class IntakeComponent {
     }
   }
 
-  /**
-   * Función que abre el diálogo de intake o ejecuta la función de borrar intake en base a {@link deleteMode}
-   * @param intakes
-   * @param index para la función de {@link openIntakeDialog}
-   */
-  public getIntakeListConfirmationMethod(intakes: NutritionIntake[], index: number): void {
-    if (!this.deleteMode()) this.openIntakeDialog(index)
-    else {
-      const intakeIdList: (undefined | number)[] = intakes.map(intake => intake.id)
-      this.nutritionStore.deleteIntakes(intakeIdList.filter((intake): intake is number => intake !== undefined))
+  /** Abre el detalle de la ingesta seleccionada o elimina la selección activa. */
+  private handleIntakeSelection(intakes: readonly NutritionIntakeWithIngredient[]): void {
+    if (this.deleteMode()) {
+      void this.nutritionStore.deleteIntakes(intakes.map(intake => intake.id))
+      return
     }
+
+    const selectedIntake = intakes[0]
+    const index = this.nutritionStore.intakeJoinIngredientList().findIndex(intake => intake.id === selectedIntake?.id)
+    if (index >= 0) this.openIntakeDialog(index)
   }
 
   protected readonly formatDateForDisplay = formatDateForDisplay
