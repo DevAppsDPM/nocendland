@@ -1,7 +1,7 @@
 ---
 Nombre: Definir sistema visual y retirar Angular Material
 Estado: Hecha
-Resumen: Sistema visual «Atlas modular» implementado con temas claro y oscuro, perfiles diferenciados por área, tokens y primitivas propias; Angular Material y sus estilos se han retirado por completo.
+Resumen: Sistema visual «Atlas modular» implementado y preparado para Vercel con una verificación de estilos independiente del binario pnpm del entorno.
 Decisiones: La dirección aprobada es «Atlas modular», con una gramática visual global y una expresión diferenciada por área; todos los colores se centralizan como tokens semánticos con variantes clara y oscura, sin valores hexadecimales dispersos; Angular Material y Angular Animations se retiraron; Angular CDK se conserva exclusivamente para overlay, portales y gestión accesible del foco en la primitiva de diálogo.
 Bloqueada: []
 Fecha de creación: 2026-08-06
@@ -65,6 +65,12 @@ La recomendación inicial es no conservar el sistema de theming de Material si s
 - Shell, navegación y diálogos comprobados en escritorio y en un viewport móvil de 390 × 844, sin desbordamiento horizontal.
 - El diálogo conserva los providers del límite lazy, atrapa el foco y lo devuelve al control que lo abrió al cerrarse.
 - `pnpm audit --audit-level high` continúa informando vulnerabilidades transitivas ya cubiertas por [[Revisar vulnerabilidades transitivas]]; no se aplicaron correcciones automáticas.
+
+## Incidencia de despliegue
+
+El primer despliegue del commit `dbad2e8` falló porque el script `build` lanzaba un segundo proceso `pnpm`. Vercel ejecutó la instalación con la versión fijada 10.33.2, pero ese proceso anidado resolvió el binario global 10.28.0 y `engineStrict` rechazó la diferencia. La comprobación de estilos se invoca directamente con Node para mantener el control sin relajar la política de versiones.
+
+El comando de producción exacto configurado en Vercel, `corepack pnpm run build`, se verificó localmente con la versión 0.1.14.
 
 ## Criterios de finalización
 

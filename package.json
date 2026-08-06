@@ -1,6 +1,6 @@
 {
   "name": "nocendland",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "packageManager": "pnpm@10.33.2",
   "engines": {
     "node": "22.x",
@@ -9,7 +9,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "pnpm run check:styles && ng build --configuration=production",
+    "build": "node scripts/check-style-tokens.mjs && ng build --configuration=production",
     "check:styles": "node scripts/check-style-tokens.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
