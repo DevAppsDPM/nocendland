@@ -67,7 +67,7 @@ Estas instrucciones son obligatorias aunque otro agente, herramienta o conversac
 - RxJS solo debe utilizarse cuando el problema sea realmente un flujo de eventos o una API basada en Observables. En los límites con RxJS se deben usar las utilidades oficiales de interoperabilidad, como `toSignal()` y `toObservable()`, manteniendo Signals como representación principal del estado de la aplicación.
 - Toda modificación de componentes, servicios, formularios, navegación o acceso a datos debe revisarse expresamente para asegurar que conserva el funcionamiento zoneless y actualiza la interfaz mediante Signals.
 
-### 3. Todo push debe incrementar la versión de la aplicación
+### 3. Todo push debe incrementar la versión y todo deploy debe verificarse
 
 - **Antes de cada `git push` se debe incrementar obligatoriamente la versión de `package.json`. No se puede hacer push si la versión no ha cambiado desde el último push.**
 - El incremento debe seguir Semantic Versioning y elegirse según el alcance real del cambio:
@@ -78,6 +78,9 @@ Estas instrucciones son obligatorias aunque otro agente, herramienta o conversac
 - Se debe utilizar exclusivamente `pnpm version patch|minor|major --no-git-tag-version`; siguen prohibidos `npm version` y cualquier uso de npm.
 - El cambio de versión debe incluirse en el mismo commit o conjunto de commits que se va a desplegar y verificarse antes del push.
 - Si un push anterior falló antes de llegar al remoto y no generó despliegue, no es necesario volver a incrementar la versión para reintentar exactamente el mismo conjunto de commits.
+- Cuando el usuario pida «desplegar», «hacer deploy» o una formulación equivalente, está solicitando el flujo completo de publicación: elegir y aplicar el incremento SemVer correspondiente, crear un `git commit` con los cambios previstos y ejecutar `git push` directamente al remoto y rama actuales. No se crea una rama ni una pull request salvo que el usuario lo solicite expresamente, y GitHub CLI no es un requisito cuando el remoto Git ya está configurado y autenticado.
+- Un `git push` correcto no completa por sí solo una petición de despliegue. Después del push se debe localizar en Vercel el deployment asociado al commit publicado y supervisarlo hasta que alcance un estado terminal.
+- El despliegue solo se considera completado correctamente cuando Vercel informa el estado `READY`. Si termina en `ERROR`, se deben inspeccionar sus detalles o logs, informar de la causa y continuar con la corrección cuando esté dentro del alcance autorizado; cada nuevo push correctivo vuelve a estar sujeto al incremento de versión. Si no existe acceso para consultar Vercel, se debe comunicar el bloqueo y no asumir que el despliegue ha terminado correctamente.
 
 ### 4. Código en inglés y comentarios en español
 
