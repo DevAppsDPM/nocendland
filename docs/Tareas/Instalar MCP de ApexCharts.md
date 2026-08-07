@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Instalar y configurar más adelante el MCP oficial de ApexCharts para que los agentes puedan generar y validar configuraciones y consultar su documentación.
 Decisiones: El MCP se tratará como herramienta de desarrollo separada de las dependencias de runtime; su instalación usará pnpm, una versión exacta revisada y una configuración compatible con Codex.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T23:38:46
+Última modificación: 2026-08-06T23:38:46
 ---
 
 # Instalar MCP de ApexCharts

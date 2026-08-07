@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Localizar el bloque @for que genera claves de seguimiento duplicadas y sustituirlo por una identidad única y estable.
 Decisiones: ""
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T17:49:32
 ---
 
 # Corregir claves duplicadas NG0955

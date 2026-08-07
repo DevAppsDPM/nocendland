@@ -4,8 +4,8 @@ Estado: Hecha
 Resumen: El README de la bóveda documenta el propósito de Nocendland, su taxonomía, arquitectura modular, dependencias, estado, datos, autenticación y despliegue.
 Decisiones: La arquitectura definitiva es un monolito modular frontend por áreas y features; el término módulo no se usa como nivel funcional para evitar confundirlo con NgModule.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T19:19:09
 ---
 
 # Documentar propósito y arquitectura

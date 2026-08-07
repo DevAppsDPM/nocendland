@@ -4,8 +4,8 @@ Estado: Hecha
 Resumen: Sistema visual «Atlas modular» y navegación inferior reutilizable implementados, sin Angular Material y con temas, perfiles de área y controles automáticos centralizados.
 Decisiones: La dirección aprobada es «Atlas modular», con una gramática visual global y una expresión diferenciada por área; todos los colores se centralizan como tokens semánticos con variantes clara y oscura, sin valores hexadecimales dispersos; Angular Material y Angular Animations se retiraron; Angular CDK se conserva exclusivamente para overlay, portales y gestión accesible del foco en la primitiva de diálogo; la navegación principal de una feature utilizará una tab bar inferior flotante común cuya configuración y estado activo pertenecen a la feature.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T18:15:27
+Última modificación: 2026-08-06T23:29:32
 ---
 
 # Definir sistema visual y retirar Angular Material

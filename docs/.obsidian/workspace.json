@@ -11,14 +11,13 @@
             "id": "a3cc26ae34df985b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "bases",
               "state": {
-                "file": "Tareas/Definir sistema visual y retirar Angular Material.md",
-                "mode": "source",
-                "source": false
+                "file": "Tareas/Tareas.base",
+                "viewName": "Pendiente"
               },
-              "icon": "lucide-file",
-              "title": "Definir sistema visual y retirar Angular Material"
+              "icon": "lucide-table",
+              "title": "Tareas"
             }
           }
         ]
@@ -99,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Tareas/Definir sistema visual y retirar Angular Material.md",
+                "file": "Tareas/Tareas.base",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +117,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Tareas/Definir sistema visual y retirar Angular Material.md",
+                "file": "Tareas/Tareas.base",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -161,7 +160,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Tareas/Definir sistema visual y retirar Angular Material.md",
+                "file": "Tareas/Tareas.base",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -190,15 +189,18 @@
   },
   "active": "a3cc26ae34df985b",
   "lastOpenFiles": [
+    "Tareas/Desarrollar feature de entrenamiento.md",
+    "Tareas/Sistema anti pérdida de datos.md",
+    "Tareas/Tareas.base",
+    "Tareas/Corregir columnas de fechas del panel de tareas.md",
+    "Tareas/Definir sistema visual y retirar Angular Material.md",
     "Tareas/Instalar MCP de ApexCharts.md",
     "Tareas/Migrar gráficos a ApexCharts.md",
     "Catálogo técnico.md",
-    "Tareas/Tareas.base",
     "Inicio.md",
     "README.md",
     "Tareas/Crear catálogo técnico reutilizable.md",
     "Tareas/Revisar vulnerabilidades transitivas.md",
-    "Tareas/Definir sistema visual y retirar Angular Material.md",
     "Tareas/Refactorizar arquitectura por áreas.md"
   ]
 }

@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Eliminar la configuración heredada del despliegue en Railway y revisar el redirect obsoleto de Supabase para localhost:3000.
 Decisiones: Vercel es la plataforma de despliegue actual; Railway deja de formar parte de la arquitectura objetivo.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T17:49:32
 ---
 
 # Retirar restos de Railway

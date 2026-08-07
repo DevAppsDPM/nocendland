@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Reducir el JavaScript inicial, actualmente alrededor de 1,09 MB frente a un presupuesto de 500 kB, sin degradar la experiencia.
 Decisiones: La limpieza previa de CSS ya redujo los estilos globales; esta tarea se centra en el JavaScript inicial.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T17:49:32
 ---
 
 # Reducir bundle inicial

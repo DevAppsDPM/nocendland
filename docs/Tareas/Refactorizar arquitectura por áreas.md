@@ -4,8 +4,8 @@ Estado: Hecha
 Resumen: Nocendland está reorganizado como monolito modular por áreas y features; Llimbro contiene Nutrición y Entrenamiento con rutas standalone y límites explícitos.
 Decisiones: Se adoptó un monolito modular por áreas y features, con shell, platform y shared; las páginas usan una fachada Signal de feature y se conservan redirects desde las rutas antiguas.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T18:15:27
+Última modificación: 2026-08-06T19:19:09
 ---
 
 # Refactorizar arquitectura por áreas

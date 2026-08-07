@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Definir e implementar cómo se detectan, comunican y activan nuevas versiones del service worker sin dejar pestañas usando recursos antiguos.
 Decisiones: ""
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T17:49:32
 ---
 
 # Gestionar actualizaciones de la PWA

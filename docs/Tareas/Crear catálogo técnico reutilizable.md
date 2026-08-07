@@ -4,8 +4,8 @@ Estado: En curso
 Resumen: El catálogo técnico ya publica y protege automáticamente la superficie común de shared UI; queda ampliar el mismo sistema a stores, utilidades y APIs reutilizables fuera de la capa visual.
 Decisiones: El catálogo incluye solo piezas públicas reutilizables y resume ruta, propósito, contrato y ámbito; los entrypoints @shared/ui/* son el acceso público a las primitivas visuales y permanecen separados para conservar los límites lazy; el build impide imports internos, any, rutas de propiedades como texto, redefiniciones de .ui-* y piezas sin catalogar; el código sigue siendo la fuente de verdad.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T19:36:26
+Última modificación: 2026-08-06T23:29:32
 ---
 
 # Crear catálogo técnico reutilizable

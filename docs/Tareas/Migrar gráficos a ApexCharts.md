@@ -4,8 +4,8 @@ Estado: Hecha
 Resumen: Chart.js y ng2-charts se sustituyeron por ApexCharts en un chunk diferido, preservando el gráfico nutricional, el funcionamiento zoneless y la actualización mediante Signals.
 Decisiones: Se fijaron versiones exactas compatibles con Angular 22 y la cuarentena; ApexCharts se carga en la ruta lazy del formulario, y su MCP se mantiene como herramienta de agentes separada de la dependencia de runtime.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T23:18:25
+Última modificación: 2026-08-06T23:38:46
 ---
 
 # Migrar gráficos a ApexCharts

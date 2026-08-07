@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Revisar y resolver de forma controlada los 53 avisos actuales de pnpm audit, incluidos 32 de severidad alta, sin aplicar correcciones automáticas ni relajar la política de seguridad.
 Decisiones: La mayoría de rutas detectadas pertenecen a herramientas de desarrollo como Karma, Tailwind con Sucrase y Angular CLI; se revisarán actualizaciones y overrides exactos caso por caso antes de modificar el lockfile.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T19:21:20
+Última modificación: 2026-08-06T19:21:20
 ---
 
 # Revisar vulnerabilidades transitivas

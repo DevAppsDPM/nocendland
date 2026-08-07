@@ -3,6 +3,9 @@ filters:
     - file.inFolder("Tareas")
     - file.ext == "md"
     - Estado != null
+formulas:
+  created_display: note["Fecha de creación"].format("DD-MM-YYYY HH:mm")
+  updated_display: note["Última modificación"].format("DD-MM-YYYY HH:mm")
 properties:
   file.name:
     displayName: Tarea
@@ -14,9 +17,9 @@ properties:
     displayName: Decisiones
   Bloqueada:
     displayName: Bloqueada por
-  note["Fecha de creación"]:
+  formula.created_display:
     displayName: Creada
-  note["Última modificación"]:
+  formula.updated_display:
     displayName: Modificada
 views:
   - type: table
@@ -27,8 +30,13 @@ views:
       - Resumen
       - Decisiones
       - Bloqueada
-      - note["Fecha de creación"]
-      - note["Última modificación"]
+      - formula.created_display
+      - formula.updated_display
+    sort:
+      - property: formula.updated_display
+        direction: DESC
+      - property: Fecha de creación
+        direction: ASC
   - type: table
     name: Planificando
     filters:
@@ -40,7 +48,8 @@ views:
       - Resumen
       - Decisiones
       - Bloqueada
-      - note["Última modificación"]
+      - formula.created_display
+      - formula.updated_display
   - type: table
     name: Pendiente
     filters:
@@ -52,7 +61,8 @@ views:
       - Resumen
       - Decisiones
       - Bloqueada
-      - note["Última modificación"]
+      - formula.created_display
+      - formula.updated_display
   - type: table
     name: En curso
     filters:
@@ -64,7 +74,8 @@ views:
       - Resumen
       - Decisiones
       - Bloqueada
-      - note["Última modificación"]
+      - formula.created_display
+      - formula.updated_display
   - type: table
     name: Hecha
     filters:
@@ -75,7 +86,10 @@ views:
       - Estado
       - Resumen
       - Decisiones
-      - note["Última modificación"]
+      - formula.created_display
+      - formula.updated_display
+    columnSize:
+      file.name: 314
   - type: table
     name: Archivada
     filters:
@@ -86,4 +100,5 @@ views:
       - Estado
       - Resumen
       - Decisiones
-      - note["Última modificación"]
+      - formula.created_display
+      - formula.updated_display

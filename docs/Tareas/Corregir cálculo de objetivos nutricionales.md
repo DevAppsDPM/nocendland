@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Diagnosticar y corregir el error observado entre getIntakeJoinIngredientOnlyValues() y loadObjectiveSumByDate() al cargar datos nutricionales.
 Decisiones: ""
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T17:49:32
 ---
 
 # Corregir cálculo de objetivos nutricionales

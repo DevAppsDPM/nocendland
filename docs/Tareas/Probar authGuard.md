@@ -4,8 +4,8 @@ Estado: Pendiente
 Resumen: Añadir pruebas reales del guard de autenticación para sesiones válidas, usuarios anónimos y redirección a /auth.
 Decisiones: La ruta protegida debe rechazar usuarios anónimos y redirigirlos a /auth.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T17:49:32
 ---
 
 # Probar authGuard

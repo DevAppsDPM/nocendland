@@ -4,8 +4,8 @@ Estado: Hecha
 Resumen: Evaluar la arquitectura heredada y acordar una estructura escalable para las áreas vitales de Nocendland antes de ejecutar los refactors estructural y visual.
 Decisiones: Nocendland será un monolito modular por áreas y features; Llimbro y Finanzas son áreas, Alimentación y Entrenamiento son features, y el refactor visual se mantiene como una línea separada.
 Bloqueada: []
-Fecha de creación: 2026-08-06
-Última modificación: 2026-08-06
+Fecha de creación: 2026-08-06T17:49:32
+Última modificación: 2026-08-06T18:48:42
 ---
 
 # Definir el refactor pendiente
