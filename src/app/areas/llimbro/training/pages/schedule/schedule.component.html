@@ -1,0 +1,90 @@
+<main class="schedule-page training-page">
+  <header class="schedule-heading training-page-heading">
+    <div>
+      <p class="section-eyebrow">Entrenamiento · plantilla semanal</p>
+      <h1>Horario</h1>
+      <span>Marca el rumbo de cada día. Luego podrás adaptarlo en Seguimiento.</span>
+    </div>
+    <button
+      class="ui-icon-button"
+      type="button"
+      [attr.aria-label]="selectingExercises() ? 'Cancelar selección' : 'Asignar ejercicios'"
+      (click)="selectingExercises.set(!selectingExercises())"
+    >
+      <svg class="ui-icon" aria-hidden="true"><use [attr.href]="'icons/atlas-icons.svg#' + (selectingExercises() ? 'close' : 'add')"/></svg>
+    </button>
+  </header>
+
+  <nav class="weekday-strip ui-card" aria-label="Días de la semana">
+    @for (day of weekdays; track day.id) {
+      <button
+        type="button"
+        [class.weekday-strip__day--active]="selectedWeekday() === day.id"
+        [attr.aria-current]="selectedWeekday() === day.id ? 'date' : null"
+        (click)="selectWeekday(day.id)"
+      >{{ day.shortLabel }}</button>
+    }
+  </nav>
+
+  @if (selectingExercises()) {
+    <section class="schedule-page__selector">
+      <app-data-list [config]="exerciseListConfig" [items]="exerciseItems()"/>
+    </section>
+  } @else {
+    <section class="schedule-board">
+      <header>
+        <div>
+          <p class="section-eyebrow">Día seleccionado</p>
+          <h2>{{ selectedDayLabel() }}</h2>
+        </div>
+        <span>{{ drafts().length }} {{ drafts().length === 1 ? 'ejercicio' : 'ejercicios' }}</span>
+      </header>
+
+      @if (store.loadingSchedule()) {
+        <span class="ui-spinner" role="status" aria-label="Cargando horario"></span>
+      } @else if (drafts().length === 0) {
+        <div class="schedule-empty ui-card training-empty-state">
+          <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#fitness_center"/></svg>
+          <h3>Día abierto</h3>
+          <p>Añade ejercicios o déjalo libre para descansar.</p>
+        </div>
+      } @else {
+        <div class="schedule-list">
+          @for (draft of drafts(); track draft.id ?? draft.exerciseId; let index = $index) {
+            <article class="schedule-card ui-card">
+              <header>
+                <span class="schedule-card__index">{{ index + 1 }}</span>
+                <h3>{{ exerciseName(draft.exerciseId) }}</h3>
+                <button class="ui-icon-button" type="button" aria-label="Quitar del horario" (click)="removeExercise(index)">
+                  <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#close"/></svg>
+                </button>
+              </header>
+              <div class="schedule-card__targets">
+                <label class="ui-field">Series
+                  <input class="ui-input" type="number" min="1" step="1" [value]="draft.setCount" (input)="updateNumber(index, 'setCount', $event)">
+                </label>
+                <label class="ui-field">Repeticiones
+                  <input class="ui-input" type="number" min="0" step="1" placeholder="0" [value]="draft.targetRepetitions ?? ''" (input)="updateNumber(index, 'targetRepetitions', $event)">
+                </label>
+                <label class="ui-field">Peso · kg
+                  <input class="ui-input" type="number" min="0" step="0.25" placeholder="0" [value]="draft.targetWeightKg ?? ''" (input)="updateNumber(index, 'targetWeightKg', $event)">
+                </label>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <footer class="schedule-save training-save-bar">
+      @if (saveError()) {
+        <span class="schedule-save__error" role="alert">{{ saveError() }}</span>
+      } @else {
+        <span [class.schedule-save__dirty]="dirty()">{{ dirty() ? 'Cambios sin guardar' : 'Horario al día' }}</span>
+      }
+      <button class="ui-button" type="button" [disabled]="!dirty() || store.savingSchedule()" (click)="save()">
+        Guardar horario
+      </button>
+    </footer>
+  }
+</main>

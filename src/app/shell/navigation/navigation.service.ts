@@ -18,6 +18,10 @@ export const APP_ROUTES = {
     segments: ['llimbro', 'training'],
     children: {
       exercises: 'exercises',
+      'exercise-form': 'exercise-form',
+      schedule: 'schedule',
+      tracking: 'tracking',
+      measurements: 'measurements',
     },
   },
 } as const

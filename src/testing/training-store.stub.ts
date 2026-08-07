@@ -1,0 +1,67 @@
+import {signal} from '@angular/core'
+
+export function createTrainingStoreStub() {
+  const selectedDate = signal(new Date(2026, 7, 3))
+  return {
+    exercises: signal([{
+      id: 1,
+      id_user: 'test-user',
+      name: 'Sentadilla',
+      description: 'Patrón dominante de rodilla',
+      tips: ['Mantén el torso firme'],
+      image_path: null,
+      archived_at: null,
+      created_at: '2026-08-01T00:00:00Z',
+      updated_at: '2026-08-01T00:00:00Z',
+    }]),
+    schedule: signal([{
+      id: 10,
+      id_user: 'test-user',
+      exercise_id: 1,
+      weekday: 1,
+      set_count: 3,
+      target_repetitions: 10,
+      target_weight_kg: 40,
+      sort_order: 0,
+      created_at: '2026-08-01T00:00:00Z',
+      updated_at: '2026-08-01T00:00:00Z',
+      training_exercise: {id: 1, name: 'Sentadilla'},
+    }]),
+    entries: signal([{
+      id: 20,
+      id_user: 'test-user',
+      exercise_id: 1,
+      performed_on: '2026-08-03',
+      sort_order: 0,
+      created_at: '2026-08-03T00:00:00Z',
+      updated_at: '2026-08-03T00:00:00Z',
+      training_exercise: {id: 1, name: 'Sentadilla'},
+      training_set: [{
+        id: 30,
+        id_user: 'test-user',
+        entry_id: 20,
+        position: 1,
+        repetitions: 10,
+        weight_kg: 40,
+        created_at: '2026-08-03T00:00:00Z',
+        updated_at: '2026-08-03T00:00:00Z',
+      }],
+    }]),
+    selectedDate,
+    loadingExercises: signal(false),
+    loadingSchedule: signal(false),
+    loadingEntries: signal(false),
+    savingSchedule: signal(false),
+    savingEntries: signal(false),
+    savingExercise: signal(false),
+    savingExerciseImage: signal(false),
+    loadExercises: async () => undefined,
+    loadSchedule: async () => undefined,
+    loadEntries: async () => undefined,
+    saveScheduleDay: async () => undefined,
+    saveEntries: async () => undefined,
+    archiveExercise: async () => undefined,
+    selectDate: (date: Date) => selectedDate.set(date),
+  }
+}
+

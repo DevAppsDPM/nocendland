@@ -1,1 +1,27 @@
-<p>exercises works!</p>
+<main class="exercises-page training-page">
+  <header class="training-heading training-page-heading">
+    <div>
+      <p class="section-eyebrow">Entrenamiento · maestro</p>
+      <h1>Ejercicios</h1>
+      <span>Tu biblioteca de movimientos, técnica y referencias.</span>
+    </div>
+    <div class="training-heading__actions">
+      <button
+        class="ui-icon-button"
+        type="button"
+        [class.ui-button--danger]="archiveMode()"
+        [attr.aria-label]="archiveMode() ? 'Cancelar archivado' : 'Seleccionar ejercicios para archivar'"
+        (click)="toggleArchiveMode()"
+      >
+        <svg class="ui-icon" aria-hidden="true"><use [attr.href]="'icons/atlas-icons.svg#' + (archiveMode() ? 'close' : 'delete')"/></svg>
+      </button>
+      <button class="ui-icon-button" type="button" aria-label="Crear ejercicio" (click)="openForm('new')">
+        <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#add"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="exercises-page__list">
+    <app-data-list [config]="config" [items]="items()"/>
+  </section>
+</main>

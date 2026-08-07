@@ -1,0 +1,88 @@
+<main class="tracking-page training-page">
+  <details class="tracking-calendar ui-card">
+    <summary>
+      <span>Fecha de entrenamiento</span>
+      <strong>{{ formatDateForDisplay(store.selectedDate()) }}</strong>
+      <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#calendar_month"/></svg>
+    </summary>
+    <app-calendar (dateSelected)="selectDate($event)"/>
+  </details>
+
+  <header class="tracking-heading training-page-heading">
+    <div>
+      <p class="section-eyebrow">Entrenamiento · diario</p>
+      <h1>{{ selectingExercises() ? 'Elige ejercicios' : 'Seguimiento' }}</h1>
+      <span>{{ formatDateForDisplay(store.selectedDate()) }}</span>
+    </div>
+    <button
+      class="ui-icon-button"
+      type="button"
+      [attr.aria-label]="selectingExercises() ? 'Cancelar selección' : 'Añadir registros'"
+      (click)="selectingExercises.set(!selectingExercises())"
+    >
+      <svg class="ui-icon" aria-hidden="true"><use [attr.href]="'icons/atlas-icons.svg#' + (selectingExercises() ? 'close' : 'add')"/></svg>
+    </button>
+  </header>
+
+  @if (selectingExercises()) {
+    <app-data-list [config]="exerciseListConfig" [items]="exerciseItems()"/>
+  } @else {
+    <section class="tracking-list" aria-label="Registros del día">
+      @if (store.loadingEntries()) {
+        <span class="ui-spinner" role="status" aria-label="Cargando seguimiento"></span>
+      } @else if (drafts().length === 0) {
+        <div class="tracking-empty ui-card training-empty-state">
+          <span>00</span>
+          <h2>La sesión está por escribir</h2>
+          <p>Añade ejercicios; los previstos para hoy ya aparecerán seleccionados.</p>
+        </div>
+      } @else {
+        @for (entry of drafts(); track entry.clientId; let entryIndex = $index) {
+          <article class="tracking-entry ui-card">
+            <header>
+              <div>
+                <p class="section-eyebrow">Ejercicio {{ entryIndex + 1 }}</p>
+                <h2>{{ exerciseName(entry.exerciseId) }}</h2>
+              </div>
+              <button class="ui-icon-button ui-button--danger" type="button" aria-label="Eliminar registro" (click)="removeEntry(entryIndex)">
+                <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#delete"/></svg>
+              </button>
+            </header>
+
+            <div class="set-table">
+              <div class="set-table__head" aria-hidden="true">
+                <span>Serie</span><span>Repeticiones</span><span>Peso · kg</span><span></span>
+              </div>
+              @for (set of entry.sets; track set.clientId; let setIndex = $index) {
+                <div class="set-row">
+                  <strong>{{ set.position }}</strong>
+                  <label>
+                    <span class="sr-only">Repeticiones de la serie {{ set.position }}</span>
+                    <input class="ui-input" type="number" min="0" step="1" placeholder="0" [value]="set.repetitions ?? ''" (input)="updateSet(entryIndex, setIndex, 'repetitions', $event)">
+                  </label>
+                  <label>
+                    <span class="sr-only">Peso de la serie {{ set.position }}</span>
+                    <input class="ui-input" type="number" min="0" step="0.25" placeholder="0" [value]="set.weightKg ?? ''" (input)="updateSet(entryIndex, setIndex, 'weightKg', $event)">
+                  </label>
+                  <button class="ui-icon-button" type="button" aria-label="Eliminar serie" [disabled]="entry.sets.length === 1" (click)="removeSet(entryIndex, setIndex)">
+                    <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#close"/></svg>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <button class="tracking-entry__add-set" type="button" (click)="addSet(entryIndex)">
+              <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#add"/></svg>
+              Añadir serie
+            </button>
+          </article>
+        }
+      }
+    </section>
+
+    <footer class="tracking-save training-save-bar">
+      <span [class.tracking-save__dirty]="dirty()">{{ dirty() ? 'Cambios sin guardar' : 'Seguimiento al día' }}</span>
+      <button class="ui-button" type="button" [disabled]="!dirty() || store.savingEntries()" (click)="save()">Guardar seguimiento</button>
+    </footer>
+  }
+</main>

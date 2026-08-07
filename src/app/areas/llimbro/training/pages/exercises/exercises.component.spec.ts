@@ -1,23 +1,32 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ExercisesComponent } from './exercises.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing'
+import {NavigationService} from '@shell/navigation/navigation.service'
+import {createTrainingStoreStub} from '@testing/training-store.stub'
+import {TrainingStore} from '../../state/training.store'
+import {ExercisesComponent} from './exercises.component'
 
 describe('ExercisesComponent', () => {
-  let component: ExercisesComponent;
-  let fixture: ComponentFixture<ExercisesComponent>;
+  let fixture: ComponentFixture<ExercisesComponent>
+  const navigation = {to: jasmine.createSpy('to').and.resolveTo(true)}
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExercisesComponent]
-    })
-    .compileComponents();
+      imports: [ExercisesComponent],
+      providers: [
+        {provide: TrainingStore, useValue: createTrainingStoreStub()},
+        {provide: NavigationService, useValue: navigation},
+      ],
+    }).compileComponents()
+    fixture = TestBed.createComponent(ExercisesComponent)
+    fixture.detectChanges()
+  })
 
-    fixture = TestBed.createComponent(ExercisesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  it('renders the exercise catalogue', () => {
+    expect(fixture.nativeElement.textContent).toContain('Sentadilla')
+  })
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  it('opens the creation form from the primary action', () => {
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('[aria-label="Crear ejercicio"]')
+    button.click()
+    expect(navigation.to).toHaveBeenCalledWith('training', 'exercise-form', 'new')
+  })
+})

@@ -25,6 +25,8 @@ export interface DataListConfig<TItem> {
   showSelectionConfirmation?: boolean
   confirmationIcon?: string
   loading?: Signal<boolean>
+  /** Identidades que deben aparecer seleccionadas al abrir una selección múltiple. */
+  initialSelectedIds?: Signal<readonly DataListItemId[]>
 }
 
 @Component({
@@ -50,13 +52,19 @@ export class DataListComponent<TItem = unknown> {
     ).includes(filter))
   })
   protected readonly selectedItems = linkedSignal<
-    {items: readonly DataListItem<TItem>[]; multiple: boolean},
+    {items: readonly DataListItem<TItem>[]; multiple: boolean; initialSelectedIds: readonly DataListItemId[]},
     readonly DataListItem<TItem>[]
   >({
-    source: () => ({items: this.items(), multiple: this.multiple()}),
-    computation: ({items, multiple}, previous) => {
+    source: () => ({
+      items: this.items(),
+      multiple: this.multiple(),
+      initialSelectedIds: this.config().initialSelectedIds?.() ?? [],
+    }),
+    computation: ({items, multiple, initialSelectedIds}, previous) => {
       if (!multiple) return []
-      const selectedIds = new Set(previous?.value.map(item => item.id) ?? [])
+      const selectedIds = new Set(previous?.value.length
+        ? previous.value.map(item => item.id)
+        : initialSelectedIds)
       return items.filter(item => selectedIds.has(item.id))
     },
   })

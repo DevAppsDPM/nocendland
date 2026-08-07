@@ -13,7 +13,7 @@ Los consumidores importan estas piezas únicamente desde los entrypoints `@share
 | `CardDataComponent` | Presenta una métrica formada por etiqueta y valor textual o numérico. | Aplicación | `src/app/shared/ui/card-data/card-data.component.ts` |
 | `ColumnCenterContainerComponent` | Compone un `TemplateRef` dentro de la columna principal de contenido. | Shell | `src/app/shared/ui/column-center-container/column-center-container.component.ts` |
 | `ConfirmDialogComponent` | Vista accesible del diálogo de confirmación; normalmente se consume mediante su servicio. | Aplicación | `src/app/shared/ui/confirm-dialog/confirm-dialog.component.ts` |
-| `DataListComponent<T>` | Lista buscable y seleccionable de `DataListItem<T>`; devuelve siempre colecciones del tipo de dominio. | Aplicación | `src/app/shared/ui/data-list/data-list.component.ts` |
+| `DataListComponent<T>` | Lista buscable y seleccionable de `DataListItem<T>`; devuelve colecciones del tipo de dominio y admite identidades inicialmente seleccionadas. | Aplicación | `src/app/shared/ui/data-list/data-list.component.ts` |
 | `DialogRef<TResult>` | Referencia tipada para cerrar un diálogo y observar su resultado. | Aplicación | `src/app/shared/ui/dialog/dialog-ref.ts` |
 | `DialogService` | Abre componentes en un overlay accesible conservando el inyector del límite lazy. | Aplicación | `src/app/shared/ui/dialog/dialog.service.ts` |
 | `DIALOG_DATA` | Token para inyectar datos tipados por el consumidor de un diálogo. | Aplicación | `src/app/shared/ui/dialog/dialog.tokens.ts` |

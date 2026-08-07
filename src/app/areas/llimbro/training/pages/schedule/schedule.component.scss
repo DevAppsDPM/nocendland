@@ -1,0 +1,25 @@
+:host { display: block; }
+.schedule-board > header span,
+.schedule-save > span { color: var(--color-text-muted); }
+.weekday-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--space-1); padding: var(--space-2); }
+.weekday-strip button { min-height: var(--control-height-md); border: 0; border-radius: var(--radius-round); background: transparent; color: var(--color-text-muted); cursor: pointer; font-weight: 700; }
+.weekday-strip button:hover { background: var(--color-surface-muted); color: var(--color-text); }
+.weekday-strip .weekday-strip__day--active { background: var(--area-accent); color: var(--color-text-inverse); transform: rotate(var(--area-tab-active-tilt)); }
+.schedule-board { display: grid; gap: var(--space-4); }
+.schedule-board > header { display: flex; align-items: end; justify-content: space-between; }
+.schedule-board h2 { margin: 0; font-size: var(--font-size-xl); }
+.schedule-list { display: grid; gap: var(--space-3); }
+.schedule-card { overflow: hidden; padding: var(--space-4); border-left: var(--space-2) solid var(--area-accent); }
+.schedule-card > header { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--space-3); }
+.schedule-card h3 { margin: 0; }
+.schedule-card__index { display: grid; width: 2rem; aspect-ratio: 1; place-items: center; border-radius: var(--radius-round); background: var(--area-accent-soft); color: var(--area-accent-ink); font-weight: 800; }
+.schedule-card__targets { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-top: var(--space-4); }
+.schedule-empty .ui-icon { width: 3rem; height: 3rem; color: var(--area-accent); }
+.schedule-empty h3 { margin: var(--space-3) 0 var(--space-1); }
+.schedule-save .schedule-save__dirty { color: var(--area-accent-strong); font-weight: 700; }
+.schedule-save .schedule-save__error { color: var(--color-danger); font-weight: 700; }
+@media (max-width: 38rem) {
+  .weekday-strip { overflow-x: auto; grid-template-columns: repeat(7, minmax(3.3rem, 1fr)); }
+  .schedule-card__targets { grid-template-columns: 1fr 1fr; }
+  .schedule-card__targets .ui-field:last-child { grid-column: 1 / -1; }
+}
