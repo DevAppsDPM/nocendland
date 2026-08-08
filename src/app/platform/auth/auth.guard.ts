@@ -8,7 +8,7 @@ export const authGuard: CanActivateChildFn = async (childRoute, state) => {
 
   const authenticated = await auth.isAuthenticated()
   if (!authenticated) {
-    return router.parseUrl('/auth')
+    return router.createUrlTree(['/auth'], {queryParams: {returnUrl: auth.sanitizeReturnPath(state.url)}})
   }
 
   return true

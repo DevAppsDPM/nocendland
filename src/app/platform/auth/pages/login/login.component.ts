@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {AuthService} from '@platform/auth/auth.service';
 
 @Component({
@@ -9,6 +10,9 @@ import {AuthService} from '@platform/auth/auth.service';
     styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  constructor(protected auth: AuthService) {
+  protected readonly returnPath: string
+
+  constructor(protected auth: AuthService, route: ActivatedRoute) {
+    this.returnPath = auth.sanitizeReturnPath(route.snapshot.queryParamMap.get('returnUrl'))
   }
 }

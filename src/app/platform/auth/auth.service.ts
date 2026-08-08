@@ -33,12 +33,12 @@ export class AuthService {
     return this.supabase.client.auth.exchangeCodeForSession(code)
   }
 
-  public signInWithGithub(): Promise<OAuthResponse> {
-    return this.signInWithOAuth('github')
+  public signInWithGithub(returnPath = '/'): Promise<OAuthResponse> {
+    return this.signInWithOAuth('github', returnPath)
   }
 
-  public signInWithGoogle(): Promise<OAuthResponse> {
-    return this.signInWithOAuth('google')
+  public signInWithGoogle(returnPath = '/'): Promise<OAuthResponse> {
+    return this.signInWithOAuth('google', returnPath)
   }
 
   public async signOut(): Promise<void> {
@@ -55,10 +55,21 @@ export class AuthService {
     return userId
   }
 
-  private signInWithOAuth(provider: AuthProvider): Promise<OAuthResponse> {
+  public sanitizeReturnPath(returnPath: string | null | undefined): string {
+    if (!returnPath?.startsWith('/') || returnPath.startsWith('//')) return '/'
+    try {
+      const url = new URL(returnPath, globalThis.location.origin)
+      if (url.origin !== globalThis.location.origin || url.pathname.startsWith('/auth')) return '/'
+      return `${url.pathname}${url.search}${url.hash}`
+    } catch {
+      return '/'
+    }
+  }
+
+  private signInWithOAuth(provider: AuthProvider, returnPath: string): Promise<OAuthResponse> {
     return this.supabase.client.auth.signInWithOAuth({
       provider,
-      options: {redirectTo: this.authRedirectUrl},
+      options: {redirectTo: this.authRedirectUrl(returnPath)},
     })
   }
 
@@ -73,7 +84,9 @@ export class AuthService {
     this.userState.set(data)
   }
 
-  private get authRedirectUrl(): string {
-    return new URL('/auth/callback', globalThis.location.origin).toString()
+  private authRedirectUrl(returnPath: string): string {
+    const callback = new URL('/auth/callback', globalThis.location.origin)
+    callback.searchParams.set('returnUrl', this.sanitizeReturnPath(returnPath))
+    return callback.toString()
   }
 }

@@ -14,7 +14,7 @@
               "type": "bases",
               "state": {
                 "file": "Tareas/Tareas.base",
-                "viewName": "Pendiente"
+                "viewName": "Todo"
               },
               "icon": "lucide-table",
               "title": "Tareas"
@@ -189,15 +189,17 @@
   },
   "active": "a3cc26ae34df985b",
   "lastOpenFiles": [
+    "Tareas/Compartir ejercicios y horarios.md",
+    "Tareas/Tests con vitest.md",
+    "Inicio.md",
+    "Tareas/Tareas.base",
     "Tareas/Desarrollar feature de entrenamiento.md",
     "Tareas/Sistema anti pérdida de datos.md",
-    "Tareas/Tareas.base",
     "Tareas/Corregir columnas de fechas del panel de tareas.md",
     "Tareas/Definir sistema visual y retirar Angular Material.md",
     "Tareas/Instalar MCP de ApexCharts.md",
     "Tareas/Migrar gráficos a ApexCharts.md",
     "Catálogo técnico.md",
-    "Inicio.md",
     "README.md",
     "Tareas/Crear catálogo técnico reutilizable.md",
     "Tareas/Revisar vulnerabilidades transitivas.md",

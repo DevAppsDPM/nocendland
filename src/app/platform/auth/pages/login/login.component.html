@@ -6,11 +6,11 @@
     <p class="login-card__intro">Accede a Nocendland para continuar registrando tus áreas, hábitos y progreso.</p>
 
     <div class="login-card__actions">
-      <button class="ui-button" type="button" (click)="auth.signInWithGithub()">
+      <button class="ui-button" type="button" (click)="auth.signInWithGithub(returnPath)">
         <span aria-hidden="true">GH</span>
         Continuar con GitHub
       </button>
-      <button class="ui-button ui-button--quiet" type="button" (click)="auth.signInWithGoogle()">
+      <button class="ui-button ui-button--quiet" type="button" (click)="auth.signInWithGoogle(returnPath)">
         <span aria-hidden="true">G</span>
         Continuar con Google
       </button>

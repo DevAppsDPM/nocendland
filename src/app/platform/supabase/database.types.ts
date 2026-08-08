@@ -218,6 +218,7 @@ export type Database = {
           id_user: string
           image_path: string | null
           name: string
+          portable_id: string
           tips: string[]
           updated_at: string
         }
@@ -229,6 +230,7 @@ export type Database = {
           id_user: string
           image_path?: string | null
           name: string
+          portable_id?: string
           tips?: string[]
           updated_at?: string
         }
@@ -240,6 +242,7 @@ export type Database = {
           id_user?: string
           image_path?: string | null
           name?: string
+          portable_id?: string
           tips?: string[]
           updated_at?: string
         }
@@ -253,12 +256,61 @@ export type Database = {
           },
         ]
       }
+      training_schedule: {
+        Row: {
+          created_at: string
+          id: number
+          id_user: string
+          is_active: boolean
+          name: string
+          portable_id: string
+          source_share_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          id_user: string
+          is_active?: boolean
+          name: string
+          portable_id?: string
+          source_share_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          id_user?: string
+          is_active?: boolean
+          name?: string
+          portable_id?: string
+          source_share_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_schedule_id_user_fkey"
+            columns: ["id_user"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_schedule_source_share_id_fkey"
+            columns: ["source_share_id"]
+            isOneToOne: false
+            referencedRelation: "training_share"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       training_schedule_item: {
         Row: {
           created_at: string
           exercise_id: number
           id: number
           id_user: string
+          schedule_id: number
           set_count: number
           sort_order: number
           target_repetitions: number | null
@@ -271,6 +323,7 @@ export type Database = {
           exercise_id: number
           id?: number
           id_user: string
+          schedule_id: number
           set_count?: number
           sort_order?: number
           target_repetitions?: number | null
@@ -283,6 +336,7 @@ export type Database = {
           exercise_id?: number
           id?: number
           id_user?: string
+          schedule_id?: number
           set_count?: number
           sort_order?: number
           target_repetitions?: number | null
@@ -304,6 +358,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_schedule_item_schedule_owner_fkey"
+            columns: ["schedule_id", "id_user"]
+            isOneToOne: false
+            referencedRelation: "training_schedule"
+            referencedColumns: ["id", "id_user"]
           },
         ]
       }
@@ -349,6 +410,47 @@ export type Database = {
           {
             foreignKeyName: "training_set_id_user_fkey"
             columns: ["id_user"]
+            isOneToOne: false
+            referencedRelation: "user"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_share: {
+        Row: {
+          created_at: string
+          id: string
+          manifest: Json
+          owner_id: string
+          revoked_at: string | null
+          share_type: string
+          title: string
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          manifest: Json
+          owner_id: string
+          revoked_at?: string | null
+          share_type: string
+          title: string
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          manifest?: Json
+          owner_id?: string
+          revoked_at?: string | null
+          share_type?: string
+          title?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_share_owner_id_fkey"
+            columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "user"
             referencedColumns: ["id"]
@@ -432,7 +534,38 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      activate_training_schedule: {
+        Args: { target_schedule_id: number }
+        Returns: undefined
+      }
+      ensure_training_schedule: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: number
+          id_user: string
+          is_active: boolean
+          name: string
+          portable_id: string
+          source_share_id: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "training_schedule"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      import_training_share_manifest: {
+        Args: {
+          activate_schedule?: boolean
+          conflict_actions?: Json
+          shared_manifest: Json
+          source_share?: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       nutrition_objetive_levels: "keep" | "good" | "top"

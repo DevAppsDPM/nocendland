@@ -2,6 +2,7 @@ import {Routes} from '@angular/router';
 import {ExerciseRepository} from './data-access/exercise.repository'
 import {ScheduleRepository} from './data-access/schedule.repository'
 import {TrackingRepository} from './data-access/tracking.repository'
+import {ShareRepository} from './data-access/share.repository'
 import {TrainingLayoutComponent} from './layout/training-layout.component'
 import {TrainingStore} from './state/training.store'
 
@@ -9,7 +10,7 @@ export const TRAINING_ROUTES: Routes = [
   {
     path: '',
     component: TrainingLayoutComponent,
-    providers: [TrainingStore, ExerciseRepository, ScheduleRepository, TrackingRepository],
+    providers: [TrainingStore, ExerciseRepository, ScheduleRepository, TrackingRepository, ShareRepository],
     children: [
       {path: '', redirectTo: 'exercises', pathMatch: 'full'},
       {

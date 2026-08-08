@@ -30,4 +30,9 @@ describe('ScheduleComponent', () => {
       .map((input: HTMLInputElement) => input.value)
     expect(values).toEqual(['3', '10', '40'])
   })
+
+  it('marks the active schedule used by tracking', () => {
+    expect(fixture.nativeElement.textContent).toContain('Horario 1 · activo')
+    expect(fixture.nativeElement.textContent).toContain('Activo en Seguimiento')
+  })
 })

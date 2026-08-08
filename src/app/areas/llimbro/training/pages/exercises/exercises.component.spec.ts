@@ -29,4 +29,12 @@ describe('ExercisesComponent', () => {
     button.click()
     expect(navigation.to).toHaveBeenCalledWith('training', 'exercise-form', 'new')
   })
+
+  it('offers the full catalogue when entering share mode', () => {
+    const button: HTMLButtonElement = fixture.nativeElement
+      .querySelector('[aria-label="Seleccionar ejercicios para compartir"]')
+    button.click()
+    fixture.detectChanges()
+    expect(fixture.nativeElement.textContent).toContain('Compartir todos')
+  })
 })

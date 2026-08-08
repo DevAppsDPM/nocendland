@@ -2,11 +2,37 @@ import {signal} from '@angular/core'
 
 export function createTrainingStoreStub() {
   const selectedDate = signal(new Date(2026, 7, 3))
+  const selectedScheduleId = signal<number | null>(5)
+  const schedules = signal([{
+    id: 5,
+    id_user: 'test-user',
+    portable_id: '11111111-1111-4111-8111-111111111111',
+    name: 'Horario 1',
+    is_active: true,
+    source_share_id: null,
+    created_at: '2026-08-01T00:00:00Z',
+    updated_at: '2026-08-01T00:00:00Z',
+  }])
+  const scheduleItems = signal([{
+    id: 10,
+    id_user: 'test-user',
+    schedule_id: 5,
+    exercise_id: 1,
+    weekday: 1,
+    set_count: 3,
+    target_repetitions: 10,
+    target_weight_kg: 40,
+    sort_order: 0,
+    created_at: '2026-08-01T00:00:00Z',
+    updated_at: '2026-08-01T00:00:00Z',
+    training_exercise: {id: 1, name: 'Sentadilla'},
+  }])
   return {
     exercises: signal([{
       id: 1,
       id_user: 'test-user',
       name: 'Sentadilla',
+      portable_id: '22222222-2222-4222-8222-222222222222',
       description: 'Patrón dominante de rodilla',
       tips: ['Mantén el torso firme'],
       image_path: null,
@@ -14,19 +40,13 @@ export function createTrainingStoreStub() {
       created_at: '2026-08-01T00:00:00Z',
       updated_at: '2026-08-01T00:00:00Z',
     }]),
-    schedule: signal([{
-      id: 10,
-      id_user: 'test-user',
-      exercise_id: 1,
-      weekday: 1,
-      set_count: 3,
-      target_repetitions: 10,
-      target_weight_kg: 40,
-      sort_order: 0,
-      created_at: '2026-08-01T00:00:00Z',
-      updated_at: '2026-08-01T00:00:00Z',
-      training_exercise: {id: 1, name: 'Sentadilla'},
-    }]),
+    schedules,
+    selectedScheduleId,
+    selectedSchedule: signal(schedules()[0]),
+    activeSchedule: signal(schedules()[0]),
+    selectedScheduleItems: scheduleItems,
+    schedule: scheduleItems,
+    shares: signal([]),
     entries: signal([{
       id: 20,
       id_user: 'test-user',
@@ -55,13 +75,22 @@ export function createTrainingStoreStub() {
     savingEntries: signal(false),
     savingExercise: signal(false),
     savingExerciseImage: signal(false),
+    sharing: signal(false),
     loadExercises: async () => undefined,
     loadSchedule: async () => undefined,
     loadEntries: async () => undefined,
     saveScheduleDay: async () => undefined,
+    createSchedule: async () => undefined,
+    renameSelectedSchedule: async () => undefined,
+    duplicateSelectedSchedule: async () => undefined,
+    activateSelectedSchedule: async () => undefined,
+    deleteSelectedSchedule: async () => undefined,
+    selectSchedule: (id: number) => selectedScheduleId.set(id),
+    shareExercises: async () => ({id: 'share-id', token: 'share-token'}),
+    shareSelectedSchedule: async () => ({id: 'share-id', token: 'share-token'}),
+    revokeShare: async () => undefined,
     saveEntries: async () => undefined,
     archiveExercise: async () => undefined,
     selectDate: (date: Date) => selectedDate.set(date),
   }
 }
-

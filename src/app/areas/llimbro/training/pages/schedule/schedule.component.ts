@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal} from '@angular/core'
 import {FormsModule} from '@angular/forms'
 import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
+import {ConfirmDialogService} from '@shared/ui/confirm-dialog'
 import {TrainingExerciseListItem, TrainingScheduleDraft} from '../../models/training.models'
 import {TrainingStore} from '../../state/training.store'
 import {getIsoWeekday, TRAINING_WEEKDAYS} from '../../training.constants'
@@ -14,13 +15,19 @@ import {getIsoWeekday, TRAINING_WEEKDAYS} from '../../training.constants'
 })
 export class ScheduleComponent {
   protected readonly store = inject(TrainingStore)
+  private readonly confirmDialog = inject(ConfirmDialogService)
   protected readonly weekdays = TRAINING_WEEKDAYS
   protected readonly selectedWeekday = signal(getIsoWeekday(new Date()))
   protected readonly selectingExercises = signal(false)
   protected readonly dirty = signal(false)
   protected readonly saveError = signal<string | null>(null)
+  protected readonly catalogAction = signal<'create' | 'rename' | 'duplicate' | null>(null)
+  protected readonly scheduleName = signal('')
+  protected readonly catalogError = signal<string | null>(null)
+  protected readonly shareUrl = signal<string | null>(null)
+  protected readonly managingShares = signal(false)
   private readonly multiSelection = signal(true)
-  protected readonly drafts = linkedSignal<TrainingScheduleDraft[]>(() => this.store.schedule()
+  protected readonly drafts = linkedSignal<TrainingScheduleDraft[]>(() => this.store.selectedScheduleItems()
     .filter(item => item.weekday === this.selectedWeekday())
     .map(item => ({
       id: item.id,
@@ -57,6 +64,106 @@ export class ScheduleComponent {
     this.selectingExercises.set(false)
     this.dirty.set(false)
     this.saveError.set(null)
+  }
+
+  protected selectSchedule(event: Event): void {
+    if (this.dirty()) {
+      this.catalogError.set('Guarda o descarta los cambios del día antes de cambiar de horario.')
+      ;(event.target as HTMLSelectElement).value = String(this.store.selectedScheduleId() ?? '')
+      return
+    }
+    this.store.selectSchedule(Number((event.target as HTMLSelectElement).value))
+    this.selectingExercises.set(false)
+    this.saveError.set(null)
+    this.catalogError.set(null)
+  }
+
+  protected beginCatalogAction(action: 'create' | 'rename' | 'duplicate'): void {
+    this.catalogAction.set(action)
+    const selectedName = this.store.selectedSchedule()?.name ?? 'Horario'
+    this.scheduleName.set(action === 'create' ? this.nextScheduleName('Horario')
+      : action === 'duplicate' ? this.nextScheduleName(`${selectedName} copia`)
+        : selectedName)
+    this.catalogError.set(null)
+  }
+
+  protected updateScheduleName(event: Event): void {
+    this.scheduleName.set((event.target as HTMLInputElement).value)
+  }
+
+  protected async saveCatalogAction(): Promise<void> {
+    const action = this.catalogAction()
+    const name = this.scheduleName().trim()
+    if (!action || !name) {
+      this.catalogError.set('El horario necesita un nombre.')
+      return
+    }
+    this.catalogError.set(null)
+    try {
+      if (action === 'create') await this.store.createSchedule(name)
+      if (action === 'rename') await this.store.renameSelectedSchedule(name)
+      if (action === 'duplicate') await this.store.duplicateSelectedSchedule(name)
+      this.catalogAction.set(null)
+    } catch {
+      this.catalogError.set('No se ha podido guardar el horario. Comprueba que el nombre no esté repetido.')
+    }
+  }
+
+  protected async activateSchedule(): Promise<void> {
+    try {
+      await this.store.activateSelectedSchedule()
+    } catch {
+      this.catalogError.set('No se ha podido activar el horario.')
+    }
+  }
+
+  protected deleteSchedule(): void {
+    const schedule = this.store.selectedSchedule()
+    if (!schedule) return
+    if (schedule.is_active) {
+      this.catalogError.set('Activa otro horario antes de eliminar este.')
+      return
+    }
+    this.confirmDialog.open({
+      title: 'Eliminar horario',
+      message: `Se eliminará ${schedule.name}. Los seguimientos guardados no cambiarán.`,
+      acceptButton: {text: 'Eliminar', show: true, intent: 'danger'},
+    }).subscribe(confirmed => {
+      if (!confirmed) return
+      void this.store.deleteSelectedSchedule().catch(() =>
+        this.catalogError.set('No se ha podido eliminar el horario.'))
+    })
+  }
+
+  protected async shareSchedule(): Promise<void> {
+    this.catalogError.set(null)
+    try {
+      const share = await this.store.shareSelectedSchedule()
+      const url = new URL(`/share/training/${share.token}`, globalThis.location.origin).toString()
+      this.shareUrl.set(url)
+      await this.copyShareUrl(url)
+    } catch {
+      this.catalogError.set('No se ha podido crear el enlace compartido.')
+    }
+  }
+
+  protected async copyShareUrl(url = this.shareUrl()): Promise<void> {
+    if (!url) return
+    try {
+      await globalThis.navigator.clipboard.writeText(url)
+    } catch {
+      this.catalogError.set('Copia el enlace manualmente desde el campo.')
+    }
+  }
+
+  protected revokeShare(shareId: string): void {
+    this.confirmDialog.open({
+      title: 'Revocar enlace',
+      message: 'El enlace dejará de funcionar. Las copias ya importadas no se modificarán.',
+      acceptButton: {text: 'Revocar', show: true, intent: 'danger'},
+    }).subscribe(confirmed => {
+      if (confirmed) void this.store.revokeShare(shareId)
+    })
   }
 
   protected removeExercise(index: number): void {
@@ -105,5 +212,13 @@ export class ScheduleComponent {
     this.selectingExercises.set(false)
     this.dirty.set(true)
     this.saveError.set(null)
+  }
+
+  private nextScheduleName(base: string): string {
+    const names = new Set(this.store.schedules().map(schedule => schedule.name.toLocaleLowerCase()))
+    if (!names.has(base.toLocaleLowerCase())) return base
+    let suffix = 2
+    while (names.has(`${base} ${suffix}`.toLocaleLowerCase())) suffix += 1
+    return `${base} ${suffix}`
   }
 }

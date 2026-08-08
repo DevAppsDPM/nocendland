@@ -9,6 +9,11 @@ export const routes: Routes = [
     loadChildren: () => import('@platform/auth/auth.routes').then(({AUTH_ROUTES}) => AUTH_ROUTES),
   },
   {
+    path: 'share/training/:token',
+    loadComponent: () => import('@areas/llimbro/training/pages/share-preview/share-preview.component')
+      .then(({SharePreviewComponent}) => SharePreviewComponent),
+  },
+  {
     path: '',
     component: MainpageComponent,
     canActivate: [authGuard],

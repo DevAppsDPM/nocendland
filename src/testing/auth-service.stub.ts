@@ -9,5 +9,6 @@ export function createAuthServiceStub() {
     signInWithGoogle: () => Promise.resolve(undefined),
     signOut: () => Promise.resolve(undefined),
     requireUserId: () => 'test-user',
+    sanitizeReturnPath: (path: string | null | undefined) => path?.startsWith('/') ? path : '/',
   };
 }

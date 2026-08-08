@@ -21,6 +21,7 @@ export class CallbackComponent implements OnInit {
     if (code) await this.auth.exchangeCodeForSession(code)
 
     const authenticated = await this.auth.isAuthenticated()
-    await this.router.navigateByUrl(authenticated ? '/' : '/auth')
+    const returnPath = this.auth.sanitizeReturnPath(this.route.snapshot.queryParamMap.get('returnUrl'))
+    await this.router.navigateByUrl(authenticated ? returnPath : '/auth')
   }
 }

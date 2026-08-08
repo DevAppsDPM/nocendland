@@ -2,8 +2,11 @@ import {Database} from '@platform/supabase/database.types'
 
 export type TrainingExercise = Database['public']['Tables']['training_exercise']['Row']
 export type TrainingExerciseInsert = Database['public']['Tables']['training_exercise']['Insert']
+export type TrainingSchedule = Database['public']['Tables']['training_schedule']['Row']
+export type TrainingScheduleInsert = Database['public']['Tables']['training_schedule']['Insert']
 export type TrainingScheduleItem = Database['public']['Tables']['training_schedule_item']['Row']
 export type TrainingScheduleItemInsert = Database['public']['Tables']['training_schedule_item']['Insert']
+export type TrainingShare = Database['public']['Tables']['training_share']['Row']
 export type TrainingEntry = Database['public']['Tables']['training_entry']['Row']
 export type TrainingEntryInsert = Database['public']['Tables']['training_entry']['Insert']
 export type TrainingSet = Database['public']['Tables']['training_set']['Row']
@@ -33,6 +36,68 @@ export interface TrainingScheduleDraft {
   sortOrder: number
 }
 
+export type TrainingShareType = 'exercises' | 'schedule'
+export type TrainingShareConflictAction = 'keep' | 'update'
+
+export interface TrainingShareExercise {
+  portableId: string
+  name: string
+  description: string | null
+  tips: string[]
+  imageKey: string | null
+  imageUrl?: string
+}
+
+export interface TrainingShareScheduleItem {
+  exercisePortableId: string
+  setCount: number
+  targetRepetitions: number | null
+  targetWeightKg: number | null
+  sortOrder: number
+}
+
+export interface TrainingShareScheduleDay {
+  weekday: number
+  items: TrainingShareScheduleItem[]
+}
+
+export interface TrainingShareSchedule {
+  portableId: string
+  name: string
+  days: TrainingShareScheduleDay[]
+}
+
+export interface TrainingShareManifest {
+  version: 'training-share/v1'
+  type: TrainingShareType
+  title: string
+  exercises: TrainingShareExercise[]
+  schedule?: TrainingShareSchedule
+}
+
+export interface TrainingSharePreview {
+  shareId: string
+  createdAt: string
+  manifest: TrainingShareManifest
+}
+
+export interface TrainingShareImportOptions {
+  activateSchedule: boolean
+  conflicts: Readonly<Record<string, TrainingShareConflictAction>>
+}
+
+export interface TrainingShareImportResult {
+  exerciseIds: Record<string, number>
+  scheduleId: number | null
+  scheduleName: string | null
+  imageFailures: string[]
+}
+
+export interface TrainingShareCreated {
+  id: string
+  token: string
+}
+
 export interface TrainingSetDraft {
   id?: number
   position: number
@@ -46,4 +111,3 @@ export interface TrainingEntryDraft {
   sortOrder: number
   sets: TrainingSetDraft[]
 }
-
