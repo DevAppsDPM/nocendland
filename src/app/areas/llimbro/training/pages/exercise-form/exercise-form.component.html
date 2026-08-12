@@ -7,21 +7,55 @@
       <p class="section-eyebrow">Entrenamiento · ejercicio</p>
       <h1>{{ isNew() ? 'Nuevo ejercicio' : 'Editar ejercicio' }}</h1>
     </div>
-    @if (!isNew()) {
-      <button class="ui-icon-button ui-button--danger" type="button" aria-label="Archivar ejercicio" (click)="archive()">
-        <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#delete"/></svg>
-      </button>
-    }
+    <div class="exercise-form-page__actions">
+      @if (!isNew()) {
+        <div class="exercise-form-mode ui-segmented-control" aria-label="Modo de la ficha">
+          <button type="button" aria-pressed="false" (click)="viewSummary()">Resumen</button>
+          <button type="button" class="exercise-form-mode__active" aria-pressed="true">Editar</button>
+        </div>
+        <button class="ui-icon-button ui-button--danger" type="button" aria-label="Archivar ejercicio" (click)="archive()">
+          <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#delete"/></svg>
+        </button>
+      }
+    </div>
   </header>
 
   <form class="exercise-form" [formGroup]="form" (ngSubmit)="save()">
     <section class="exercise-form__image ui-card">
-      <app-avatar [image]="imageUrl()" [loading]="store.savingExerciseImage()"/>
-      <input #imageInput type="file" accept="image/*" hidden (change)="onImageSelected($event)">
-      <button class="ui-button ui-button--quiet" type="button" (click)="chooseImage()">
-        <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#add_a_photo"/></svg>
-        Elegir imagen
-      </button>
+      @if (cropSource(); as source) {
+        <app-image-cropper
+          [source]="source"
+          [config]="cropperConfig"
+          (confirmed)="applyCrop($event)"
+          (cancelled)="cancelCrop()"
+        />
+      } @else {
+        <button
+          class="exercise-form__image-button"
+          type="button"
+          aria-label="Elegir otra imagen para el ejercicio"
+          [disabled]="store.savingExerciseImage()"
+          (click)="chooseImage()"
+        >
+          <app-avatar [image]="imageUrl()" [loading]="store.savingExerciseImage()"/>
+          <span>Pulsa para {{ imageUrl() ? 'cambiar' : 'elegir' }}</span>
+        </button>
+        <input #imageInput type="file" accept="image/*" hidden (change)="onImageSelected($event)">
+        <div class="exercise-form__image-actions">
+          <button class="ui-button ui-button--quiet" type="button" (click)="chooseImage()">
+            <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#add_a_photo"/></svg>
+            {{ imageUrl() ? 'Cambiar imagen' : 'Elegir imagen' }}
+          </button>
+          @if (imageUrl()) {
+            <button class="ui-icon-button" type="button" aria-label="Editar encuadre" (click)="editImage()">
+              <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#edit"/></svg>
+            </button>
+            <button class="ui-icon-button ui-button--danger" type="button" aria-label="Quitar imagen" (click)="removeImage()">
+              <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#delete"/></svg>
+            </button>
+          }
+        </div>
+      }
     </section>
 
     <section class="exercise-form__fields ui-card">
@@ -36,6 +70,62 @@
         Descripción
         <textarea class="ui-textarea" formControlName="description" rows="4"></textarea>
       </label>
+      <label class="ui-field">
+        Vídeo de referencia
+        <input class="ui-input" type="url" formControlName="videoUrl" inputmode="url" autocomplete="url" placeholder="https://…">
+        @if (form.controls.videoUrl.touched && form.controls.videoUrl.invalid) {
+          <small class="exercise-form__error">Introduce una URL completa que empiece por https://.</small>
+        }
+      </label>
+
+      <div class="exercise-form__taxonomy">
+        <p class="section-eyebrow">Clasificación</p>
+        <fieldset>
+          <legend>Modalidades</legend>
+          <div class="exercise-form__chips">
+            @for (option of modalities; track option.id) {
+              <label class="ui-choice-chip">
+                <input
+                  type="checkbox"
+                  [checked]="optionSelected(form.controls.trainingModalities, option.id)"
+                  (change)="toggleOption(form.controls.trainingModalities, option.id, $event)"
+                >
+                {{ option.label }}
+              </label>
+            }
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Zonas musculares</legend>
+          <div class="exercise-form__chips">
+            @for (option of muscleGroups; track option.id) {
+              <label class="ui-choice-chip">
+                <input
+                  type="checkbox"
+                  [checked]="optionSelected(form.controls.muscleGroups, option.id)"
+                  (change)="toggleOption(form.controls.muscleGroups, option.id, $event)"
+                >
+                {{ option.label }}
+              </label>
+            }
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Patrones de movimiento</legend>
+          <div class="exercise-form__chips">
+            @for (option of movementPatterns; track option.id) {
+              <label class="ui-choice-chip">
+                <input
+                  type="checkbox"
+                  [checked]="optionSelected(form.controls.movementPatterns, option.id)"
+                  (change)="toggleOption(form.controls.movementPatterns, option.id, $event)"
+                >
+                {{ option.label }}
+              </label>
+            }
+          </div>
+        </fieldset>
+      </div>
 
       <div class="exercise-form__tips" formArrayName="tips">
         <header>
@@ -66,11 +156,10 @@
       <p class="exercise-form__message" role="alert">{{ error() }}</p>
     }
     <footer>
-      <button class="ui-button" type="submit" [disabled]="store.savingExercise()">
-        @if (store.savingExercise()) { <span class="ui-spinner" aria-hidden="true"></span> }
+      <button class="ui-button" type="submit" [disabled]="store.savingExercise() || store.savingExerciseImage() || cropping()">
+        @if (store.savingExercise() || store.savingExerciseImage()) { <span class="ui-spinner" aria-hidden="true"></span> }
         Guardar ejercicio
       </button>
     </footer>
   </form>
 </main>
-

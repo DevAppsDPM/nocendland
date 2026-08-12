@@ -30,6 +30,12 @@ describe('ExercisesComponent', () => {
     expect(navigation.to).toHaveBeenCalledWith('training', 'exercise-form', 'new')
   })
 
+  it('opens the detail page from a catalogue item', () => {
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('.data-list__item')
+    button.click()
+    expect(navigation.to).toHaveBeenCalledWith('training', 'exercises', '1', {queryParams: {from: 'exercises'}})
+  })
+
   it('offers the full catalogue when entering share mode', () => {
     const button: HTMLButtonElement = fixture.nativeElement
       .querySelector('[aria-label="Seleccionar ejercicios para compartir"]')

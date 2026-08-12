@@ -4,6 +4,7 @@ import {ConfirmDialogService} from '@shared/ui/confirm-dialog'
 import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
 import {TrainingExerciseListItem} from '../../models/training.models'
 import {TrainingStore} from '../../state/training.store'
+import {trainingTaxonomyLabels} from '../../training.constants'
 
 @Component({
   selector: 'app-exercises',
@@ -28,9 +29,25 @@ export class ExercisesComponent {
       id: exercise.id,
       value: exercise,
       title: exercise.name,
-      details: exercise.description ? [exercise.description] : ['Sin descripción'],
+      details: [
+        ...trainingTaxonomyLabels([
+          ...(exercise.training_modalities ?? []),
+          ...(exercise.muscle_groups ?? []),
+          ...(exercise.movement_patterns ?? []),
+        ]).slice(0, 4),
+        exercise.description || 'Sin descripción',
+      ],
       imageUrl: exercise.imageUrl,
-      searchText: [exercise.name, exercise.description, ...exercise.tips].filter(Boolean).join(' '),
+      searchText: [
+        exercise.name,
+        exercise.description,
+        ...exercise.tips,
+        ...trainingTaxonomyLabels([
+          ...(exercise.training_modalities ?? []),
+          ...(exercise.muscle_groups ?? []),
+          ...(exercise.movement_patterns ?? []),
+        ]),
+      ].filter(Boolean).join(' '),
     })),
   )
   protected readonly config: DataListConfig<TrainingExerciseListItem> = {
@@ -47,6 +64,10 @@ export class ExercisesComponent {
 
   protected openForm(id: number | 'new'): void {
     void this.navigation.to('training', 'exercise-form', String(id))
+  }
+
+  protected openDetail(id: number): void {
+    void this.navigation.to('training', 'exercises', String(id), {queryParams: {from: 'exercises'}})
   }
 
   protected toggleArchiveMode(): void {
@@ -83,7 +104,7 @@ export class ExercisesComponent {
   private handleSelection(exercises: readonly TrainingExerciseListItem[]): void {
     if (this.selectionMode() === 'browse') {
       const exercise = exercises[0]
-      if (exercise) this.openForm(exercise.id)
+      if (exercise) this.openDetail(exercise.id)
       return
     }
     if (this.selectionMode() === 'share') {

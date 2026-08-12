@@ -114,6 +114,29 @@
     box-shadow: 0 0 0 3px var(--area-accent-soft);
   }
 
+  .ui-choice-chip {
+    display: inline-flex;
+    min-height: var(--control-height-md);
+    align-items: center;
+    gap: var(--space-2);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-round);
+    background: var(--color-surface-muted);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .ui-choice-chip:has(input:checked) {
+    border-color: var(--area-accent);
+    background: var(--area-accent-soft);
+    color: var(--area-accent-strong);
+  }
+
+  .ui-choice-chip input { width: 1rem; height: 1rem; accent-color: var(--area-accent); }
+
   .ui-progress {
     overflow: hidden;
     width: 100%;

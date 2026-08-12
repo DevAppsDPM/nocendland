@@ -22,6 +22,10 @@ interface ShareExercise {
   tips: string[]
   imageKey: string | null
   imageUrl?: string
+  videoUrl?: string | null
+  trainingModalities?: string[]
+  muscleGroups?: string[]
+  movementPatterns?: string[]
 }
 
 interface ShareScheduleItem {
@@ -216,6 +220,10 @@ async function snapshotExercises(
     description: string | null
     tips: string[]
     image_path: string | null
+    video_url: string | null
+    training_modalities: string[]
+    muscle_groups: string[]
+    movement_patterns: string[]
   }>,
   shareId: string,
   admin: SupabaseClient,
@@ -236,6 +244,10 @@ async function snapshotExercises(
       description: exercise.description,
       tips: exercise.tips,
       imageKey,
+      videoUrl: exercise.video_url,
+      trainingModalities: exercise.training_modalities,
+      muscleGroups: exercise.muscle_groups,
+      movementPatterns: exercise.movement_patterns,
     })
   }
   return snapshots

@@ -34,4 +34,8 @@ export class SupabaseStorageService {
     return this.supabase.client.storage.from(this.supabase.storageBucket).list(path)
   }
 
+  public removeFiles(paths: string[]): Promise<{data: FileObject[], error: null} | {data: null, error: StorageError}> {
+    return this.supabase.client.storage.from(this.supabase.storageBucket).remove(paths)
+  }
+
 }

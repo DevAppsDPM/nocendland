@@ -1,4 +1,5 @@
 import {Database} from '@platform/supabase/database.types'
+import {TrainingModality, TrainingMovementPattern, TrainingMuscleGroup} from '../training.constants'
 
 export type TrainingExercise = Database['public']['Tables']['training_exercise']['Row']
 export type TrainingExerciseInsert = Database['public']['Tables']['training_exercise']['Insert']
@@ -18,6 +19,7 @@ export type TrainingEntryWithDetails = TrainingEntry & {
   training_exercise: TrainingExercise
   training_set: TrainingSet[]
 }
+export type TrainingExerciseHistoryEntry = TrainingEntry & {training_set: TrainingSet[]}
 
 export interface TrainingExerciseDraft {
   id?: number
@@ -25,6 +27,10 @@ export interface TrainingExerciseDraft {
   description: string | null
   tips: string[]
   image_path: string | null
+  video_url: string | null
+  training_modalities: TrainingModality[]
+  muscle_groups: TrainingMuscleGroup[]
+  movement_patterns: TrainingMovementPattern[]
 }
 
 export interface TrainingScheduleDraft {
@@ -34,6 +40,21 @@ export interface TrainingScheduleDraft {
   targetRepetitions: number | null
   targetWeightKg: number | null
   sortOrder: number
+}
+
+export interface TrainingScheduleCatalogDraftItem {
+  key: string
+  id: number | null
+  name: string
+  isActive: boolean
+  duplicateFromId: number | null
+  updatedAt: string | null
+  deleted: boolean
+}
+
+export interface TrainingScheduleCatalogSaveResult {
+  scheduleIds: Record<string, number>
+  selectedScheduleId: number
 }
 
 export type TrainingShareType = 'exercises' | 'schedule'
@@ -46,6 +67,10 @@ export interface TrainingShareExercise {
   tips: string[]
   imageKey: string | null
   imageUrl?: string
+  videoUrl?: string | null
+  trainingModalities?: TrainingModality[]
+  muscleGroups?: TrainingMuscleGroup[]
+  movementPatterns?: TrainingMovementPattern[]
 }
 
 export interface TrainingShareScheduleItem {

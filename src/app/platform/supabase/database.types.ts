@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       nutrition_ingredient: {
@@ -217,10 +242,14 @@ export type Database = {
           id: number
           id_user: string
           image_path: string | null
+          movement_patterns: string[]
+          muscle_groups: string[]
           name: string
           portable_id: string
           tips: string[]
+          training_modalities: string[]
           updated_at: string
+          video_url: string | null
         }
         Insert: {
           archived_at?: string | null
@@ -229,10 +258,14 @@ export type Database = {
           id?: number
           id_user: string
           image_path?: string | null
+          movement_patterns?: string[]
+          muscle_groups?: string[]
           name: string
           portable_id?: string
           tips?: string[]
+          training_modalities?: string[]
           updated_at?: string
+          video_url?: string | null
         }
         Update: {
           archived_at?: string | null
@@ -241,10 +274,14 @@ export type Database = {
           id?: number
           id_user?: string
           image_path?: string | null
+          movement_patterns?: string[]
+          muscle_groups?: string[]
           name?: string
           portable_id?: string
           tips?: string[]
+          training_modalities?: string[]
           updated_at?: string
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -694,6 +731,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       nutrition_objetive_levels: ["keep", "good", "top"],

@@ -49,6 +49,10 @@ export class ExerciseRepository {
         description: draft.description?.trim() || null,
         tips: draft.tips.map(tip => tip.trim()).filter(Boolean),
         image_path: draft.image_path,
+        video_url: draft.video_url?.trim() || null,
+        training_modalities: draft.training_modalities,
+        muscle_groups: draft.muscle_groups,
+        movement_patterns: draft.movement_patterns,
         updated_at: now,
       }
       const query = draft.id
@@ -98,8 +102,23 @@ export class ExerciseRepository {
     }
   }
 
+  async removeImage(exerciseId: number): Promise<void> {
+    this.savingImageState.set(true)
+    try {
+      const path = this.imagePath(exerciseId)
+      const removed = await this.storage.removeFiles([path])
+      if (removed.error) return Promise.reject(removed.error)
+      const update = await this.supabase.client.from(this.entity).update({
+        image_path: null,
+        updated_at: new Date().toISOString(),
+      }).eq('id_user', this.auth.requireUserId()).eq('id', exerciseId)
+      if (update.error) return Promise.reject(update.error)
+    } finally {
+      this.savingImageState.set(false)
+    }
+  }
+
   private imagePath(exerciseId: number): string {
     return `${this.entity}/${this.auth.requireUserId()}/${exerciseId}`
   }
 }
-

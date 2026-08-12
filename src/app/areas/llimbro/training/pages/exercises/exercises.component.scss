@@ -1,5 +1,19 @@
 :host {
   display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.exercises-page {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.exercises-page__list {
+  min-height: 0;
+  flex: 1;
 }
 
 .training-heading__actions {

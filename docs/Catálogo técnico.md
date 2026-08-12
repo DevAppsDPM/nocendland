@@ -9,7 +9,7 @@ Los consumidores importan estas piezas únicamente desde los entrypoints `@share
 | Pieza | Propósito y contrato | Ámbito | Fuente |
 | --- | --- | --- | --- |
 | `AvatarComponent` | Presenta una imagen con estados de carga y recurso alternativo. | Aplicación | `src/app/shared/ui/avatar/avatar.component.ts` |
-| `CalendarComponent` | Selecciona fechas y emite la fecha activa. | Aplicación | `src/app/shared/ui/calendar/calendar.component.ts` |
+| `CalendarComponent` | Presenta una fecha controlada mediante `date`, permite recorrer meses y emite la selección con `dateSelected`. | Aplicación | `src/app/shared/ui/calendar/calendar.component.ts` |
 | `CardDataComponent` | Presenta una métrica formada por etiqueta y valor textual o numérico. | Aplicación | `src/app/shared/ui/card-data/card-data.component.ts` |
 | `ColumnCenterContainerComponent` | Compone un `TemplateRef` dentro de la columna principal de contenido. | Shell | `src/app/shared/ui/column-center-container/column-center-container.component.ts` |
 | `ConfirmDialogComponent` | Vista accesible del diálogo de confirmación; normalmente se consume mediante su servicio. | Aplicación | `src/app/shared/ui/confirm-dialog/confirm-dialog.component.ts` |
@@ -19,7 +19,11 @@ Los consumidores importan estas piezas únicamente desde los entrypoints `@share
 | `DIALOG_DATA` | Token para inyectar datos tipados por el consumidor de un diálogo. | Aplicación | `src/app/shared/ui/dialog/dialog.tokens.ts` |
 | `FeatureTabBarComponent` | Dock inferior flotante que presenta los destinos tipados aportados por una feature. | Feature | `src/app/shared/ui/feature-tab-bar/feature-tab-bar.component.ts` |
 | `FeatureSwipeNavigationDirective` | Navega entre los destinos adyacentes de una feature reutilizando su misma configuración y evitando controles interactivos. | Feature | `src/app/shared/ui/feature-tab-bar/feature-swipe-navigation.directive.ts` |
+| `ImageCropperComponent` | Recorta una fuente `Blob \| string` con relación de aspecto, tamaño, formato y calidad configurables; emite `ImageCropResult` sin conocer selección de archivos ni persistencia. Se importa desde `@shared/ui/image-cropper`. | Aplicación | `src/app/shared/ui/image-cropper/image-cropper.component.ts` |
 | `ProgressViewerComponent` | Presenta progreso y métricas configuradas por el consumidor. | Aplicación | `src/app/shared/ui/progress-viewer/progress-viewer.component.ts` |
+| `SortableListDirective` | Coordina listas reordenables verticales y emite movimientos por índice desde arrastre o teclado sin mutar la colección del consumidor. Se acompaña de `SortableItemDirective` y `SortableHandleDirective`. | Aplicación | `src/app/shared/ui/sortable-list/sortable-list.directive.ts` |
+| `.ui-segmented-input` | Combina opciones rápidas excluyentes con un campo compacto para introducir un valor personalizado. | Aplicación | `src/styles/components.scss` |
+| `.ui-segmented-control` | Agrupa botones excluyentes y representa la opción activa mediante `aria-pressed`. | Aplicación | `src/styles/components.scss` |
 | `ConfirmDialogService` | Ofrece confirmaciones semánticas sobre la infraestructura común de diálogos. | Aplicación | `src/app/shared/ui/services/confirm-dialog.service.ts` |
 | `CssTokenService` | Lee tokens CSS computados cuando una integración necesita su valor efectivo. | Aplicación | `src/app/shared/ui/theme/css-token.service.ts` |
 | `ThemeService` | Gestiona y persiste el tema claro u oscuro como estado Signal. | Aplicación | `src/app/shared/ui/theme/theme.service.ts` |
@@ -31,3 +35,16 @@ Los consumidores importan estas piezas únicamente desde los entrypoints `@share
 - Las adaptaciones de datos de dominio se realizan en el consumidor. Las primitivas no reciben rutas de propiedades ni conocen modelos de un área.
 - Las clases `.ui-*` se declaran exclusivamente en `src/styles/components.scss`; los ajustes contextuales usan clases propias del componente consumidor.
 - Una abstracción no puede introducir `any` para aparentar reutilización. Si dos casos todavía no comparten un contrato cohesivo, se mantiene una implementación explícita hasta que el patrón sea estable.
+
+## Ejemplo de recorte de imagen
+
+```html
+<app-image-cropper
+  [source]="imageBlob"
+  [config]="{aspectRatio: 1, maxOutputWidth: 1024, maxOutputHeight: 1024}"
+  (confirmed)="useCroppedImage($event)"
+  (cancelled)="cancelCrop()"
+/>
+```
+
+El consumidor convierte el `blob` de `ImageCropResult` al formato que requiera su repositorio y conserva la responsabilidad sobre selección, eliminación, errores y guardado.
