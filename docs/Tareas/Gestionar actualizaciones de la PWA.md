@@ -1,11 +1,11 @@
 ---
 Nombre: Gestionar actualizaciones de la PWA
-Estado: En curso
-Resumen: Definir e implementar cómo se detectan, comunican y activan nuevas versiones del service worker sin dejar pestañas usando recursos antiguos.
+Estado: Hecha
+Resumen: La PWA detecta nuevas versiones, muestra un aviso global posponible y recarga únicamente cuando el usuario decide actualizar.
 Decisiones: La aplicación comprueba actualizaciones al arrancar, al recuperar visibilidad y cada seis horas; avisa solo cuando la nueva versión está lista, permite posponerla y aplica una recarga completa iniciada por el usuario.
 Bloqueada: []
 Fecha de creación: 2026-08-06T17:49:32
-Última modificación: 2026-08-12T18:44:06
+Última modificación: 2026-08-12T18:55:57
 ---
 
 # Gestionar actualizaciones de la PWA
@@ -34,3 +34,10 @@ Una pestaña abierta puede continuar utilizando recursos de una versión anterio
 - La política de actualización está documentada.
 - La aplicación informa o actualiza siguiendo esa política.
 - El flujo se ha probado con dos versiones consecutivas.
+
+## Resultado
+
+- `AppUpdateService` conserva el estado mediante un Signal privado y escucha los eventos del service worker sin depender de Zone.js.
+- El aviso global es accesible, adaptable a móvil y permite posponer o recargar la aplicación.
+- Las 73 pruebas automatizadas y el build de producción finalizaron correctamente.
+- La prueba en producción mantuvo abierto un cliente `0.4.0`, publicó `0.4.1`, comprobó la aparición del aviso y verificó que el botón `Actualizar` recargaba ese mismo cliente como `0.4.1`.
