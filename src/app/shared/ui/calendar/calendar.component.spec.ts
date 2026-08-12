@@ -20,4 +20,15 @@ describe('CalendarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('presents the controlled date without replacing it on initialization', () => {
+    const emitted = jasmine.createSpy('dateSelected')
+    component.dateSelected.subscribe(emitted)
+    fixture.componentRef.setInput('date', new Date(2026, 7, 3))
+    fixture.detectChanges()
+
+    const selected: HTMLButtonElement = fixture.nativeElement.querySelector('.calendar__day--selected')
+    expect(selected.textContent?.trim()).toBe('3')
+    expect(emitted).not.toHaveBeenCalled()
+  })
 });

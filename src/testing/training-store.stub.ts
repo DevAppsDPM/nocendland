@@ -1,4 +1,8 @@
 import {signal} from '@angular/core'
+import {
+  TrainingExerciseHistoryEntry,
+  TrainingScheduleCatalogDraftItem,
+} from '@areas/llimbro/training/models/training.models'
 
 export function createTrainingStoreStub() {
   const selectedDate = signal(new Date(2026, 7, 3))
@@ -27,8 +31,7 @@ export function createTrainingStoreStub() {
     updated_at: '2026-08-01T00:00:00Z',
     training_exercise: {id: 1, name: 'Sentadilla'},
   }])
-  return {
-    exercises: signal([{
+  const exercise = {
       id: 1,
       id_user: 'test-user',
       name: 'Sentadilla',
@@ -36,10 +39,47 @@ export function createTrainingStoreStub() {
       description: 'Patrón dominante de rodilla',
       tips: ['Mantén el torso firme'],
       image_path: null,
+      video_url: 'https://example.com/squat',
+      training_modalities: ['strength'],
+      muscle_groups: ['quadriceps'],
+      movement_patterns: ['squat'],
       archived_at: null,
       created_at: '2026-08-01T00:00:00Z',
       updated_at: '2026-08-01T00:00:00Z',
-    }]),
+    }
+  const exerciseHistory = [{
+    id: 20,
+    id_user: 'test-user',
+    exercise_id: 1,
+    performed_on: '2026-08-03',
+    sort_order: 0,
+    created_at: '2026-08-03T00:00:00Z',
+    updated_at: '2026-08-03T00:00:00Z',
+    training_set: [{
+      id: 30,
+      id_user: 'test-user',
+      entry_id: 20,
+      position: 1,
+      repetitions: 10,
+      weight_kg: 40,
+      created_at: '2026-08-03T00:00:00Z',
+      updated_at: '2026-08-03T00:00:00Z',
+    }],
+  }]
+  const previousSessions = signal<ReadonlyMap<number, TrainingExerciseHistoryEntry | null>>(new Map([[1, {
+    ...exerciseHistory[0],
+    id: 19,
+    performed_on: '2026-07-27',
+    training_set: [
+      {...exerciseHistory[0].training_set[0], id: 29, entry_id: 19, position: 1},
+      {...exerciseHistory[0].training_set[0], id: 28, entry_id: 19, position: 2, repetitions: null, weight_kg: null},
+    ],
+  }]]))
+  return {
+    exercises: signal([exercise]),
+    exerciseDetail: signal(exercise),
+    exerciseHistory: signal(exerciseHistory),
+    exerciseDetailError: signal<string | null>(null),
     schedules,
     selectedScheduleId,
     selectedSchedule: signal(schedules()[0]),
@@ -67,11 +107,14 @@ export function createTrainingStoreStub() {
         updated_at: '2026-08-03T00:00:00Z',
       }],
     }]),
+    previousSessions,
     selectedDate,
     loadingExercises: signal(false),
     loadingSchedule: signal(false),
     loadingEntries: signal(false),
+    loadingExerciseDetail: signal(false),
     savingSchedule: signal(false),
+    savingScheduleCatalog: signal(false),
     savingEntries: signal(false),
     savingExercise: signal(false),
     savingExerciseImage: signal(false),
@@ -79,7 +122,13 @@ export function createTrainingStoreStub() {
     loadExercises: async () => undefined,
     loadSchedule: async () => undefined,
     loadEntries: async () => undefined,
+    loadPreviousSessions: async (_exerciseIds: readonly number[]) => undefined,
+    loadExerciseDetail: async () => undefined,
     saveScheduleDay: async () => undefined,
+    saveScheduleCatalog: async (
+      _drafts: readonly TrainingScheduleCatalogDraftItem[],
+      _selectedKey: string,
+    ) => undefined,
     createSchedule: async () => undefined,
     renameSelectedSchedule: async () => undefined,
     duplicateSelectedSchedule: async () => undefined,

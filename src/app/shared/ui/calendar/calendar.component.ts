@@ -1,80 +1,55 @@
-import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
-
+import {ChangeDetectionStrategy, Component, computed, input, linkedSignal, output} from '@angular/core'
 
 @Component({
-    selector: 'app-calendar',
-    imports: [],
-    templateUrl: './calendar.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './calendar.component.scss'
+  selector: 'app-calendar',
+  imports: [],
+  templateUrl: './calendar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './calendar.component.scss',
 })
-export class CalendarComponent implements OnInit, AfterViewInit {
-  protected currentDate: Date = new Date();
-  protected currentMonth: number = this.currentDate.getMonth();
-  protected currentYear: number = this.currentDate.getFullYear();
-  protected currentDay: number = this.currentDate.getDate();
-  public selectedDate: Date = new Date(this.currentYear, this.currentMonth, this.currentDay)
+export class CalendarComponent {
+  readonly date = input(new Date())
+  readonly dateSelected = output<Date>()
 
-  monthNames: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  weekDays: string[] = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sab', 'Dom']; // Comienza el lunes
+  protected readonly currentMonth = linkedSignal(() => this.date().getMonth())
+  protected readonly currentYear = linkedSignal(() => this.date().getFullYear())
+  protected readonly monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+  protected readonly weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+  protected readonly daysInMonth = computed(() => Array.from(
+    {length: new Date(this.currentYear(), this.currentMonth() + 1, 0).getDate()},
+    (_, index) => index + 1,
+  ))
+  protected readonly emptyDays = computed(() => {
+    const firstDayOfMonth = new Date(this.currentYear(), this.currentMonth(), 1).getDay()
+    return Array.from({length: firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1})
+  })
 
-  daysInMonth: number[] = [];
-
-  @Output() dateSelected: EventEmitter<Date> = new EventEmitter<Date>();
-
-  constructor(private changeDetector: ChangeDetectorRef) {
-  }
-
-  ngOnInit() {
-    this.generateCalendar()
-  }
-
-	ngAfterViewInit() {
-    // this.selectedDate = new Date(this.currentYear, this.currentMonth, this.currentDay)
-    this.onDayClick(this.currentDay)
-  }
-
-  generateCalendar() {
-    const daysInCurrentMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-    this.daysInMonth = Array.from({ length: daysInCurrentMonth }, (_, i) => i + 1);
-  }
-
-  // Ajusta la cantidad de días vacíos
-  getEmptyDays() {
-    const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1).getDay();
-    return firstDayOfMonth === 0 ? Array.from({ length: 6 }) : Array.from({ length: firstDayOfMonth - 1 });
-  }
-
-  prevMonth() {
-    if (this.currentMonth === 0) {
-      this.currentMonth = 11;
-      this.currentYear--;
-    } else {
-      this.currentMonth--;
+  protected prevMonth(): void {
+    if (this.currentMonth() === 0) {
+      this.currentMonth.set(11)
+      this.currentYear.update(year => year - 1)
+      return
     }
-    this.generateCalendar();
+    this.currentMonth.update(month => month - 1)
   }
 
-  nextMonth() {
-    if (this.currentMonth === 11) {
-      this.currentMonth = 0;
-      this.currentYear++;
-    } else {
-      this.currentMonth++;
+  protected nextMonth(): void {
+    if (this.currentMonth() === 11) {
+      this.currentMonth.set(0)
+      this.currentYear.update(year => year + 1)
+      return
     }
-    this.generateCalendar();
+    this.currentMonth.update(month => month + 1)
   }
 
-  protected onDayClick(day: number): void {
-    this.currentDay = day
-    const newDate: Date = new Date(this.currentYear, this.currentMonth, day)
-
-    console.log('New date selected', newDate)
-    this.selectedDate = newDate
-    this.dateSelected.emit(this.selectedDate);  // Emitimos la fecha seleccionada
+  protected selectDay(day: number): void {
+    this.dateSelected.emit(new Date(this.currentYear(), this.currentMonth(), day))
   }
 
   protected isSelectedDay(day: number): boolean {
-    return this.selectedDate.getTime() === new Date(this.currentYear, this.currentMonth, day).getTime()
+    const selected = this.date()
+    return selected.getFullYear() === this.currentYear()
+      && selected.getMonth() === this.currentMonth()
+      && selected.getDate() === day
   }
 }

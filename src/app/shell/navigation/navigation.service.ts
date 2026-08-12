@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {NavigationEnd, Router} from '@angular/router';
+import {NavigationEnd, NavigationExtras, Router} from '@angular/router';
 import {filter, Observable} from 'rxjs';
 
 export const APP_ROUTES = {
@@ -40,6 +40,7 @@ export class NavigationService {
     route: Route,
     child?: Child,
     parameter?: string,
+    extras?: NavigationExtras,
   ): Promise<boolean> {
     const routeConfig = APP_ROUTES[route]
     const children = routeConfig.children as Record<string, string>
@@ -51,7 +52,7 @@ export class NavigationService {
     if (parameter) path.push(parameter)
     this.rememberPath(route, path)
 
-    return this.router.navigate(path)
+    return this.router.navigate(path, extras)
   }
 
   public navigationEnd(): Observable<NavigationEnd> {
