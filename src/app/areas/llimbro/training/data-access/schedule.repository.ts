@@ -1,8 +1,11 @@
 import {Injectable} from '@angular/core'
 import {AuthService} from '@platform/auth/auth.service'
 import {SupabaseClientService} from '@platform/supabase/supabase-client.service'
+import {Json} from '@platform/supabase/database.types'
 import {
   TrainingSchedule,
+  TrainingScheduleCatalogDraftItem,
+  TrainingScheduleCatalogSaveResult,
   TrainingScheduleDraft,
   TrainingScheduleInsert,
   TrainingScheduleItemInsert,
@@ -56,6 +59,35 @@ export class ScheduleRepository {
   async activate(scheduleId: number): Promise<void> {
     const query = await this.supabase.client.rpc('activate_training_schedule', {target_schedule_id: scheduleId})
     if (query.error) return Promise.reject(query.error)
+  }
+
+  async saveCatalog(
+    drafts: readonly TrainingScheduleCatalogDraftItem[],
+    selectedKey: string,
+  ): Promise<TrainingScheduleCatalogSaveResult> {
+    const catalogDraft: Json = drafts.map(draft => ({
+      key: draft.key,
+      id: draft.id,
+      name: draft.name,
+      isActive: draft.isActive,
+      duplicateFromId: draft.duplicateFromId,
+      updatedAt: draft.updatedAt,
+      deleted: draft.deleted,
+    }))
+    const saveCatalogRpc = this.supabase.client.rpc as unknown as (
+      functionName: 'save_training_schedule_catalog',
+      args: {catalog_draft: Json; selected_key: string},
+    ) => Promise<{data: Json; error: {message: string} | null}>
+    const query = await saveCatalogRpc('save_training_schedule_catalog', {
+      catalog_draft: catalogDraft,
+      selected_key: selectedKey,
+    })
+    if (query.error) return Promise.reject(query.error)
+    const result = query.data as unknown as TrainingScheduleCatalogSaveResult
+    if (!result || !Number.isInteger(result.selectedScheduleId) || typeof result.scheduleIds !== 'object') {
+      return Promise.reject(new Error('Invalid training schedule catalog response'))
+    }
+    return result
   }
 
   async duplicate(schedule: TrainingSchedule, items: readonly TrainingScheduleItemWithExercise[], name: string): Promise<void> {

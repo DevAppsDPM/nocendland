@@ -1,4 +1,4 @@
-import {computed, effect, Injectable, linkedSignal, signal} from '@angular/core'
+import {computed, effect, Injectable, linkedSignal, OnDestroy, signal} from '@angular/core'
 import {formatDateForDatabase} from '@shared/utilities/date.utils'
 import {ExerciseRepository} from '../data-access/exercise.repository'
 import {ScheduleRepository} from '../data-access/schedule.repository'
@@ -9,8 +9,10 @@ import {
   TrainingEntryWithDetails,
   TrainingExercise,
   TrainingExerciseDraft,
+  TrainingExerciseHistoryEntry,
   TrainingExerciseListItem,
   TrainingScheduleDraft,
+  TrainingScheduleCatalogDraftItem,
   TrainingSchedule,
   TrainingScheduleItemWithExercise,
   TrainingShare,
@@ -18,19 +20,26 @@ import {
 } from '../models/training.models'
 
 @Injectable()
-export class TrainingStore {
+export class TrainingStore implements OnDestroy {
   private readonly exercisesState = signal<TrainingExerciseListItem[]>([])
   private readonly schedulesState = signal<TrainingSchedule[]>([])
   private readonly scheduleItemsState = signal<TrainingScheduleItemWithExercise[]>([])
   private readonly entriesState = signal<TrainingEntryWithDetails[]>([])
+  private readonly previousSessionsState = signal<ReadonlyMap<number, TrainingExerciseHistoryEntry | null>>(new Map())
+  private readonly exerciseDetailState = signal<TrainingExerciseListItem | null>(null)
+  private readonly exerciseHistoryState = signal<TrainingExerciseHistoryEntry[]>([])
   private readonly selectedDateState = signal(new Date())
   private readonly loadingExercisesState = signal(false)
   private readonly loadingScheduleState = signal(false)
   private readonly loadingEntriesState = signal(false)
+  private readonly loadingExerciseDetailState = signal(false)
+  private readonly exerciseDetailErrorState = signal<string | null>(null)
   private readonly savingScheduleState = signal(false)
+  private readonly savingScheduleCatalogState = signal(false)
   private readonly savingEntriesState = signal(false)
   private readonly sharingState = signal(false)
   private readonly sharesState = signal<TrainingShare[]>([])
+  private readonly previousSessionRequests = new Map<string, Promise<void>>()
   private readonly selectedScheduleIdState = linkedSignal<TrainingSchedule[], number | null>({
     source: () => this.schedulesState(),
     computation: (schedules, previous) => {
@@ -53,12 +62,18 @@ export class TrainingStore {
     return activeId ? this.scheduleItemsState().filter(item => item.schedule_id === activeId) : []
   })
   readonly entries = this.entriesState.asReadonly()
+  readonly previousSessions = this.previousSessionsState.asReadonly()
+  readonly exerciseDetail = this.exerciseDetailState.asReadonly()
+  readonly exerciseHistory = this.exerciseHistoryState.asReadonly()
   readonly shares = this.sharesState.asReadonly()
   readonly selectedDate = this.selectedDateState.asReadonly()
   readonly loadingExercises = this.loadingExercisesState.asReadonly()
   readonly loadingSchedule = this.loadingScheduleState.asReadonly()
   readonly loadingEntries = this.loadingEntriesState.asReadonly()
+  readonly loadingExerciseDetail = this.loadingExerciseDetailState.asReadonly()
+  readonly exerciseDetailError = this.exerciseDetailErrorState.asReadonly()
   readonly savingSchedule = this.savingScheduleState.asReadonly()
+  readonly savingScheduleCatalog = this.savingScheduleCatalogState.asReadonly()
   readonly savingEntries = this.savingEntriesState.asReadonly()
   readonly sharing = this.sharingState.asReadonly()
   readonly savingExercise: ExerciseRepository['saving']
@@ -85,14 +100,44 @@ export class TrainingStore {
         const image = await this.exercisesRepository.readImage(exercise.id)
         return {...exercise, imageUrl: image ? URL.createObjectURL(image) : undefined}
       }))
+      const previous = this.exercisesState()
       this.exercisesState.set(withImages)
+      this.revokeExerciseImageUrls(previous)
     } finally {
       this.loadingExercisesState.set(false)
     }
   }
 
+  ngOnDestroy(): void {
+    this.revokeExerciseImageUrls(this.exercisesState())
+    this.revokeExerciseImageUrls(this.exerciseDetailState() ? [this.exerciseDetailState()!] : [])
+  }
+
   readExercise(id: number): Promise<TrainingExercise> {
     return this.exercisesRepository.readById(id)
+  }
+
+  async loadExerciseDetail(id: number): Promise<void> {
+    this.loadingExerciseDetailState.set(true)
+    this.exerciseDetailErrorState.set(null)
+    const previous = this.exerciseDetailState()
+    try {
+      const exercise = await this.exercisesRepository.readById(id)
+      const [history, image] = await Promise.all([
+        this.trackingRepository.readByExercise(id),
+        exercise.image_path ? this.exercisesRepository.readImage(id) : Promise.resolve(null),
+      ])
+      this.exerciseDetailState.set({...exercise, imageUrl: image ? URL.createObjectURL(image) : undefined})
+      this.exerciseHistoryState.set(history)
+      if (previous) this.revokeExerciseImageUrls([previous])
+    } catch {
+      this.exerciseDetailState.set(null)
+      this.exerciseHistoryState.set([])
+      this.exerciseDetailErrorState.set('No se ha podido cargar el ejercicio y su seguimiento.')
+      if (previous) this.revokeExerciseImageUrls([previous])
+    } finally {
+      this.loadingExerciseDetailState.set(false)
+    }
   }
 
   async saveExercise(draft: TrainingExerciseDraft): Promise<TrainingExercise> {
@@ -101,8 +146,14 @@ export class TrainingStore {
     return saved
   }
 
-  async uploadExerciseImage(exerciseId: number, file: File): Promise<void> {
-    await this.exercisesRepository.uploadImage(exerciseId, file)
+  async uploadExerciseImage(exerciseId: number, file: File): Promise<string> {
+    const path = await this.exercisesRepository.uploadImage(exerciseId, file)
+    await this.loadExercises()
+    return path
+  }
+
+  async removeExerciseImage(exerciseId: number): Promise<void> {
+    await this.exercisesRepository.removeImage(exerciseId)
     await this.loadExercises()
   }
 
@@ -164,6 +215,20 @@ export class TrainingStore {
     await this.loadSchedule()
   }
 
+  async saveScheduleCatalog(
+    drafts: readonly TrainingScheduleCatalogDraftItem[],
+    selectedKey: string,
+  ): Promise<void> {
+    this.savingScheduleCatalogState.set(true)
+    try {
+      const result = await this.scheduleRepository.saveCatalog(drafts, selectedKey)
+      await this.loadSchedule()
+      this.selectedScheduleIdState.set(result.selectedScheduleId)
+    } finally {
+      this.savingScheduleCatalogState.set(false)
+    }
+  }
+
   async saveScheduleDay(weekday: number, drafts: readonly TrainingScheduleDraft[]): Promise<void> {
     this.savingScheduleState.set(true)
     try {
@@ -192,16 +257,32 @@ export class TrainingStore {
   }
 
   selectDate(date: Date): void {
+    if (formatDateForDatabase(date) !== formatDateForDatabase(this.selectedDateState())) {
+      this.previousSessionsState.set(new Map())
+    }
     this.selectedDateState.set(date)
   }
 
   async loadEntries(date = this.selectedDateState()): Promise<void> {
+    const dateKey = formatDateForDatabase(date)
     this.loadingEntriesState.set(true)
     try {
-      this.entriesState.set(await this.trackingRepository.readByDate(formatDateForDatabase(date)))
+      const entries = await this.trackingRepository.readByDate(dateKey)
+      if (dateKey !== formatDateForDatabase(this.selectedDateState())) return
+      this.entriesState.set(entries)
+      void this.loadPreviousSessions(entries.map(entry => entry.exercise_id), date)
     } finally {
-      this.loadingEntriesState.set(false)
+      if (dateKey === formatDateForDatabase(this.selectedDateState())) this.loadingEntriesState.set(false)
     }
+  }
+
+  async loadPreviousSessions(
+    exerciseIds: readonly number[],
+    date = this.selectedDateState(),
+  ): Promise<void> {
+    const dateKey = formatDateForDatabase(date)
+    const uniqueIds = [...new Set(exerciseIds)]
+    await Promise.all(uniqueIds.map(exerciseId => this.loadPreviousSession(exerciseId, dateKey)))
   }
 
   async saveEntries(drafts: readonly TrainingEntryDraft[]): Promise<void> {
@@ -233,6 +314,35 @@ export class TrainingStore {
       return result
     } finally {
       this.sharingState.set(false)
+    }
+  }
+
+  private loadPreviousSession(exerciseId: number, dateKey: string): Promise<void> {
+    if (dateKey === formatDateForDatabase(this.selectedDateState())
+      && this.previousSessionsState().has(exerciseId)) return Promise.resolve()
+
+    const requestKey = `${dateKey}:${exerciseId}`
+    const pending = this.previousSessionRequests.get(requestKey)
+    if (pending) return pending
+
+    const request = this.trackingRepository.readPreviousByExercise(exerciseId, dateKey)
+      .then(previousSession => {
+        if (dateKey !== formatDateForDatabase(this.selectedDateState())) return
+        this.previousSessionsState.update(sessions => {
+          const updated = new Map(sessions)
+          updated.set(exerciseId, previousSession)
+          return updated
+        })
+      })
+      .catch(() => undefined)
+      .finally(() => this.previousSessionRequests.delete(requestKey))
+    this.previousSessionRequests.set(requestKey, request)
+    return request
+  }
+
+  private revokeExerciseImageUrls(exercises: readonly TrainingExerciseListItem[]): void {
+    for (const exercise of exercises) {
+      if (exercise.imageUrl?.startsWith('blob:')) URL.revokeObjectURL(exercise.imageUrl)
     }
   }
 }

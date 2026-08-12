@@ -169,6 +169,96 @@
     height: 1px;
     clip: rect(0 0 0 0);
   }
+
+  .ui-sortable-handle {
+    touch-action: none;
+    cursor: grab;
+  }
+
+  .ui-sortable-handle:active {
+    cursor: grabbing;
+  }
+
+  .ui-sortable-item.cdk-drag-preview {
+    border-color: var(--area-accent);
+    box-shadow: 0 var(--space-4) var(--space-12) var(--color-shadow);
+  }
+
+  .ui-sortable-item.cdk-drag-placeholder {
+    opacity: 0.25;
+  }
+
+  .ui-sortable-list.cdk-drop-list-dragging .ui-sortable-item:not(.cdk-drag-placeholder),
+  .ui-sortable-item.cdk-drag-animating {
+    transition: transform var(--duration-fast) var(--ease-emphasized);
+  }
+
+  .ui-segmented-input {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(2.8rem, auto)) minmax(5.4rem, 1fr);
+    gap: var(--space-1);
+    padding: var(--space-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-elevated);
+  }
+
+  .ui-segmented-input button {
+    min-height: calc(var(--control-height-lg) - var(--space-2));
+    border: 0;
+    border-radius: calc(var(--radius-md) - var(--space-1));
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font: 750 var(--font-size-sm) / 1 var(--font-family-body);
+  }
+
+  .ui-segmented-input button:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+  }
+
+  .ui-segmented-input .ui-segmented-input__option--active {
+    background: var(--area-accent);
+    color: var(--color-text-inverse);
+  }
+
+  .ui-segmented-input .ui-segmented-input__custom {
+    min-height: calc(var(--control-height-lg) - var(--space-2));
+    padding: var(--space-2);
+    text-align: center;
+  }
+
+  .ui-segmented-control {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-round);
+    background: var(--color-surface);
+  }
+
+  .ui-segmented-control button {
+    min-height: var(--control-height-md);
+    padding: var(--space-2) var(--space-4);
+    border: 0;
+    border-radius: var(--radius-round);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .ui-segmented-control button:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+  }
+
+  .ui-segmented-control button[aria-pressed='true'] {
+    background: var(--area-accent-soft);
+    color: var(--area-accent-strong);
+  }
 }
 
 @keyframes ui-spin {

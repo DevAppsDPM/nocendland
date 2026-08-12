@@ -12,6 +12,6 @@ describe('Training routes', () => {
     expect(children).toContain('schedule')
     expect(children).toContain('tracking')
     expect(children).toContain('measurements')
+    expect(children).toContain('exercises/:id')
   })
 })
-

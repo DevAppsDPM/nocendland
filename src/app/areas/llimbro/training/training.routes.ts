@@ -5,6 +5,7 @@ import {TrackingRepository} from './data-access/tracking.repository'
 import {ShareRepository} from './data-access/share.repository'
 import {TrainingLayoutComponent} from './layout/training-layout.component'
 import {TrainingStore} from './state/training.store'
+import {confirmPendingTrainingChanges} from './pending-changes.guard'
 
 export const TRAINING_ROUTES: Routes = [
   {
@@ -26,6 +27,7 @@ export const TRAINING_ROUTES: Routes = [
       {
         path: 'tracking',
         data: {featureTab: 'tracking'},
+        canDeactivate: [confirmPendingTrainingChanges],
         loadComponent: () => import('./pages/tracking/tracking.component').then(({TrackingComponent}) => TrackingComponent),
       },
       {
@@ -36,7 +38,13 @@ export const TRAINING_ROUTES: Routes = [
       {
         path: 'exercise-form/:id',
         data: {featureTab: 'exercises', featureSwipe: false},
+        canDeactivate: [confirmPendingTrainingChanges],
         loadComponent: () => import('./pages/exercise-form/exercise-form.component').then(({ExerciseFormComponent}) => ExerciseFormComponent),
+      },
+      {
+        path: 'exercises/:id',
+        data: {featureTab: 'exercises', featureSwipe: false},
+        loadComponent: () => import('./pages/exercise-detail/exercise-detail.component').then(({ExerciseDetailComponent}) => ExerciseDetailComponent),
       },
     ],
   },

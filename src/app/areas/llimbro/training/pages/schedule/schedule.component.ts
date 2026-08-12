@@ -1,14 +1,33 @@
-import {ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal} from '@angular/core'
+import {ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, linkedSignal, signal, viewChild} from '@angular/core'
 import {FormsModule} from '@angular/forms'
-import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
 import {ConfirmDialogService} from '@shared/ui/confirm-dialog'
-import {TrainingExerciseListItem, TrainingScheduleDraft} from '../../models/training.models'
+import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
+import {
+  SortableHandleDirective,
+  SortableItemDirective,
+  SortableListDirective,
+  SortableMove,
+} from '@shared/ui/sortable-list'
+import {firstValueFrom} from 'rxjs'
+import {RepetitionsInputComponent} from '../../ui/repetitions-input/repetitions-input.component'
+import {
+  TrainingExerciseListItem,
+  TrainingScheduleCatalogDraftItem,
+  TrainingScheduleDraft,
+} from '../../models/training.models'
 import {TrainingStore} from '../../state/training.store'
 import {getIsoWeekday, TRAINING_WEEKDAYS} from '../../training.constants'
 
 @Component({
   selector: 'app-schedule',
-  imports: [FormsModule, DataListComponent],
+  imports: [
+    FormsModule,
+    DataListComponent,
+    SortableListDirective,
+    SortableItemDirective,
+    SortableHandleDirective,
+    RepetitionsInputComponent,
+  ],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -21,25 +40,37 @@ export class ScheduleComponent {
   protected readonly selectingExercises = signal(false)
   protected readonly dirty = signal(false)
   protected readonly saveError = signal<string | null>(null)
-  protected readonly catalogAction = signal<'create' | 'rename' | 'duplicate' | null>(null)
-  protected readonly scheduleName = signal('')
+  protected readonly catalogEditing = signal(false)
+  protected readonly catalogDrafts = signal<TrainingScheduleCatalogDraftItem[]>([])
+  protected readonly catalogSelectedKey = signal<string | null>(null)
   protected readonly catalogError = signal<string | null>(null)
   protected readonly shareUrl = signal<string | null>(null)
   protected readonly managingShares = signal(false)
+  private readonly catalogInitialValue = signal('')
   private readonly multiSelection = signal(true)
-  protected readonly drafts = linkedSignal<TrainingScheduleDraft[]>(() => this.store.selectedScheduleItems()
-    .filter(item => item.weekday === this.selectedWeekday())
-    .map(item => ({
-      id: item.id,
-      exerciseId: item.exercise_id,
-      setCount: item.set_count,
-      targetRepetitions: item.target_repetitions,
-      targetWeightKg: item.target_weight_kg,
-      sortOrder: item.sort_order,
-    } satisfies TrainingScheduleDraft)))
+  private readonly exerciseSelector = viewChild<ElementRef<HTMLElement>>('exerciseSelector')
+  private readonly selectionScrollEffect = effect(() => {
+    if (this.selectingExercises()) this.exerciseSelector()?.nativeElement.scrollIntoView({block: 'start'})
+  })
+  protected readonly drafts = linkedSignal<TrainingScheduleDraft[]>(() => this.dayDrafts())
   protected readonly selectedDayLabel = computed(() =>
     this.weekdays.find(day => day.id === this.selectedWeekday())?.label ?? '',
   )
+  protected readonly visibleCatalogDrafts = computed(() => this.catalogDrafts().filter(draft => !draft.deleted))
+  protected readonly selectedCatalogDraft = computed(() => this.visibleCatalogDrafts()
+    .find(draft => draft.key === this.catalogSelectedKey()) ?? null)
+  protected readonly catalogDirty = computed(() =>
+    JSON.stringify(this.catalogDrafts()) !== this.catalogInitialValue(),
+  )
+  protected readonly catalogValid = computed(() => {
+    const visible = this.visibleCatalogDrafts()
+    const names = visible.map(draft => draft.name.trim().toLocaleLowerCase())
+    return visible.length > 0
+      && visible.filter(draft => draft.isActive).length === 1
+      && names.every(Boolean)
+      && new Set(names).size === names.length
+      && visible.some(draft => draft.key === this.catalogSelectedKey())
+  })
   protected readonly exerciseItems = computed<readonly DataListItem<TrainingExerciseListItem>[]>(() => {
     const assigned = new Set(this.drafts().map(draft => draft.exerciseId))
     return this.store.exercises().filter(exercise => !assigned.has(exercise.id)).map(exercise => ({
@@ -60,82 +91,126 @@ export class ScheduleComponent {
   }
 
   protected selectWeekday(weekday: number): void {
-    this.selectedWeekday.set(weekday)
-    this.selectingExercises.set(false)
-    this.dirty.set(false)
-    this.saveError.set(null)
+    void this.changeWeekday(weekday)
+  }
+
+  protected toggleExerciseSelection(): void {
+    this.selectingExercises.update(selecting => !selecting)
   }
 
   protected selectSchedule(event: Event): void {
-    if (this.dirty()) {
-      this.catalogError.set('Guarda o descarta los cambios del día antes de cambiar de horario.')
-      ;(event.target as HTMLSelectElement).value = String(this.store.selectedScheduleId() ?? '')
-      return
-    }
-    this.store.selectSchedule(Number((event.target as HTMLSelectElement).value))
-    this.selectingExercises.set(false)
-    this.saveError.set(null)
+    const select = event.target as HTMLSelectElement
+    void this.changeSchedule(Number(select.value), select)
+  }
+
+  protected selectCatalogDraft(event: Event): void {
+    this.catalogSelectedKey.set((event.target as HTMLSelectElement).value)
     this.catalogError.set(null)
   }
 
-  protected beginCatalogAction(action: 'create' | 'rename' | 'duplicate'): void {
-    this.catalogAction.set(action)
-    const selectedName = this.store.selectedSchedule()?.name ?? 'Horario'
-    this.scheduleName.set(action === 'create' ? this.nextScheduleName('Horario')
-      : action === 'duplicate' ? this.nextScheduleName(`${selectedName} copia`)
-        : selectedName)
+  protected beginCatalogEditing(): void {
+    void this.openCatalogEditing()
+  }
+
+  protected cancelCatalogEditing(): void {
+    this.catalogEditing.set(false)
+    this.catalogDrafts.set([])
+    this.catalogSelectedKey.set(null)
+    this.catalogInitialValue.set('')
+    this.catalogError.set(null)
+    this.managingShares.set(false)
+  }
+
+  protected createScheduleDraft(): void {
+    const key = `new:${crypto.randomUUID()}`
+    this.catalogDrafts.update(drafts => [...drafts, {
+      key,
+      id: null,
+      name: this.nextScheduleName('Horario', drafts),
+      isActive: false,
+      duplicateFromId: null,
+      updatedAt: null,
+      deleted: false,
+    }])
+    this.catalogSelectedKey.set(key)
     this.catalogError.set(null)
   }
 
-  protected updateScheduleName(event: Event): void {
-    this.scheduleName.set((event.target as HTMLInputElement).value)
+  protected duplicateScheduleDraft(): void {
+    const source = this.selectedCatalogDraft()
+    if (!source?.id) return
+    const key = `new:${crypto.randomUUID()}`
+    this.catalogDrafts.update(drafts => [...drafts, {
+      key,
+      id: null,
+      name: this.nextScheduleName(`${source.name.trim()} copia`, drafts),
+      isActive: false,
+      duplicateFromId: source.id,
+      updatedAt: null,
+      deleted: false,
+    }])
+    this.catalogSelectedKey.set(key)
+    this.catalogError.set(null)
   }
 
-  protected async saveCatalogAction(): Promise<void> {
-    const action = this.catalogAction()
-    const name = this.scheduleName().trim()
-    if (!action || !name) {
-      this.catalogError.set('El horario necesita un nombre.')
+  protected deleteScheduleDraft(): void {
+    const selected = this.selectedCatalogDraft()
+    if (!selected) return
+    const remaining = this.visibleCatalogDrafts().filter(draft => draft.key !== selected.key)
+    if (!remaining.length) {
+      this.catalogError.set('El catálogo necesita al menos un horario.')
       return
     }
+    const replacement = remaining[0]
+    this.catalogDrafts.update(drafts => selected.id === null
+      ? drafts.filter(draft => draft.key !== selected.key)
+      : drafts.map(draft => draft.key === selected.key ? {...draft, deleted: true, isActive: false} : draft))
+    if (selected.isActive) this.activateCatalogDraft(replacement.key)
+    this.catalogSelectedKey.set(replacement.key)
+    this.catalogError.set(null)
+  }
+
+  protected activateCatalogDraft(key = this.catalogSelectedKey()): void {
+    if (!key) return
+    this.catalogDrafts.update(drafts => drafts.map(draft => ({
+      ...draft,
+      isActive: !draft.deleted && draft.key === key,
+    })))
+    this.catalogError.set(null)
+  }
+
+  protected updateCatalogName(event: Event): void {
+    const key = this.catalogSelectedKey()
+    if (!key) return
+    const name = (event.target as HTMLInputElement).value
+    this.catalogDrafts.update(drafts => drafts.map(draft => draft.key === key ? {...draft, name} : draft))
+    this.catalogError.set(null)
+  }
+
+  protected async saveCatalog(): Promise<void> {
+    if (!this.catalogValid()) {
+      this.catalogError.set('Revisa los nombres y asegúrate de que haya un único horario activo.')
+      return
+    }
+    const selectedKey = this.catalogSelectedKey()
+    if (!selectedKey) return
     this.catalogError.set(null)
     try {
-      if (action === 'create') await this.store.createSchedule(name)
-      if (action === 'rename') await this.store.renameSelectedSchedule(name)
-      if (action === 'duplicate') await this.store.duplicateSelectedSchedule(name)
-      this.catalogAction.set(null)
-    } catch {
-      this.catalogError.set('No se ha podido guardar el horario. Comprueba que el nombre no esté repetido.')
+      await this.store.saveScheduleCatalog(this.catalogDrafts(), selectedKey)
+      this.cancelCatalogEditing()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : ''
+      this.catalogError.set(message.includes('stale_training_schedule_catalog')
+        ? 'El catálogo cambió en otra sesión. Cancela y vuelve a abrir la edición para recargarlo.'
+        : 'No se han guardado los cambios. Revisa los nombres e inténtalo de nuevo.')
     }
-  }
-
-  protected async activateSchedule(): Promise<void> {
-    try {
-      await this.store.activateSelectedSchedule()
-    } catch {
-      this.catalogError.set('No se ha podido activar el horario.')
-    }
-  }
-
-  protected deleteSchedule(): void {
-    const schedule = this.store.selectedSchedule()
-    if (!schedule) return
-    if (schedule.is_active) {
-      this.catalogError.set('Activa otro horario antes de eliminar este.')
-      return
-    }
-    this.confirmDialog.open({
-      title: 'Eliminar horario',
-      message: `Se eliminará ${schedule.name}. Los seguimientos guardados no cambiarán.`,
-      acceptButton: {text: 'Eliminar', show: true, intent: 'danger'},
-    }).subscribe(confirmed => {
-      if (!confirmed) return
-      void this.store.deleteSelectedSchedule().catch(() =>
-        this.catalogError.set('No se ha podido eliminar el horario.'))
-    })
   }
 
   protected async shareSchedule(): Promise<void> {
+    if (this.dirty() || this.catalogEditing()) {
+      this.catalogError.set('Guarda o cancela los cambios antes de crear un enlace.')
+      return
+    }
     this.catalogError.set(null)
     try {
       const share = await this.store.shareSelectedSchedule()
@@ -167,21 +242,36 @@ export class ScheduleComponent {
   }
 
   protected removeExercise(index: number): void {
-    this.drafts.update(drafts => drafts.filter((_, draftIndex) => draftIndex !== index)
-      .map((draft, sortOrder) => ({...draft, sortOrder})))
-    this.dirty.set(true)
-    this.saveError.set(null)
+    this.drafts.update(drafts => this.normalizeOrder(drafts.filter((_, draftIndex) => draftIndex !== index)))
+    this.markDayDirty()
   }
 
-  protected updateNumber(index: number, field: 'setCount' | 'targetRepetitions' | 'targetWeightKg', event: Event): void {
+  protected updateNumber(
+    index: number,
+    field: 'setCount' | 'targetRepetitions' | 'targetWeightKg',
+    event: Event,
+  ): void {
     const raw = (event.target as HTMLInputElement).value
-    const value = raw === '' ? null : Number(raw)
-    this.drafts.update(drafts => drafts.map((draft, draftIndex) => draftIndex === index ? {
-      ...draft,
-      [field]: field === 'setCount' ? Math.max(1, Math.trunc(value ?? 1)) : value,
-    } : draft))
-    this.dirty.set(true)
-    this.saveError.set(null)
+    const parsed = raw === '' ? null : Number(raw)
+    const value = field === 'targetWeightKg'
+      ? parsed === null ? null : Math.max(0, parsed)
+      : parsed === null ? null : Math.max(1, Math.trunc(parsed))
+    this.updateDraftNumber(index, field, field === 'setCount' ? value ?? 1 : value)
+  }
+
+  protected setRepetitions(index: number, repetitions: number | null): void {
+    this.updateDraftNumber(index, 'targetRepetitions', repetitions)
+  }
+
+  protected reorder(move: SortableMove): void {
+    this.drafts.update(drafts => {
+      const reordered = [...drafts]
+      const [moved] = reordered.splice(move.previousIndex, 1)
+      if (!moved) return drafts
+      reordered.splice(move.currentIndex, 0, moved)
+      return this.normalizeOrder(reordered)
+    })
+    this.markDayDirty()
   }
 
   protected exerciseName(exerciseId: number): string {
@@ -198,24 +288,112 @@ export class ScheduleComponent {
     }
   }
 
+  private async changeWeekday(weekday: number): Promise<void> {
+    if (weekday === this.selectedWeekday()) return
+    if (this.dirty() && !await this.confirmDayDiscard()) return
+    this.dirty.set(false)
+    this.selectedWeekday.set(weekday)
+    this.selectingExercises.set(false)
+    this.saveError.set(null)
+  }
+
+  private async changeSchedule(scheduleId: number, select: HTMLSelectElement): Promise<void> {
+    if (scheduleId === this.store.selectedScheduleId()) return
+    if (this.dirty() && !await this.confirmDayDiscard()) {
+      select.value = String(this.store.selectedScheduleId() ?? '')
+      return
+    }
+    this.dirty.set(false)
+    this.store.selectSchedule(scheduleId)
+    this.selectingExercises.set(false)
+    this.saveError.set(null)
+    this.catalogError.set(null)
+  }
+
+  private async openCatalogEditing(): Promise<void> {
+    const discardingDay = this.dirty()
+    if (discardingDay && !await this.confirmDayDiscard()) return
+    if (discardingDay) this.drafts.set(this.dayDrafts())
+    this.dirty.set(false)
+    this.selectingExercises.set(false)
+    const drafts = this.store.schedules().map(schedule => ({
+      key: `schedule:${schedule.id}`,
+      id: schedule.id,
+      name: schedule.name,
+      isActive: schedule.is_active,
+      duplicateFromId: null,
+      updatedAt: schedule.updated_at,
+      deleted: false,
+    } satisfies TrainingScheduleCatalogDraftItem))
+    this.catalogDrafts.set(drafts)
+    this.catalogInitialValue.set(JSON.stringify(drafts))
+    const selectedId = this.store.selectedScheduleId()
+    this.catalogSelectedKey.set(`schedule:${selectedId ?? drafts[0]?.id}`)
+    this.catalogEditing.set(true)
+    this.catalogError.set(null)
+  }
+
+  private async confirmDayDiscard(): Promise<boolean> {
+    if (!this.dirty()) return true
+    return firstValueFrom(this.confirmDialog.open({
+      title: 'Cambios sin guardar',
+      message: 'Si continúas, se descartarán los cambios del día seleccionado.',
+      acceptButton: {text: 'Descartar y continuar', show: true, intent: 'danger'},
+      cancelButton: {text: 'Seguir editando', show: true},
+    }))
+  }
+
   private addExercises(exercises: readonly TrainingExerciseListItem[]): void {
     this.drafts.update(drafts => [
       ...drafts,
       ...exercises.map((exercise, offset) => ({
         exerciseId: exercise.id,
         setCount: 1,
-        targetRepetitions: null,
+        targetRepetitions: 12,
         targetWeightKg: null,
         sortOrder: drafts.length + offset,
       })),
     ])
     this.selectingExercises.set(false)
+    this.markDayDirty()
+  }
+
+  private dayDrafts(): TrainingScheduleDraft[] {
+    return this.store.selectedScheduleItems()
+      .filter(item => item.weekday === this.selectedWeekday())
+      .map(item => ({
+        id: item.id,
+        exerciseId: item.exercise_id,
+        setCount: item.set_count,
+        targetRepetitions: item.target_repetitions,
+        targetWeightKg: item.target_weight_kg,
+        sortOrder: item.sort_order,
+      }))
+  }
+
+  private updateDraftNumber(
+    index: number,
+    field: 'setCount' | 'targetRepetitions' | 'targetWeightKg',
+    value: number | null,
+  ): void {
+    this.drafts.update(drafts => drafts.map((draft, draftIndex) => draftIndex === index
+      ? {...draft, [field]: value}
+      : draft))
+    this.markDayDirty()
+  }
+
+  private normalizeOrder(drafts: readonly TrainingScheduleDraft[]): TrainingScheduleDraft[] {
+    return drafts.map((draft, sortOrder) => ({...draft, sortOrder}))
+  }
+
+  private markDayDirty(): void {
     this.dirty.set(true)
     this.saveError.set(null)
   }
 
-  private nextScheduleName(base: string): string {
-    const names = new Set(this.store.schedules().map(schedule => schedule.name.toLocaleLowerCase()))
+  private nextScheduleName(base: string, drafts: readonly TrainingScheduleCatalogDraftItem[]): string {
+    const names = new Set(drafts.filter(draft => !draft.deleted)
+      .map(draft => draft.name.trim().toLocaleLowerCase()))
     if (!names.has(base.toLocaleLowerCase())) return base
     let suffix = 2
     while (names.has(`${base} ${suffix}`.toLocaleLowerCase())) suffix += 1
