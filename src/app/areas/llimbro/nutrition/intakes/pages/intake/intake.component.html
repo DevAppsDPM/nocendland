@@ -5,7 +5,7 @@
       <strong>{{ formatDateForDisplay(nutritionStore.dateSelected()) }}</strong>
       <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#calendar_month"/></svg>
     </summary>
-    <app-calendar (dateSelected)="dateSelected($event)"/>
+    <app-calendar [date]="nutritionStore.dateSelected()" (dateSelected)="dateSelected($event)"/>
   </details>
 
   <header class="page-heading">
