@@ -1,8 +1,13 @@
 import {ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal} from '@angular/core'
+import {ActivatedRoute} from '@angular/router'
+import {NavigationService} from '@shell/navigation/navigation.service'
 import {CalendarComponent} from '@shared/ui/calendar'
 import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
 import {formatDateForDisplay} from '@shared/utilities/date.utils'
-import {TrainingEntryDraft, TrainingExerciseListItem, TrainingSetDraft} from '../../models/training.models'
+import {formatExerciseRouteDate, parseExerciseRouteDate} from '../../exercise-route-context'
+import {TrainingPendingChanges} from '../../pending-changes.guard'
+import {RepetitionsInputComponent} from '../../ui/repetitions-input/repetitions-input.component'
+import {TrainingEntryDraft, TrainingExerciseListItem, TrainingSet, TrainingSetDraft} from '../../models/training.models'
 import {TrainingStore} from '../../state/training.store'
 import {getIsoWeekday} from '../../training.constants'
 
@@ -11,13 +16,15 @@ type EditableEntry = Omit<TrainingEntryDraft, 'sets'> & {clientId: string; sets:
 
 @Component({
   selector: 'app-tracking',
-  imports: [CalendarComponent, DataListComponent],
+  imports: [CalendarComponent, DataListComponent, RepetitionsInputComponent],
   templateUrl: './tracking.component.html',
   styleUrl: './tracking.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
-export class TrackingComponent {
+export class TrackingComponent implements TrainingPendingChanges {
   protected readonly store = inject(TrainingStore)
+  private readonly route = inject(ActivatedRoute)
+  private readonly navigation = inject(NavigationService)
   protected readonly selectingExercises = signal(false)
   protected readonly dirty = signal(false)
   private readonly multiSelection = signal(true)
@@ -69,6 +76,15 @@ export class TrackingComponent {
     initialSelectedIds: this.plannedSelectionIds,
   }
 
+  constructor() {
+    const selectedDate = parseExerciseRouteDate(this.route.snapshot.queryParamMap.get('date'))
+    if (selectedDate) this.store.selectDate(selectedDate)
+  }
+
+  hasPendingChanges(): boolean {
+    return this.dirty()
+  }
+
   protected selectDate(date: Date): void {
     this.store.selectDate(date)
     this.selectingExercises.set(false)
@@ -79,6 +95,13 @@ export class TrackingComponent {
     return this.store.exercises().find(exercise => exercise.id === exerciseId)?.name
       ?? this.store.entries().find(entry => entry.exercise_id === exerciseId)?.training_exercise.name
       ?? 'Ejercicio'
+  }
+
+  protected openExercise(exerciseId: number): void {
+    const date = formatExerciseRouteDate(this.store.selectedDate())
+    void this.navigation.to('training', 'exercises', String(exerciseId), {
+      queryParams: {from: 'tracking', date},
+    })
   }
 
   protected addSet(entryIndex: number): void {
@@ -107,11 +130,11 @@ export class TrackingComponent {
   protected updateSet(entryIndex: number, setIndex: number, field: 'repetitions' | 'weightKg', event: Event): void {
     const raw = (event.target as HTMLInputElement).value
     const value = raw === '' ? null : Number(raw)
-    this.drafts.update(entries => entries.map((entry, index) => index === entryIndex ? {
-      ...entry,
-      sets: entry.sets.map((set, indexOfSet) => indexOfSet === setIndex ? {...set, [field]: value} : set),
-    } : entry))
-    this.dirty.set(true)
+    this.updateSetValue(entryIndex, setIndex, field, value)
+  }
+
+  protected updateRepetitions(entryIndex: number, setIndex: number, repetitions: number | null): void {
+    this.updateSetValue(entryIndex, setIndex, 'repetitions', repetitions)
   }
 
   protected async save(): Promise<void> {
@@ -120,6 +143,20 @@ export class TrackingComponent {
   }
 
   protected readonly formatDateForDisplay = formatDateForDisplay
+
+  protected formatPreviousDate(value: string): string {
+    return new Date(`${value}T00:00:00`).toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  }
+
+  protected formatPreviousSet(set: TrainingSet): string {
+    const repetitions = set.repetitions === null ? '— reps' : `${set.repetitions} reps`
+    const weight = set.weight_kg === null ? 'sin peso' : `${this.formatNumber(set.weight_kg)} kg`
+    return `${repetitions} × ${weight}`
+  }
 
   private addEntries(exercises: readonly TrainingExerciseListItem[]): void {
     const weekday = getIsoWeekday(this.store.selectedDate())
@@ -142,9 +179,27 @@ export class TrackingComponent {
     ])
     this.selectingExercises.set(false)
     this.dirty.set(true)
+    void this.store.loadPreviousSessions(exercises.map(exercise => exercise.id))
   }
 
   private newSet(position: number, repetitions: number | null, weightKg: number | null): EditableSet {
     return {clientId: crypto.randomUUID(), position, repetitions, weightKg}
+  }
+
+  private updateSetValue(
+    entryIndex: number,
+    setIndex: number,
+    field: 'repetitions' | 'weightKg',
+    value: number | null,
+  ): void {
+    this.drafts.update(entries => entries.map((entry, index) => index === entryIndex ? {
+      ...entry,
+      sets: entry.sets.map((set, indexOfSet) => indexOfSet === setIndex ? {...set, [field]: value} : set),
+    } : entry))
+    this.dirty.set(true)
+  }
+
+  private formatNumber(value: number): string {
+    return new Intl.NumberFormat('es-ES', {maximumFractionDigits: 2}).format(value)
   }
 }
