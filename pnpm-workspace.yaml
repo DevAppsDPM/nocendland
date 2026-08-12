@@ -25,10 +25,10 @@ verifyStoreIntegrity: true
 strictStorePkgContentCheck: true
 verifyDepsBeforeRun: error
 
-# Angular 22 requires Node ^22.22.3 (or a newer supported major). pnpm keeps
-# the runtime local to the project instead of relying on the machine default.
-useNodeVersion: 22.22.3
-nodeVersion: 22.22.3
+# Angular 22 admite Node ^24.15.0. pnpm fija la versión exacta para mantener
+# el mismo runtime en desarrollo, CI y despliegue.
+useNodeVersion: 24.19.0
+nodeVersion: 24.19.0
 engineStrict: true
 
 packageManagerStrict: true

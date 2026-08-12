@@ -1,11 +1,11 @@
 ---
 Nombre: Mantener visibles los controles de data-list
 Estado: Hecha
-Resumen: DataList limita su altura al viewport utilizable y desplaza únicamente sus elementos, manteniendo visibles la búsqueda y la confirmación en todos sus consumidores.
+Resumen: DataList limita su altura al viewport utilizable y desplaza únicamente sus elementos; los pies de guardado de Horario y Seguimiento permanecen visibles sin solaparse con sus listas.
 Decisiones: Solo el contenido de la lista será desplazable; toolbar y footer ocuparán filas fijas; se conservará la API pública y se limitará la altura al viewport utilizable cuando el consumidor no la acote.
 Bloqueada: []
 Fecha de creación: 2026-08-12T16:58:00+02:00
-Última modificación: 2026-08-12T17:08:00+02:00
+Última modificación: 2026-08-12T17:40:40+02:00
 ---
 
 # Mantener visibles los controles de data-list
@@ -37,3 +37,6 @@ Mejorar la experiencia de las listas largas haciendo que la barra de herramienta
 - Los layouts de feature gestionan el scroll de las páginas normales; las listas largas desplazan exclusivamente sus elementos.
 - Horario alinea automáticamente el selector al entrar en modo selección para evitar que la navegación inferior tape la confirmación.
 - La API `DataListConfig` y el estado basado en Signals permanecen intactos.
+- El pie sticky compartido de Horario y Seguimiento conserva únicamente la separación mínima respecto al contenedor; el layout ya reserva la navegación inferior y no vuelve a descontarse su altura.
+- Se verificó en navegador que Horario y Seguimiento mantienen 20 px de separación respecto al contenido anterior y 0 px de solapamiento.
+- `pnpm test -- --watch=false`: 72 pruebas correctas; `pnpm run build`: correcto con los avisos de presupuesto conocidos.

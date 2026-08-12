@@ -50,7 +50,7 @@
 
 .training-save-bar {
   position: sticky;
-  bottom: calc(var(--feature-tab-bar-height) + var(--feature-tab-bar-offset) + var(--space-3));
+  bottom: var(--space-3);
   display: flex;
   align-items: center;
   justify-content: flex-end;
