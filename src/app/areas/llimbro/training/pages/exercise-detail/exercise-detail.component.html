@@ -26,9 +26,11 @@
         <app-avatar [image]="exercise.imageUrl ?? null"/>
       </div>
       <div class="exercise-detail-identity__content">
-        @if (taxonomy().length) {
+        @if (taxonomyBadges().length) {
           <div class="exercise-detail-tags" aria-label="Clasificación">
-            @for (label of taxonomy(); track label) { <span>{{ label }}</span> }
+            @for (badge of taxonomyBadges(); track $index) {
+              <app-badge [config]="badge"/>
+            }
           </div>
         }
         <p>{{ exercise.description || 'Este ejercicio todavía no tiene descripción.' }}</p>

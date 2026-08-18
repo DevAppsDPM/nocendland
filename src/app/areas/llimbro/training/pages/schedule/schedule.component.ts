@@ -1,7 +1,9 @@
 import {ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, linkedSignal, signal, viewChild} from '@angular/core'
 import {FormsModule} from '@angular/forms'
+import {BadgeComponent, BadgeConfig} from '@shared/ui/badge'
 import {ConfirmDialogService} from '@shared/ui/confirm-dialog'
 import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
+import {ToastService} from '@shared/ui/toast'
 import {
   SortableHandleDirective,
   SortableItemDirective,
@@ -22,6 +24,7 @@ import {getIsoWeekday, TRAINING_WEEKDAYS} from '../../training.constants'
   selector: 'app-schedule',
   imports: [
     FormsModule,
+    BadgeComponent,
     DataListComponent,
     SortableListDirective,
     SortableItemDirective,
@@ -35,6 +38,7 @@ import {getIsoWeekday, TRAINING_WEEKDAYS} from '../../training.constants'
 export class ScheduleComponent {
   protected readonly store = inject(TrainingStore)
   private readonly confirmDialog = inject(ConfirmDialogService)
+  private readonly toast = inject(ToastService)
   protected readonly weekdays = TRAINING_WEEKDAYS
   protected readonly selectedWeekday = signal(getIsoWeekday(new Date()))
   protected readonly selectingExercises = signal(false)
@@ -59,6 +63,12 @@ export class ScheduleComponent {
   protected readonly visibleCatalogDrafts = computed(() => this.catalogDrafts().filter(draft => !draft.deleted))
   protected readonly selectedCatalogDraft = computed(() => this.visibleCatalogDrafts()
     .find(draft => draft.key === this.catalogSelectedKey()) ?? null)
+  protected readonly selectedScheduleBadge = computed<BadgeConfig>(() => this.scheduleStatusBadge(
+    this.store.selectedSchedule()?.is_active ?? false,
+  ))
+  protected readonly selectedCatalogDraftBadge = computed<BadgeConfig>(() => this.scheduleStatusBadge(
+    this.selectedCatalogDraft()?.isActive ?? false,
+  ))
   protected readonly catalogDirty = computed(() =>
     JSON.stringify(this.catalogDrafts()) !== this.catalogInitialValue(),
   )
@@ -198,11 +208,14 @@ export class ScheduleComponent {
     try {
       await this.store.saveScheduleCatalog(this.catalogDrafts(), selectedKey)
       this.cancelCatalogEditing()
+      this.toast.success('Catálogo guardado', {description: 'Los horarios ya están actualizados.'})
     } catch (error) {
       const message = error instanceof Error ? error.message : ''
-      this.catalogError.set(message.includes('stale_training_schedule_catalog')
+      const description = message.includes('stale_training_schedule_catalog')
         ? 'El catálogo cambió en otra sesión. Cancela y vuelve a abrir la edición para recargarlo.'
-        : 'No se han guardado los cambios. Revisa los nombres e inténtalo de nuevo.')
+        : 'No se han guardado los cambios. Revisa los nombres e inténtalo de nuevo.'
+      this.catalogError.set(description)
+      this.toast.error('No se pudo guardar el catálogo', {description})
     }
   }
 
@@ -278,13 +291,20 @@ export class ScheduleComponent {
     return this.store.exercises().find(exercise => exercise.id === exerciseId)?.name ?? 'Ejercicio'
   }
 
+  protected exercisePositionBadge(position: number): BadgeConfig {
+    return {variant: 'count', value: position, ariaLabel: `Ejercicio ${position}`}
+  }
+
   protected async save(): Promise<void> {
     this.saveError.set(null)
     try {
       await this.store.saveScheduleDay(this.selectedWeekday(), this.drafts())
       this.dirty.set(false)
+      this.toast.success('Horario guardado', {description: 'Tus cambios ya están al día.'})
     } catch {
+      const description = 'Inténtalo de nuevo dentro de unos segundos.'
       this.saveError.set('No se ha podido guardar el horario. Inténtalo de nuevo.')
+      this.toast.error('No se pudo guardar el horario', {description})
     }
   }
 
@@ -389,6 +409,14 @@ export class ScheduleComponent {
   private markDayDirty(): void {
     this.dirty.set(true)
     this.saveError.set(null)
+  }
+
+  private scheduleStatusBadge(active: boolean): BadgeConfig {
+    return {
+      variant: 'label',
+      label: active ? 'Activo en Seguimiento' : 'No activo',
+      status: active ? 'primary' : 'neutral',
+    }
   }
 
   private nextScheduleName(base: string, drafts: readonly TrainingScheduleCatalogDraftItem[]): string {

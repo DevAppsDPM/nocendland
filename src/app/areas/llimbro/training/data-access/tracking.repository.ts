@@ -47,24 +47,22 @@ export class TrackingRepository {
     }
   }
 
-  async readPreviousByExercise(
+  async readRecentBeforeByExercise(
     exerciseId: number,
     beforeDate: string,
-  ): Promise<TrainingExerciseHistoryEntry | null> {
+  ): Promise<TrainingExerciseHistoryEntry[]> {
     const query = await this.supabase.client.from('training_entry')
       .select('*, training_set(*)')
       .eq('id_user', this.auth.requireUserId())
       .eq('exercise_id', exerciseId)
       .lt('performed_on', beforeDate)
       .order('performed_on', {ascending: false})
-      .limit(1)
-      .maybeSingle()
+      .limit(2)
     if (query.error) return Promise.reject(query.error)
-    if (!query.data) return null
-    return {
-      ...query.data,
-      training_set: [...query.data.training_set].sort((left, right) => left.position - right.position),
-    }
+    return query.data.map(entry => ({
+      ...entry,
+      training_set: [...entry.training_set].sort((left, right) => left.position - right.position),
+    }))
   }
 
   async replaceDate(date: string, drafts: readonly TrainingEntryDraft[]): Promise<void> {

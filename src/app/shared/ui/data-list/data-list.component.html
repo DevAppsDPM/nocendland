@@ -50,6 +50,16 @@
                 @for (detail of item.details; track detail) {
                   <small>{{ detail }}</small>
                 }
+                @if (item.badges?.length) {
+                  <span class="data-list__badges" aria-label="Etiquetas">
+                    @for (badge of visibleBadges(item); track $index) {
+                      <app-badge [config]="badge"/>
+                    }
+                    @if (overflowBadge(item); as overflow) {
+                      <app-badge [config]="overflow"/>
+                    }
+                  </span>
+                }
               </span>
               @if (multiple()) {
                 <svg class="data-list__check ui-icon" aria-hidden="true">

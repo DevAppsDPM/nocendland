@@ -6,6 +6,7 @@ import {NutritionObjective, NutritionObjectiveLevel} from "@areas/llimbro/nutrit
 import {selectInputContent} from "@shared/utilities/input.utils"
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {DialogRef} from '@shared/ui/dialog'
+import {ToastService} from '@shared/ui/toast'
 
 @Component({
   selector: 'app-objective-config',
@@ -18,6 +19,7 @@ import {DialogRef} from '@shared/ui/dialog'
 })
 export class ObjectiveConfigComponent {
   protected readonly dialogRef = inject<DialogRef<void>>(DialogRef)
+  private readonly toast = inject(ToastService)
 
   private levels: NutritionObjectiveLevel[] = ['keep', 'good', 'top']
   protected objectiveConfigFormList: FormGroup[] = []
@@ -44,7 +46,7 @@ export class ObjectiveConfigComponent {
     })
   }
 
-  protected saveObjectiveConfig(): void {
+  protected async saveObjectiveConfig(): Promise<void> {
     const objectiveList: NutritionObjective[] = this.objectiveConfigFormList.map((form: FormGroup) => {
       return {
         level: form.controls["level"].value,
@@ -56,7 +58,15 @@ export class ObjectiveConfigComponent {
       }
     });
 
-    void this.nutritionStore.saveObjectives(objectiveList)
+    try {
+      await this.nutritionStore.saveObjectives(objectiveList)
+      this.dialogRef.close()
+      this.toast.success('Objetivos guardados', {description: 'Tus referencias nutricionales están al día.'})
+    } catch {
+      this.toast.error('No se pudieron guardar los objetivos', {
+        description: 'Conservamos los valores para que puedas reintentarlo.',
+      })
+    }
   }
 
   protected readonly text = NUTRITION_TEXT

@@ -25,7 +25,7 @@ export class TrainingStore implements OnDestroy {
   private readonly schedulesState = signal<TrainingSchedule[]>([])
   private readonly scheduleItemsState = signal<TrainingScheduleItemWithExercise[]>([])
   private readonly entriesState = signal<TrainingEntryWithDetails[]>([])
-  private readonly previousSessionsState = signal<ReadonlyMap<number, TrainingExerciseHistoryEntry | null>>(new Map())
+  private readonly recentSessionsState = signal<ReadonlyMap<number, readonly TrainingExerciseHistoryEntry[]>>(new Map())
   private readonly exerciseDetailState = signal<TrainingExerciseListItem | null>(null)
   private readonly exerciseHistoryState = signal<TrainingExerciseHistoryEntry[]>([])
   private readonly selectedDateState = signal(new Date())
@@ -39,7 +39,7 @@ export class TrainingStore implements OnDestroy {
   private readonly savingEntriesState = signal(false)
   private readonly sharingState = signal(false)
   private readonly sharesState = signal<TrainingShare[]>([])
-  private readonly previousSessionRequests = new Map<string, Promise<void>>()
+  private readonly recentSessionRequests = new Map<string, Promise<void>>()
   private readonly selectedScheduleIdState = linkedSignal<TrainingSchedule[], number | null>({
     source: () => this.schedulesState(),
     computation: (schedules, previous) => {
@@ -62,7 +62,14 @@ export class TrainingStore implements OnDestroy {
     return activeId ? this.scheduleItemsState().filter(item => item.schedule_id === activeId) : []
   })
   readonly entries = this.entriesState.asReadonly()
-  readonly previousSessions = this.previousSessionsState.asReadonly()
+  readonly recentSessions = this.recentSessionsState.asReadonly()
+  readonly previousSessions = computed<ReadonlyMap<number, TrainingExerciseHistoryEntry | null>>(() => {
+    const previous = new Map<number, TrainingExerciseHistoryEntry | null>()
+    for (const [exerciseId, sessions] of this.recentSessionsState()) {
+      previous.set(exerciseId, sessions[0] ?? null)
+    }
+    return previous
+  })
   readonly exerciseDetail = this.exerciseDetailState.asReadonly()
   readonly exerciseHistory = this.exerciseHistoryState.asReadonly()
   readonly shares = this.sharesState.asReadonly()
@@ -258,7 +265,7 @@ export class TrainingStore implements OnDestroy {
 
   selectDate(date: Date): void {
     if (formatDateForDatabase(date) !== formatDateForDatabase(this.selectedDateState())) {
-      this.previousSessionsState.set(new Map())
+      this.recentSessionsState.set(new Map())
     }
     this.selectedDateState.set(date)
   }
@@ -282,7 +289,7 @@ export class TrainingStore implements OnDestroy {
   ): Promise<void> {
     const dateKey = formatDateForDatabase(date)
     const uniqueIds = [...new Set(exerciseIds)]
-    await Promise.all(uniqueIds.map(exerciseId => this.loadPreviousSession(exerciseId, dateKey)))
+    await Promise.all(uniqueIds.map(exerciseId => this.loadRecentSessions(exerciseId, dateKey)))
   }
 
   async saveEntries(drafts: readonly TrainingEntryDraft[]): Promise<void> {
@@ -317,26 +324,26 @@ export class TrainingStore implements OnDestroy {
     }
   }
 
-  private loadPreviousSession(exerciseId: number, dateKey: string): Promise<void> {
+  private loadRecentSessions(exerciseId: number, dateKey: string): Promise<void> {
     if (dateKey === formatDateForDatabase(this.selectedDateState())
-      && this.previousSessionsState().has(exerciseId)) return Promise.resolve()
+      && this.recentSessionsState().has(exerciseId)) return Promise.resolve()
 
     const requestKey = `${dateKey}:${exerciseId}`
-    const pending = this.previousSessionRequests.get(requestKey)
+    const pending = this.recentSessionRequests.get(requestKey)
     if (pending) return pending
 
-    const request = this.trackingRepository.readPreviousByExercise(exerciseId, dateKey)
-      .then(previousSession => {
+    const request = this.trackingRepository.readRecentBeforeByExercise(exerciseId, dateKey)
+      .then(recentSessions => {
         if (dateKey !== formatDateForDatabase(this.selectedDateState())) return
-        this.previousSessionsState.update(sessions => {
+        this.recentSessionsState.update(sessions => {
           const updated = new Map(sessions)
-          updated.set(exerciseId, previousSession)
+          updated.set(exerciseId, recentSessions)
           return updated
         })
       })
       .catch(() => undefined)
-      .finally(() => this.previousSessionRequests.delete(requestKey))
-    this.previousSessionRequests.set(requestKey, request)
+      .finally(() => this.recentSessionRequests.delete(requestKey))
+    this.recentSessionRequests.set(requestKey, request)
     return request
   }
 

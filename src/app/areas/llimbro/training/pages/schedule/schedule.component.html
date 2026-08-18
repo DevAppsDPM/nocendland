@@ -28,10 +28,7 @@
             }
           </select>
         </label>
-        <span
-          class="schedule-catalog__status"
-          [class.schedule-catalog__status--inactive]="!store.selectedSchedule()?.is_active"
-        >{{ store.selectedSchedule()?.is_active ? 'Activo en Seguimiento' : 'No activo' }}</span>
+        <app-badge class="schedule-catalog__status" [config]="selectedScheduleBadge()"/>
         <button class="ui-icon-button" type="button" aria-label="Editar catálogo" (click)="beginCatalogEditing()">
           <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#edit"/></svg>
         </button>
@@ -53,10 +50,7 @@
             }
           </select>
         </label>
-        <span
-          class="schedule-catalog__status"
-          [class.schedule-catalog__status--inactive]="!selectedCatalogDraft()?.isActive"
-        >{{ selectedCatalogDraft()?.isActive ? 'Activo en Seguimiento' : 'No activo' }}</span>
+        <app-badge class="schedule-catalog__status" [config]="selectedCatalogDraftBadge()"/>
       </div>
 
       @if (selectedCatalogDraft(); as schedule) {
@@ -175,7 +169,7 @@
                 >
                   <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#drag_handle"/></svg>
                 </button>
-                <span class="schedule-card__index" aria-hidden="true">{{ index + 1 }}</span>
+                <app-badge class="schedule-card__index" [config]="exercisePositionBadge(index + 1)"/>
                 <h3>{{ exerciseName(draft.exerciseId) }}</h3>
                 <button class="ui-icon-button" type="button" aria-label="Quitar del horario" (click)="removeExercise(index)">
                   <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#close"/></svg>

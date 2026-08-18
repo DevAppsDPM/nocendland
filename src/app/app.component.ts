@@ -2,10 +2,11 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {DeviceService} from '@platform/browser/device.service'
 import {AppUpdateService} from '@platform/browser/app-update.service'
+import {ToastOutletComponent} from '@shared/ui/toast'
 
 @Component({
     selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ToastOutletComponent],
     templateUrl: './app.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './app.component.scss'

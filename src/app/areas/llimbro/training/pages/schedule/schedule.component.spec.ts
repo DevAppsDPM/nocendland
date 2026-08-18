@@ -42,8 +42,25 @@ describe('ScheduleComponent', () => {
   it('shows only the selector, status and edit action in the collapsed catalog', () => {
     const catalog: HTMLElement = fixture.nativeElement.querySelector('.schedule-catalog')
     expect(catalog.textContent).toContain('Activo en Seguimiento')
+    expect(catalog.querySelector('.schedule-catalog__status .badge')?.getAttribute('data-status')).toBe('primary')
     expect(catalog.textContent).not.toContain('Nuevo')
     expect(catalog.querySelector('[aria-label="Editar catálogo"]')).not.toBeNull()
+  })
+
+  it('uses the neutral badge state for inactive schedules', () => {
+    store.selectedSchedule.set({...store.selectedSchedule()!, is_active: false})
+    fixture.detectChanges()
+
+    const badge: HTMLElement = fixture.nativeElement.querySelector('.schedule-catalog__status .badge')
+    expect(badge.textContent?.trim()).toBe('No activo')
+    expect(badge.getAttribute('data-status')).toBe('neutral')
+  })
+
+  it('uses count badges for exercise positions', () => {
+    selectMonday()
+    const badge: HTMLElement = fixture.nativeElement.querySelector('.schedule-card__index .badge--count')
+    expect(badge.textContent?.trim()).toBe('1')
+    expect(badge.getAttribute('aria-label')).toBe('Ejercicio 1')
   })
 
   it('opens catalog editing exclusively and restores the persisted catalog when cancelled', async () => {

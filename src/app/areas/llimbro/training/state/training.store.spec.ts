@@ -28,7 +28,7 @@ describe('TrainingStore previous sessions', () => {
     shares.list.and.resolveTo([])
     tracking = jasmine.createSpyObj<TrackingRepository>(
       'TrackingRepository',
-      ['readByDate', 'readPreviousByExercise'],
+      ['readByDate', 'readRecentBeforeByExercise'],
     )
     tracking.readByDate.and.resolveTo([])
 
@@ -47,12 +47,13 @@ describe('TrainingStore previous sessions', () => {
   it('reuses a request and caches an empty result for the active date', async () => {
     const date = new Date(2026, 7, 5)
     store.selectDate(date)
-    tracking.readPreviousByExercise.and.resolveTo(null)
+    tracking.readRecentBeforeByExercise.and.resolveTo([])
 
     await Promise.all([store.loadPreviousSessions([3], date), store.loadPreviousSessions([3], date)])
     await store.loadPreviousSessions([3], date)
 
-    expect(tracking.readPreviousByExercise).toHaveBeenCalledOnceWith(3, '2026-8-5')
+    expect(tracking.readRecentBeforeByExercise).toHaveBeenCalledOnceWith(3, '2026-8-5')
+    expect(store.recentSessions().get(3)).toEqual([])
     expect(store.previousSessions().get(3)).toBeNull()
   })
 
@@ -60,7 +61,7 @@ describe('TrainingStore previous sessions', () => {
     const firstDate = new Date(2026, 7, 5)
     const secondDate = new Date(2026, 7, 6)
     let resolvePrevious!: (entry: TrainingExerciseHistoryEntry | null) => void
-    tracking.readPreviousByExercise.and.returnValue(new Promise(resolve => resolvePrevious = resolve))
+    tracking.readRecentBeforeByExercise.and.returnValue(new Promise(resolve => resolvePrevious = entry => resolve(entry ? [entry] : [])))
     store.selectDate(firstDate)
     const pending = store.loadPreviousSessions([3], firstDate)
 
@@ -68,16 +69,28 @@ describe('TrainingStore previous sessions', () => {
     resolvePrevious(previousEntry())
     await pending
 
-    expect(store.previousSessions().has(3)).toBeFalse()
+    expect(store.recentSessions().has(3)).toBeFalse()
   })
 
   it('keeps reminder failures isolated from tracking state', async () => {
     const date = new Date(2026, 7, 5)
     store.selectDate(date)
-    tracking.readPreviousByExercise.and.rejectWith(new Error('network'))
+    tracking.readRecentBeforeByExercise.and.rejectWith(new Error('network'))
 
     await expectAsync(store.loadPreviousSessions([3], date)).toBeResolved()
-    expect(store.previousSessions().has(3)).toBeFalse()
+    expect(store.recentSessions().has(3)).toBeFalse()
+  })
+
+  it('derives the previous-session reminder from the latest recent session', async () => {
+    const latest = previousEntry()
+    const older = {...previousEntry(), id: 19, performed_on: '2026-07-22'}
+    tracking.readRecentBeforeByExercise.and.resolveTo([latest, older])
+    const date = new Date(2026, 7, 5)
+    store.selectDate(date)
+
+    await store.loadPreviousSessions([3], date)
+
+    expect(store.previousSessions().get(3)).toBe(latest)
   })
 })
 

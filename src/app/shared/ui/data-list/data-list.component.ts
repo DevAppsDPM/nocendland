@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Signal, computed, input, linkedSignal, signal} from '@angular/core'
 import {FormsModule} from '@angular/forms'
+import {BadgeComponent, BadgeConfig} from '@shared/ui/badge'
 import {DEFAULT_IMAGE_PATH} from '@shared/ui/image/image.constants'
 
 export type DataListItemId = string | number
@@ -9,6 +10,7 @@ export interface DataListItem<TItem> {
   value: TItem
   title: string
   details?: readonly string[]
+  badges?: readonly BadgeConfig[]
   imageUrl?: string | null
   searchText?: string
 }
@@ -25,13 +27,15 @@ export interface DataListConfig<TItem> {
   showSelectionConfirmation?: boolean
   confirmationIcon?: string
   loading?: Signal<boolean>
+  /** Número máximo de badges visibles por elemento; null muestra todos. */
+  maxVisibleBadges?: number | null
   /** Identidades que deben aparecer seleccionadas al abrir una selección múltiple. */
   initialSelectedIds?: Signal<readonly DataListItemId[]>
 }
 
 @Component({
   selector: 'app-data-list',
-  imports: [FormsModule],
+  imports: [FormsModule, BadgeComponent],
   templateUrl: './data-list.component.html',
   styleUrl: './data-list.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -48,7 +52,11 @@ export class DataListComponent<TItem = unknown> {
     if (!filter) return this.items()
 
     return this.items().filter(item => this.normalizeText(
-      item.searchText ?? [item.title, ...(item.details ?? [])].join(' '),
+      item.searchText ?? [
+        item.title,
+        ...(item.details ?? []),
+        ...this.badgeSearchTerms(item.badges ?? []),
+      ].join(' '),
     ).includes(filter))
   })
   protected readonly selectedItems = linkedSignal<
@@ -91,6 +99,30 @@ export class DataListComponent<TItem = unknown> {
     return this.selectedItems().some(selectedItem => selectedItem.id === item.id)
   }
 
+  protected visibleBadges(item: DataListItem<TItem>): readonly BadgeConfig[] {
+    const badges = item.badges ?? []
+    const configuredLimit = this.config().maxVisibleBadges
+    if (configuredLimit === null) return badges
+    const limit = Math.max(0, Math.trunc(configuredLimit ?? 4))
+    return badges.slice(0, limit)
+  }
+
+  protected overflowBadge(item: DataListItem<TItem>): BadgeConfig | null {
+    const badges = item.badges ?? []
+    const configuredLimit = this.config().maxVisibleBadges
+    if (configuredLimit === null) return null
+    const limit = Math.max(0, Math.trunc(configuredLimit ?? 4))
+    const hiddenCount = badges.length - limit
+    return hiddenCount > 0
+      ? {
+          variant: 'count',
+          value: hiddenCount,
+          prefix: '+',
+          ariaLabel: hiddenCount === 1 ? '1 badge más' : `${hiddenCount} badges más`,
+        }
+      : null
+  }
+
   protected reload(): void {
     this.config().actions?.reload?.()
   }
@@ -100,6 +132,14 @@ export class DataListComponent<TItem = unknown> {
       ? selected.filter(selectedItem => selectedItem.id !== item.id)
       : [...selected, item],
     )
+  }
+
+  private badgeSearchTerms(badges: readonly BadgeConfig[]): string[] {
+    return badges.map(badge => {
+      if (badge.variant === 'label') return badge.label
+      if (badge.variant === 'dot') return badge.ariaLabel
+      return [badge.prefix, badge.value, badge.ariaLabel].filter(value => value !== undefined).join(' ')
+    })
   }
 
   private normalizeText(text: string): string {

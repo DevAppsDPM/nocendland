@@ -3,8 +3,8 @@ import {SupabaseClientService} from '@platform/supabase/supabase-client.service'
 import {TrackingRepository} from './tracking.repository'
 
 describe('TrackingRepository', () => {
-  it('reads only the latest session before the selected date and sorts its sets', async () => {
-    const data = {
+  it('reads the two latest sessions before the selected date and sorts their sets', async () => {
+    const latest = {
       id: 20,
       id_user: 'test-user',
       exercise_id: 3,
@@ -17,13 +17,20 @@ describe('TrackingRepository', () => {
         {id: 31, id_user: 'test-user', entry_id: 20, position: 1, repetitions: 10, weight_kg: 40, created_at: '', updated_at: ''},
       ],
     }
+    const previous = {
+      ...latest,
+      id: 19,
+      performed_on: '2026-07-22',
+      training_set: latest.training_set.map(set => ({...set, id: set.id - 2, entry_id: 19})),
+    }
     const builder = {
       select: jasmine.createSpy('select'),
       eq: jasmine.createSpy('eq'),
       lt: jasmine.createSpy('lt'),
       order: jasmine.createSpy('order'),
       limit: jasmine.createSpy('limit'),
-      maybeSingle: jasmine.createSpy('maybeSingle').and.resolveTo({data, error: null}),
+      then: (resolve: (value: {data: typeof latest[]; error: null}) => unknown) =>
+        Promise.resolve(resolve({data: [latest, previous], error: null})),
     }
     builder.select.and.returnValue(builder)
     builder.eq.and.returnValue(builder)
@@ -37,12 +44,13 @@ describe('TrackingRepository', () => {
       auth as unknown as AuthService,
     )
 
-    const result = await repository.readPreviousByExercise(3, '2026-08-05')
+    const result = await repository.readRecentBeforeByExercise(3, '2026-08-05')
 
     expect(builder.eq.calls.allArgs()).toEqual([['id_user', 'test-user'], ['exercise_id', 3]])
     expect(builder.lt).toHaveBeenCalledOnceWith('performed_on', '2026-08-05')
     expect(builder.order).toHaveBeenCalledOnceWith('performed_on', {ascending: false})
-    expect(builder.limit).toHaveBeenCalledOnceWith(1)
-    expect(result?.training_set.map(set => set.position)).toEqual([1, 2])
+    expect(builder.limit).toHaveBeenCalledOnceWith(2)
+    expect(result.map(entry => entry.performed_on)).toEqual(['2026-07-29', '2026-07-22'])
+    expect(result.every(entry => entry.training_set.map(set => set.position).join() === '1,2')).toBeTrue()
   })
 })

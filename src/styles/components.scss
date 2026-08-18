@@ -68,6 +68,20 @@
     stroke-width: 1.8;
   }
 
+  .ui-tooltip {
+    display: block;
+    max-width: 18rem;
+    border: 1px solid color-mix(in oklch, var(--color-text) 74%, var(--color-border));
+    border-radius: var(--radius-md);
+    background: var(--color-text);
+    box-shadow: 0 var(--space-2) var(--space-8) var(--color-shadow);
+    color: var(--color-text-inverse);
+    font: 600 var(--font-size-sm) / 1.4 var(--font-family-body);
+    padding: var(--space-2) var(--space-3);
+    text-wrap: balance;
+    animation: tooltip-enter var(--duration-fast) var(--ease-emphasized);
+  }
+
   .ui-divider {
     width: 100%;
     height: 1px;
@@ -270,6 +284,10 @@
   to { transform: translateX(300%); }
 }
 
+@keyframes tooltip-enter {
+  from { opacity: 0; transform: translateY(0.2rem) scale(0.98); }
+}
+
 .cdk-overlay-container {
   position: fixed;
   z-index: 1000;
@@ -295,6 +313,10 @@
   position: absolute;
   max-width: 100%;
   pointer-events: auto;
+}
+
+.atlas-tooltip-panel {
+  pointer-events: none;
 }
 
 .atlas-dialog-backdrop {

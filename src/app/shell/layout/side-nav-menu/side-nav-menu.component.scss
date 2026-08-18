@@ -1,6 +1,8 @@
 :host {
   min-height: 0;
-  overflow: auto;
+  overflow-x: clip;
+  overflow-y: auto;
+  padding-inline-end: var(--space-1);
 }
 
 .atlas-navigation__section h2 {

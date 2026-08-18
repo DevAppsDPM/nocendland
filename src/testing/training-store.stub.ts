@@ -75,6 +75,17 @@ export function createTrainingStoreStub() {
       {...exerciseHistory[0].training_set[0], id: 28, entry_id: 19, position: 2, repetitions: null, weight_kg: null},
     ],
   }]]))
+  const recentSessions = signal<ReadonlyMap<number, readonly TrainingExerciseHistoryEntry[]>>(new Map([[1, [
+    previousSessions().get(1)!,
+    {
+      ...exerciseHistory[0],
+      id: 18,
+      performed_on: '2026-07-20',
+      training_set: [
+        {...exerciseHistory[0].training_set[0], id: 27, entry_id: 18, position: 1},
+      ],
+    },
+  ]]]))
   return {
     exercises: signal([exercise]),
     exerciseDetail: signal(exercise),
@@ -108,6 +119,7 @@ export function createTrainingStoreStub() {
       }],
     }]),
     previousSessions,
+    recentSessions,
     selectedDate,
     loadingExercises: signal(false),
     loadingSchedule: signal(false),

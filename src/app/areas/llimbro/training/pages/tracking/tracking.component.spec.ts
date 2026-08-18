@@ -32,6 +32,12 @@ describe('TrackingComponent', () => {
     expect(fixture.nativeElement.querySelector('.set-row__weight span')?.textContent?.trim()).toBe('Peso · kg')
   })
 
+  it('uses count badges for set positions', () => {
+    const badge: HTMLElement = fixture.nativeElement.querySelector('.set-row__position .badge--count')
+    expect(badge.textContent?.trim()).toBe('1')
+    expect(badge.getAttribute('aria-label')).toBe('Serie 1')
+  })
+
   it('adds as many set rows as the user needs', () => {
     const addButton: HTMLButtonElement = fixture.nativeElement.querySelector('.tracking-entry__add-set')
     addButton.click()
@@ -69,5 +75,35 @@ describe('TrackingComponent', () => {
     }
     component.addEntries([exercise])
     expect(loadPreviousSessions).toHaveBeenCalledOnceWith([2])
+  })
+
+  it('shows an explained load-progression indicator after two completed sessions', () => {
+    const baseSession = store.exerciseHistory()[0]
+    const completedSets = [1, 2, 3].map(position => ({
+      ...baseSession.training_set[0],
+      id: 40 + position,
+      position,
+      repetitions: 10,
+      weight_kg: 40,
+    }))
+    store.recentSessions.set(new Map([[1, [
+      {...baseSession, id: 22, performed_on: '2026-07-27', training_set: completedSets},
+      {...baseSession, id: 21, performed_on: '2026-07-20', training_set: completedSets},
+    ]]]))
+    fixture.detectChanges()
+
+    const indicator: HTMLButtonElement = fixture.nativeElement.querySelector('.tracking-entry__recommendation')
+    expect(indicator?.getAttribute('aria-label')).toBe('Recomendación: puedes subir peso')
+
+    indicator.click()
+    const tooltip: HTMLElement | null = document.querySelector('.ui-tooltip')
+    expect(tooltip?.textContent).toContain('3 series de 10 repeticiones o más, desde 40 kg')
+  })
+
+  it('hides the progression indicator when the exercise has no complete schedule target', () => {
+    store.schedule.set([])
+    fixture.detectChanges()
+
+    expect(fixture.nativeElement.querySelector('.tracking-entry__recommendation')).toBeNull()
   })
 })

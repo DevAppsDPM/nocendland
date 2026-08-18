@@ -24,6 +24,15 @@ describe('ExercisesComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Sentadilla')
   })
 
+  it('renders the description as detail and classifications as badges', () => {
+    const detail: HTMLElement = fixture.nativeElement.querySelector('.data-list__copy > small')
+    const badges = [...fixture.nativeElement.querySelectorAll('.badge--label')] as HTMLElement[]
+
+    expect(detail.textContent).toContain('Patrón dominante de rodilla')
+    expect(badges.map(badge => badge.textContent?.trim())).toEqual(['Fuerza', 'Cuádriceps', 'Sentadilla'])
+    expect(badges.every(badge => badge.dataset['status'] === 'primary')).toBeTrue()
+  })
+
   it('opens the creation form from the primary action', () => {
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('[aria-label="Crear ejercicio"]')
     button.click()

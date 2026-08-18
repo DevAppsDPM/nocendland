@@ -5,6 +5,7 @@ import {NavigationService} from '@shell/navigation/navigation.service'
 import {AvatarComponent} from '@shared/ui/avatar'
 import {ConfirmDialogService, DialogConfirm} from '@shared/ui/confirm-dialog'
 import {ImageCropResult, ImageCropperComponent, ImageCropperConfig} from '@shared/ui/image-cropper'
+import {ToastService} from '@shared/ui/toast'
 import {exerciseRouteQueryParams, parseExerciseRouteDate, readExerciseRouteContext} from '../../exercise-route-context'
 import {TrainingExerciseDraft} from '../../models/training.models'
 import {TrainingPendingChanges} from '../../pending-changes.guard'
@@ -39,6 +40,7 @@ export class ExerciseFormComponent implements OnDestroy, TrainingPendingChanges 
   private readonly route = inject(ActivatedRoute)
   private readonly navigation = inject(NavigationService)
   private readonly confirmDialog = inject(ConfirmDialogService)
+  private readonly toast = inject(ToastService)
   protected readonly store = inject(TrainingStore)
   protected readonly isNew = signal(this.route.snapshot.params['id'] === 'new')
   protected readonly routeContext = readExerciseRouteContext(this.route.snapshot)
@@ -183,7 +185,9 @@ export class ExerciseFormComponent implements OnDestroy, TrainingPendingChanges 
         this.imageUrl.set(this.store.exercises().find(item => item.id === saved.id)?.imageUrl ?? null)
       }
     } catch {
-      this.error.set('No se han podido guardar los datos del ejercicio. Revisa los campos e inténtalo de nuevo.')
+      const description = 'Revisa los campos e inténtalo de nuevo.'
+      this.error.set(`No se han podido guardar los datos del ejercicio. ${description}`)
+      this.toast.error('No se pudo guardar el ejercicio', {description})
       return
     }
 
@@ -195,9 +199,11 @@ export class ExerciseFormComponent implements OnDestroy, TrainingPendingChanges 
         this.savedImagePath = null
       }
     } catch {
-      this.error.set(this.imageMarkedForRemoval
+      const description = this.imageMarkedForRemoval
         ? 'Los datos se han guardado, pero no se ha podido eliminar la imagen. Vuelve a intentarlo.'
-        : 'Los datos se han guardado, pero no se ha podido subir la imagen. Vuelve a intentarlo.')
+        : 'Los datos se han guardado, pero no se ha podido subir la imagen. Vuelve a intentarlo.'
+      this.error.set(description)
+      this.toast.error('Ejercicio guardado con una incidencia', {description})
       return
     }
 
@@ -205,6 +211,7 @@ export class ExerciseFormComponent implements OnDestroy, TrainingPendingChanges 
     this.imageMarkedForRemoval = false
     this.isNew.set(false)
     this.form.markAsPristine()
+    this.toast.success('Ejercicio guardado', {description: 'La ficha ya está actualizada.'})
     await this.navigation.to('training', 'exercises', String(savedId), {
       queryParams: exerciseRouteQueryParams(this.routeContext),
     })

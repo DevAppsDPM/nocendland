@@ -3,6 +3,7 @@ import {ReactiveFormsModule} from "@angular/forms"
 import {CalendarComponent} from '@shared/ui/calendar'
 import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
 import {DialogService} from '@shared/ui/dialog'
+import {ToastService} from '@shared/ui/toast'
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {NutritionIngredientListItem, NutritionIntake, NutritionIntakeWithIngredient} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {formatDateForDatabase, formatDateForDisplay} from "@shared/utilities/date.utils"
@@ -23,6 +24,7 @@ export class IntakeComponent {
 
   private readonly dialog = inject(DialogService)
   private readonly injector = inject(Injector)
+  private readonly toast = inject(ToastService)
   protected readonly nutritionStore = inject(NutritionStore)
   protected readonly multiSelection = signal(true)
   protected readonly deleteMode = signal(false)
@@ -91,10 +93,20 @@ export class IntakeComponent {
       return intake
     })
 
-    const intakesSaved = await this.nutritionStore.saveIntakeList(intakes)
-
-    this.selectingIngredients.set(false)
-    await this.nutritionStore.loadIntakeJoinIngredientList()
+    let intakesSaved: NutritionIntake[]
+    try {
+      intakesSaved = await this.nutritionStore.saveIntakeList(intakes)
+      this.selectingIngredients.set(false)
+      await this.nutritionStore.loadIntakeJoinIngredientList()
+      this.toast.success(ingredients.length === 1 ? 'Ingesta añadida' : 'Ingestas añadidas', {
+        description: `${ingredients.length} ${ingredients.length === 1 ? 'alimento registrado' : 'alimentos registrados'}.`,
+      })
+    } catch {
+      this.toast.error('No se pudieron añadir las ingestas', {
+        description: 'Mantendremos abierta la selección para que puedas reintentarlo.',
+      })
+      return
+    }
 
     // Si solo hay un intake, lo abrimos directamente.
     if (intakesSaved.length === 1) {

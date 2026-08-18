@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core'
 import {NavigationService} from '@shell/navigation/navigation.service'
+import {BadgeConfig} from '@shared/ui/badge'
 import {ConfirmDialogService} from '@shared/ui/confirm-dialog'
 import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
 import {TrainingExerciseListItem} from '../../models/training.models'
@@ -25,30 +26,31 @@ export class ExercisesComponent {
   protected readonly shareError = signal<string | null>(null)
   protected readonly managingShares = signal(false)
   protected readonly items = computed<readonly DataListItem<TrainingExerciseListItem>[]>(() =>
-    this.store.exercises().map(exercise => ({
-      id: exercise.id,
-      value: exercise,
-      title: exercise.name,
-      details: [
-        ...trainingTaxonomyLabels([
-          ...(exercise.training_modalities ?? []),
-          ...(exercise.muscle_groups ?? []),
-          ...(exercise.movement_patterns ?? []),
-        ]).slice(0, 4),
-        exercise.description || 'Sin descripción',
-      ],
-      imageUrl: exercise.imageUrl,
-      searchText: [
-        exercise.name,
-        exercise.description,
-        ...exercise.tips,
-        ...trainingTaxonomyLabels([
-          ...(exercise.training_modalities ?? []),
-          ...(exercise.muscle_groups ?? []),
-          ...(exercise.movement_patterns ?? []),
-        ]),
-      ].filter(Boolean).join(' '),
-    })),
+    this.store.exercises().map(exercise => {
+      const classifications = trainingTaxonomyLabels([
+        ...(exercise.training_modalities ?? []),
+        ...(exercise.muscle_groups ?? []),
+        ...(exercise.movement_patterns ?? []),
+      ])
+      return {
+        id: exercise.id,
+        value: exercise,
+        title: exercise.name,
+        details: [exercise.description || 'Sin descripción'],
+        badges: classifications.map(label => ({
+          variant: 'label',
+          label,
+          status: 'primary',
+        }) satisfies BadgeConfig),
+        imageUrl: exercise.imageUrl,
+        searchText: [
+          exercise.name,
+          exercise.description,
+          ...exercise.tips,
+          ...classifications,
+        ].filter(Boolean).join(' '),
+      }
+    }),
   )
   protected readonly config: DataListConfig<TrainingExerciseListItem> = {
     label: 'Ejercicios',

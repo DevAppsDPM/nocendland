@@ -1,8 +1,11 @@
 import {ChangeDetectionStrategy, Component, computed, inject, linkedSignal, signal} from '@angular/core'
 import {ActivatedRoute} from '@angular/router'
 import {NavigationService} from '@shell/navigation/navigation.service'
+import {BadgeComponent, BadgeConfig} from '@shared/ui/badge'
 import {CalendarComponent} from '@shared/ui/calendar'
 import {DataListComponent, DataListConfig, DataListItem} from '@shared/ui/data-list'
+import {ToastService} from '@shared/ui/toast'
+import {TooltipDirective} from '@shared/ui/tooltip'
 import {formatDateForDisplay} from '@shared/utilities/date.utils'
 import {formatExerciseRouteDate, parseExerciseRouteDate} from '../../exercise-route-context'
 import {TrainingPendingChanges} from '../../pending-changes.guard'
@@ -10,13 +13,17 @@ import {RepetitionsInputComponent} from '../../ui/repetitions-input/repetitions-
 import {TrainingEntryDraft, TrainingExerciseListItem, TrainingSet, TrainingSetDraft} from '../../models/training.models'
 import {TrainingStore} from '../../state/training.store'
 import {getIsoWeekday} from '../../training.constants'
+import {
+  analyzeLoadProgression,
+  LoadProgressionRecommendation,
+} from './load-progression-analysis'
 
 type EditableSet = TrainingSetDraft & {clientId: string}
 type EditableEntry = Omit<TrainingEntryDraft, 'sets'> & {clientId: string; sets: EditableSet[]}
 
 @Component({
   selector: 'app-tracking',
-  imports: [CalendarComponent, DataListComponent, RepetitionsInputComponent],
+  imports: [BadgeComponent, CalendarComponent, DataListComponent, RepetitionsInputComponent, TooltipDirective],
   templateUrl: './tracking.component.html',
   styleUrl: './tracking.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -25,6 +32,7 @@ export class TrackingComponent implements TrainingPendingChanges {
   protected readonly store = inject(TrainingStore)
   private readonly route = inject(ActivatedRoute)
   private readonly navigation = inject(NavigationService)
+  private readonly toast = inject(ToastService)
   protected readonly selectingExercises = signal(false)
   protected readonly dirty = signal(false)
   private readonly multiSelection = signal(true)
@@ -65,6 +73,21 @@ export class TrackingComponent implements TrainingPendingChanges {
     const weekday = getIsoWeekday(this.store.selectedDate())
     return this.store.schedule().filter(item => item.weekday === weekday && available.has(item.exercise_id))
       .map(item => item.exercise_id)
+  })
+  protected readonly loadProgressionRecommendations = computed<ReadonlyMap<number, LoadProgressionRecommendation>>(() => {
+    const weekday = getIsoWeekday(this.store.selectedDate())
+    const recommendations = new Map<number, LoadProgressionRecommendation>()
+    for (const entry of this.drafts()) {
+      const planned = this.store.schedule().find(item =>
+        item.weekday === weekday && item.exercise_id === entry.exerciseId)
+      const recommendation = analyzeLoadProgression(planned ? {
+        setCount: planned.set_count,
+        targetRepetitions: planned.target_repetitions,
+        targetWeightKg: planned.target_weight_kg,
+      } : null, this.store.recentSessions().get(entry.exerciseId) ?? [])
+      if (recommendation) recommendations.set(entry.exerciseId, recommendation)
+    }
+    return recommendations
   })
   protected readonly exerciseListConfig: DataListConfig<TrainingExerciseListItem> = {
     label: 'Ejercicios disponibles',
@@ -138,8 +161,15 @@ export class TrackingComponent implements TrainingPendingChanges {
   }
 
   protected async save(): Promise<void> {
-    await this.store.saveEntries(this.drafts())
-    this.dirty.set(false)
+    try {
+      await this.store.saveEntries(this.drafts())
+      this.dirty.set(false)
+      this.toast.success('Seguimiento guardado', {description: 'La sesión ya está actualizada.'})
+    } catch {
+      this.toast.error('No se pudo guardar la sesión', {
+        description: 'Conservamos tus cambios en pantalla para que puedas reintentarlo.',
+      })
+    }
   }
 
   protected readonly formatDateForDisplay = formatDateForDisplay
@@ -156,6 +186,14 @@ export class TrackingComponent implements TrainingPendingChanges {
     const repetitions = set.repetitions === null ? '— reps' : `${set.repetitions} reps`
     const weight = set.weight_kg === null ? 'sin peso' : `${this.formatNumber(set.weight_kg)} kg`
     return `${repetitions} × ${weight}`
+  }
+
+  protected setPositionBadge(position: number): BadgeConfig {
+    return {variant: 'count', value: position, ariaLabel: `Serie ${position}`}
+  }
+
+  protected formatLoadProgressionTooltip(recommendation: LoadProgressionRecommendation): string {
+    return `Puedes subir peso. Cumpliste ${recommendation.setCount} series de ${recommendation.targetRepetitions} repeticiones o más, desde ${this.formatNumber(recommendation.targetWeightKg)} kg, en tus dos últimas sesiones sin reducir la carga.`
   }
 
   private addEntries(exercises: readonly TrainingExerciseListItem[]): void {

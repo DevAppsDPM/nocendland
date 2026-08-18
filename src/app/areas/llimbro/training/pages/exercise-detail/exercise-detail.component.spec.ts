@@ -33,6 +33,11 @@ describe('ExerciseDetailComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('40 kg × 10')
   })
 
+  it('uses the shared badge component for the exercise taxonomy', () => {
+    const badges = [...fixture.nativeElement.querySelectorAll('.exercise-detail-tags app-badge')] as HTMLElement[]
+    expect(badges.map(badge => badge.textContent?.trim())).toEqual(['Fuerza', 'Cuádriceps', 'Sentadilla'])
+  })
+
   it('opens editing while preserving the return context', () => {
     const button: HTMLButtonElement = [...fixture.nativeElement.querySelectorAll('.exercise-detail-mode button')][1]
     button.click()

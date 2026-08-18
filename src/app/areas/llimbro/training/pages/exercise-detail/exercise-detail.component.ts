@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, computed, effect, inject, linkedSign
 import {ActivatedRoute} from '@angular/router'
 import {NavigationService} from '@shell/navigation/navigation.service'
 import {AvatarComponent} from '@shared/ui/avatar'
+import {BadgeComponent, BadgeConfig} from '@shared/ui/badge'
 import {CssTokenService, ThemeService} from '@shared/ui/theme'
 import {
   ApexAxisChartSeries,
@@ -46,7 +47,7 @@ const METRIC_UNITS: Readonly<Record<ExerciseProgressMetric, string>> = {
 
 @Component({
   selector: 'app-exercise-detail',
-  imports: [AvatarComponent, ChartComponent],
+  imports: [AvatarComponent, BadgeComponent, ChartComponent],
   templateUrl: './exercise-detail.component.html',
   styleUrl: './exercise-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -84,13 +85,13 @@ export class ExerciseDetailComponent {
       return points.find(point => point.entry.id === previousId) ?? points.at(-1) ?? null
     },
   })
-  protected readonly taxonomy = computed(() => {
+  protected readonly taxonomyBadges = computed<readonly BadgeConfig[]>(() => {
     const exercise = this.store.exerciseDetail()
     return exercise ? trainingTaxonomyLabels([
       ...exercise.training_modalities,
       ...exercise.muscle_groups,
       ...exercise.movement_patterns,
-    ]) : []
+    ]).map(label => ({variant: 'label', label})) : []
   })
   protected readonly latestEntry = computed(() => this.filteredHistory().at(-1) ?? null)
   protected readonly latestSetSummary = computed(() => {

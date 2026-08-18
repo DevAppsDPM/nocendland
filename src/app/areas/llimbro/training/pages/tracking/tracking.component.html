@@ -45,6 +45,16 @@
                 <h2>{{ exerciseName(entry.exerciseId) }}</h2>
               </div>
               <div class="tracking-entry__actions">
+                @if (loadProgressionRecommendations().get(entry.exerciseId); as recommendation) {
+                  <button
+                    class="ui-icon-button tracking-entry__recommendation"
+                    type="button"
+                    aria-label="Recomendación: puedes subir peso"
+                    [appTooltip]="formatLoadProgressionTooltip(recommendation)"
+                  >
+                    <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#arrow_upward"/></svg>
+                  </button>
+                }
                 <button class="ui-icon-button tracking-entry__detail" type="button" [attr.aria-label]="'Ver ficha y progreso de ' + exerciseName(entry.exerciseId)" (click)="openExercise(entry.exerciseId)">
                   <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#analytics"/></svg>
                 </button>
@@ -68,7 +78,7 @@
             <div class="set-table">
               @for (set of entry.sets; track set.clientId; let setIndex = $index) {
                 <div class="set-row">
-                  <strong>{{ set.position }}</strong>
+                  <app-badge class="set-row__position" [config]="setPositionBadge(set.position)"/>
                   <app-repetitions-input
                     class="set-row__repetitions"
                     [label]="'Repeticiones · serie ' + set.position"

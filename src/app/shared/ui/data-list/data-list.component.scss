@@ -129,6 +129,13 @@
   color: var(--color-text-muted);
 }
 
+.data-list__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
 .data-list__check,
 .data-list__arrow {
   color: var(--area-accent-strong);

@@ -6,6 +6,7 @@ import {ActivatedRoute} from "@angular/router";
 import {AvatarComponent} from '@shared/ui/avatar'
 import {ConfirmDialogService, DialogConfirm} from '@shared/ui/confirm-dialog'
 import {CssTokenService, ThemeService} from '@shared/ui/theme'
+import {ToastService} from '@shared/ui/toast'
 import {NutritionIngredient, NutritionIngredientImage} from "@areas/llimbro/nutrition/models/nutrition.models"
 import {NutritionStore} from "@areas/llimbro/nutrition/state/nutrition.store"
 import {NavigationService} from "@shell/navigation/navigation.service"
@@ -52,6 +53,7 @@ export class IngredientFormComponent {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private confirmDialog: ConfirmDialogService,
+    private toast: ToastService,
     protected nutritionStore: NutritionStore,
     private resources: NutritionResourcesService,
     protected navigation: NavigationService,
@@ -126,7 +128,11 @@ export class IngredientFormComponent {
         this.new = false
         this.buildForm()
         this.setFormValues(ingredient)
+        this.toast.success('Alimento guardado', {description: 'La ficha ya está actualizada.'})
       })
+      .catch(() => this.toast.error('No se pudo guardar el alimento', {
+        description: 'Revisa los datos e inténtalo de nuevo.',
+      }))
   }
 
   public deleteIngredient(): void {
@@ -138,7 +144,13 @@ export class IngredientFormComponent {
 
     this.confirmDialog.open(config).subscribe((deleted: boolean) => {
       if (deleted) this.nutritionStore.deleteIngredients([this.ingredientForm?.value])
-        .then(() => this.navigation.to('nutrition', 'ingredients'))
+        .then(() => {
+          this.toast.success('Alimento eliminado')
+          return this.navigation.to('nutrition', 'ingredients')
+        })
+        .catch(() => this.toast.error('No se pudo eliminar el alimento', {
+          description: 'Inténtalo de nuevo dentro de unos segundos.',
+        }))
     })
   }
 
@@ -152,8 +164,15 @@ export class IngredientFormComponent {
 
     if (!file) return
 
-    await this.nutritionStore.saveIngredientImage(this.ingredientForm?.value, file)
-    this.setImage()
+    try {
+      await this.nutritionStore.saveIngredientImage(this.ingredientForm?.value, file)
+      this.setImage()
+      this.toast.success('Imagen guardada')
+    } catch {
+      this.toast.error('No se pudo guardar la imagen', {
+        description: 'El resto de datos del alimento no se ha modificado.',
+      })
+    }
   }
 
 
