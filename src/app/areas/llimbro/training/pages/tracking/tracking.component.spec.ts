@@ -24,12 +24,29 @@ describe('TrackingComponent', () => {
     fixture.detectChanges()
   })
 
-  it('renders persisted repetitions as a preset and labels the weight input', () => {
-    const inputs = [...fixture.nativeElement.querySelectorAll('.set-row input')]
-      .map((input: HTMLInputElement) => input.value)
-    expect(inputs).toEqual(['', '40'])
-    expect(fixture.nativeElement.querySelector('.ui-segmented-input__option--active')?.textContent?.trim()).toBe('10')
+  it('renders repetitions and weight as numeric inputs in the same set row', () => {
+    const repetitionsInput: HTMLInputElement = fixture.nativeElement.querySelector('.set-row__repetitions input')
+    const weightInput: HTMLInputElement = fixture.nativeElement.querySelector('.set-row__weight input')
+
+    expect(repetitionsInput.type).toBe('number')
+    expect(repetitionsInput.value).toBe('10')
+    expect(weightInput.value).toBe('40')
+    expect(fixture.nativeElement.querySelector('.set-row__repetitions span')?.textContent?.trim()).toBe('Repeticiones')
     expect(fixture.nativeElement.querySelector('.set-row__weight span')?.textContent?.trim()).toBe('Peso · kg')
+  })
+
+  it('allows editing the repetitions prefilled from the schedule', () => {
+    const repetitionsInput: HTMLInputElement = fixture.nativeElement.querySelector('.set-row__repetitions input')
+    repetitionsInput.value = '12'
+    repetitionsInput.dispatchEvent(new Event('input'))
+    fixture.detectChanges()
+
+    const component = fixture.componentInstance as unknown as {
+      drafts(): Array<{sets: Array<{repetitions: number | null}>}>
+      dirty(): boolean
+    }
+    expect(component.drafts()[0].sets[0].repetitions).toBe(12)
+    expect(component.dirty()).toBeTrue()
   })
 
   it('uses count badges for set positions', () => {
@@ -70,11 +87,16 @@ describe('TrackingComponent', () => {
   it('requests the previous session when adding an exercise during editing', () => {
     const loadPreviousSessions = spyOn(store, 'loadPreviousSessions').and.resolveTo()
     const exercise = {...store.exercises()[0], id: 2, name: 'Press banca'}
+    store.schedule.set([{...store.schedule()[0], id: 11, exercise_id: 2}])
     const component = fixture.componentInstance as unknown as {
       addEntries(exercises: readonly typeof exercise[]): void
+      drafts(): Array<{exerciseId: number; sets: Array<{repetitions: number | null}>}>
     }
     component.addEntries([exercise])
+
     expect(loadPreviousSessions).toHaveBeenCalledOnceWith([2])
+    expect(component.drafts().find(entry => entry.exerciseId === 2)?.sets.map(set => set.repetitions))
+      .toEqual([10, 10, 10])
   })
 
   it('shows an explained load-progression indicator after two completed sessions', () => {

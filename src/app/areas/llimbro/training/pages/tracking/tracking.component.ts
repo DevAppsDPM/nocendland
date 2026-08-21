@@ -9,7 +9,6 @@ import {TooltipDirective} from '@shared/ui/tooltip'
 import {formatDateForDisplay} from '@shared/utilities/date.utils'
 import {formatExerciseRouteDate, parseExerciseRouteDate} from '../../exercise-route-context'
 import {TrainingPendingChanges} from '../../pending-changes.guard'
-import {RepetitionsInputComponent} from '../../ui/repetitions-input/repetitions-input.component'
 import {TrainingEntryDraft, TrainingExerciseListItem, TrainingSet, TrainingSetDraft} from '../../models/training.models'
 import {TrainingStore} from '../../state/training.store'
 import {getIsoWeekday} from '../../training.constants'
@@ -23,7 +22,7 @@ type EditableEntry = Omit<TrainingEntryDraft, 'sets'> & {clientId: string; sets:
 
 @Component({
   selector: 'app-tracking',
-  imports: [BadgeComponent, CalendarComponent, DataListComponent, RepetitionsInputComponent, TooltipDirective],
+  imports: [BadgeComponent, CalendarComponent, DataListComponent, TooltipDirective],
   templateUrl: './tracking.component.html',
   styleUrl: './tracking.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -152,12 +151,11 @@ export class TrackingComponent implements TrainingPendingChanges {
 
   protected updateSet(entryIndex: number, setIndex: number, field: 'repetitions' | 'weightKg', event: Event): void {
     const raw = (event.target as HTMLInputElement).value
-    const value = raw === '' ? null : Number(raw)
+    const numericValue = Number(raw)
+    const value = raw === '' ? null : field === 'repetitions'
+      ? Math.max(1, Math.trunc(numericValue))
+      : numericValue
     this.updateSetValue(entryIndex, setIndex, field, value)
-  }
-
-  protected updateRepetitions(entryIndex: number, setIndex: number, repetitions: number | null): void {
-    this.updateSetValue(entryIndex, setIndex, 'repetitions', repetitions)
   }
 
   protected async save(): Promise<void> {

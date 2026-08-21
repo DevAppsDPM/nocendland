@@ -79,12 +79,10 @@
               @for (set of entry.sets; track set.clientId; let setIndex = $index) {
                 <div class="set-row">
                   <app-badge class="set-row__position" [config]="setPositionBadge(set.position)"/>
-                  <app-repetitions-input
-                    class="set-row__repetitions"
-                    [label]="'Repeticiones · serie ' + set.position"
-                    [repetitions]="set.repetitions"
-                    (repetitionsChange)="updateRepetitions(entryIndex, setIndex, $event)"
-                  />
+                  <label class="ui-field set-row__repetitions">
+                    <span>Repeticiones</span>
+                    <input class="ui-input" type="number" min="1" step="1" placeholder="0" [attr.aria-label]="'Repeticiones · serie ' + set.position" [value]="set.repetitions ?? ''" (input)="updateSet(entryIndex, setIndex, 'repetitions', $event)">
+                  </label>
                   <label class="ui-field set-row__weight">
                     <span>Peso · kg</span>
                     <input class="ui-input" type="number" min="0" step="0.25" placeholder="0" [value]="set.weightKg ?? ''" (input)="updateSet(entryIndex, setIndex, 'weightKg', $event)">
