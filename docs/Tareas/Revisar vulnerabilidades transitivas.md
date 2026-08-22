@@ -1,11 +1,11 @@
 ---
 Nombre: Revisar vulnerabilidades transitivas
-Estado: Pendiente
-Resumen: Revisar y resolver de forma controlada los 31 avisos actuales de pnpm audit, incluidos 19 de severidad alta, sin aplicar correcciones automáticas ni relajar la política de seguridad.
-Decisiones: Tras retirar Karma y actualizar Vitest a una versión sin vulnerabilidades críticas, las rutas restantes pertenecen principalmente a herramientas de desarrollo como Tailwind con Sucrase y Angular CLI; se revisarán actualizaciones y overrides exactos caso por caso antes de modificar el lockfile.
+Estado: Hecha
+Resumen: La auditoría completa y la de producción quedan sin vulnerabilidades conocidas tras actualizar Angular 22 y fijar overrides transitivos exactos, conservando la política estricta de pnpm.
+Decisiones: Angular se actualiza dentro de la versión 22; las versiones vulnerables arrastradas por Tailwind y el tooling se sustituyen mediante overrides exactos de la misma línea compatible; esbuild 0.28.2 se autoriza de forma exacta tras revisar su postinstall; el mensaje incorrecto de pnpm 10.33.2 en ignored-builds se documenta y se contrasta con pendingBuilds vacío sin relajar la configuración.
 Bloqueada: []
 Fecha de creación: 2026-08-06T19:21:20
-Última modificación: 2026-08-21
+Última modificación: 2026-08-22
 ---
 
 # Revisar vulnerabilidades transitivas
@@ -34,3 +34,14 @@ La migración a Vitest del 21 de agosto de 2026 retiró las rutas de Karma. La p
 - La política estricta de `pnpm-workspace.yaml` continúa activa.
 - `pnpm ignored-builds` inspecciona correctamente la instalación utilizada por el proyecto.
 - La compilación y las pruebas continúan pasando.
+
+## Resultado
+
+- El runtime Angular y CDK se actualizaron a 22.1.2; Angular CLI, builder y schematics CLI se actualizaron a 22.1.4.
+- Se fijaron overrides exactos para las versiones vulnerables de `glob`, `minimatch`, `brace-expansion`, `postcss` y `yaml`. Todas las versiones llevaban más de siete días publicadas.
+- `pnpm audit --audit-level low` y `pnpm audit --prod --audit-level low`: sin vulnerabilidades conocidas.
+- `pnpm install --frozen-lockfile`: correcto.
+- `pnpm run build`: correcto; conserva únicamente los avisos de presupuesto ya existentes.
+- `pnpm test -- --watch=false`: 47 archivos y 122 pruebas correctas.
+- `pnpm-workspace.yaml` mantiene activas las restricciones de integridad, cuarentena, dependencias exóticas y scripts. `esbuild@0.28.2` se añadió a `allowBuilds` tras revisar que su `postinstall` valida y enlaza el binario específico de plataforma requerido por Angular.
+- `pnpm ignored-builds` en pnpm 10.33.2 muestra `Cannot identify as no node_modules found` cuando `.modules.yaml` existe pero omite la clave opcional `ignoredBuilds`. La instalación sí existe, `.modules.yaml` declara `pendingBuilds: []` y todos los paquetes con scripts están clasificados en `allowBuilds`; se conserva la política estricta en vez de modificar metadatos internos o actualizar pnpm fuera de cuarentena.

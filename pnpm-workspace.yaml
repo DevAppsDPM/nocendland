@@ -14,6 +14,8 @@ allowBuilds:
   esbuild@0.25.9: true
   esbuild@0.27.3: true
   esbuild@0.28.1: true
+  # Angular builder 22.1.4; el postinstall valida y enlaza el binario de plataforma.
+  esbuild@0.28.2: true
   '@parcel/watcher': false
   fsevents: false
   lmdb: false
