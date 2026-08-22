@@ -17,7 +17,27 @@
 
     <app-user-info/>
     <app-side-nav-menu/>
-    <p class="app-shell__version">Nocendland · v{{ environment.version }}</p>
+    <div class="app-shell__version-row">
+      <p class="app-shell__version" aria-live="polite">
+        @if (appUpdate.checking()) {
+          Comprobando…
+        } @else {
+          Nocendland · v{{ environment.version }}
+        }
+      </p>
+      <button
+        class="ui-icon-button ui-icon-button--subtle"
+        type="button"
+        aria-label="Buscar actualizaciones"
+        [attr.aria-busy]="appUpdate.checking()"
+        [disabled]="appUpdate.checking()"
+        appTooltip="Buscar actualizaciones"
+        [appTooltipDisabled]="appUpdate.checking()"
+        (click)="appUpdate.checkForUpdate()"
+      >
+        <svg class="ui-icon" aria-hidden="true"><use href="icons/atlas-icons.svg#refresh"/></svg>
+      </button>
+    </div>
   </aside>
 
   <main class="app-shell__main">

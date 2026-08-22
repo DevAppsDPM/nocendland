@@ -74,11 +74,7 @@ export class ScheduleRepository {
       updatedAt: draft.updatedAt,
       deleted: draft.deleted,
     }))
-    const saveCatalogRpc = this.supabase.client.rpc as unknown as (
-      functionName: 'save_training_schedule_catalog',
-      args: {catalog_draft: Json; selected_key: string},
-    ) => Promise<{data: Json; error: {message: string} | null}>
-    const query = await saveCatalogRpc('save_training_schedule_catalog', {
+    const query = await this.supabase.client.rpc('save_training_schedule_catalog', {
       catalog_draft: catalogDraft,
       selected_key: selectedKey,
     })

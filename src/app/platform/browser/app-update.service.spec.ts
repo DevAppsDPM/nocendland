@@ -14,6 +14,7 @@ describe('AppUpdateService', () => {
 
   beforeEach(() => {
     swUpdate.checkForUpdate.mockReset()
+    swUpdate.checkForUpdate.mockResolvedValue(false)
     TestBed.configureTestingModule({
       providers: [{provide: SwUpdate, useValue: swUpdate}],
     })
@@ -31,5 +32,23 @@ describe('AppUpdateService', () => {
     expect(service.updateAvailable()).toBe(true)
     service.dismiss()
     expect(service.updateAvailable()).toBe(false)
+  })
+
+  it('exposes the manual check state and ignores a concurrent request', async () => {
+    const service = TestBed.inject(AppUpdateService)
+    await vi.waitFor(() => expect(service.checking()).toBe(false))
+
+    let finishCheck!: (updateFound: boolean) => void
+    swUpdate.checkForUpdate.mockImplementationOnce(() => new Promise(resolve => finishCheck = resolve))
+
+    const request = service.checkForUpdate()
+    expect(service.checking()).toBe(true)
+
+    await service.checkForUpdate()
+    expect(swUpdate.checkForUpdate).toHaveBeenCalledTimes(2)
+
+    finishCheck(false)
+    await request
+    expect(service.checking()).toBe(false)
   })
 })

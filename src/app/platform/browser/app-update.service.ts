@@ -11,9 +11,10 @@ export class AppUpdateService {
   private readonly document = inject(DOCUMENT)
   private readonly destroyRef = inject(DestroyRef)
   private readonly updateAvailableState = signal(false)
-  private checking = false
+  private readonly checkingState = signal(false)
 
   readonly updateAvailable = this.updateAvailableState.asReadonly()
+  readonly checking = this.checkingState.asReadonly()
 
   constructor() {
     if (!this.swUpdate?.isEnabled) return
@@ -52,16 +53,16 @@ export class AppUpdateService {
     this.document.defaultView?.location.reload()
   }
 
-  private async checkForUpdate(): Promise<void> {
-    if (!this.swUpdate || this.checking) return
+  async checkForUpdate(): Promise<void> {
+    if (!this.swUpdate || this.checkingState()) return
 
-    this.checking = true
+    this.checkingState.set(true)
     try {
       await this.swUpdate.checkForUpdate()
     } catch {
       // La ausencia de conexión no debe interrumpir el uso offline de la PWA.
     } finally {
-      this.checking = false
+      this.checkingState.set(false)
     }
   }
 }

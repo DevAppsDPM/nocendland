@@ -56,7 +56,8 @@
   transform: translateX(0);
 }
 
-.app-shell__navigation-topline {
+.app-shell__navigation-topline,
+.app-shell__version-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -73,6 +74,11 @@
 
 .app-shell__version {
   margin: 0;
+}
+
+.app-shell__version-row {
+  min-height: 1.75rem;
+  padding-inline-start: 1px;
 }
 
 .app-shell__scrim {

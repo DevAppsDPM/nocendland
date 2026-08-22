@@ -603,6 +603,10 @@ export type Database = {
         }
         Returns: Json
       }
+      save_training_schedule_catalog: {
+        Args: { catalog_draft: Json; selected_key: string }
+        Returns: Json
+      }
     }
     Enums: {
       nutrition_objetive_levels: "keep" | "good" | "top"
