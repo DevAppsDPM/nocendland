@@ -24,6 +24,15 @@ export const routes: Routes = [
         path: 'llimbro',
         loadChildren: () => import('@areas/llimbro/llimbro.routes').then(({LLIMBRO_ROUTES}) => LLIMBRO_ROUTES),
       },
+      {
+        path: 'miscellaneous',
+        loadChildren: () => import('@areas/miscellaneous/miscellaneous.routes')
+          .then(({MISCELLANEOUS_ROUTES}) => MISCELLANEOUS_ROUTES),
+      },
+      {
+        path: 'finances',
+        loadChildren: () => import('@areas/finances/finances.routes').then(({FINANCES_ROUTES}) => FINANCES_ROUTES),
+      },
       {path: 'nutrition', redirectTo: 'llimbro/nutrition', pathMatch: 'full'},
       {path: 'nutrition/ingredients', redirectTo: 'llimbro/nutrition/ingredients', pathMatch: 'full'},
       {path: 'nutrition/intakes', redirectTo: 'llimbro/nutrition/intakes', pathMatch: 'full'},

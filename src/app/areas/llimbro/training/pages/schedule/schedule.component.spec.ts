@@ -8,12 +8,12 @@ import {ScheduleComponent} from './schedule.component'
 describe('ScheduleComponent', () => {
   let fixture: ComponentFixture<ScheduleComponent>
   let store: ReturnType<typeof createTrainingStoreStub>
-  const confirmDialog = {open: jasmine.createSpy('open').and.returnValue(of(false))}
+  const confirmDialog = {open: vi.fn().mockReturnValue(of(false))}
 
   beforeEach(async () => {
     store = createTrainingStoreStub()
-    confirmDialog.open.calls.reset()
-    confirmDialog.open.and.returnValue(of(false))
+    confirmDialog.open.mockReset()
+    confirmDialog.open.mockReturnValue(of(false))
     await TestBed.configureTestingModule({
       imports: [ScheduleComponent],
       providers: [
@@ -103,7 +103,7 @@ describe('ScheduleComponent', () => {
   })
 
   it('sends the complete catalog draft only when changes are saved', async () => {
-    const saveCatalog = spyOn(store, 'saveScheduleCatalog').and.callThrough()
+    const saveCatalog = vi.spyOn(store, 'saveScheduleCatalog')
     click('[aria-label="Editar catálogo"]')
     await fixture.whenStable()
     fixture.detectChanges()
@@ -114,7 +114,7 @@ describe('ScheduleComponent', () => {
     fixture.detectChanges()
 
     expect(saveCatalog).toHaveBeenCalled()
-    const [drafts, selectedKey] = saveCatalog.calls.mostRecent().args
+    const [drafts, selectedKey] = saveCatalog.mock.lastCall!
     expect(drafts.length).toBe(2)
     expect(selectedKey).toContain('new:')
   })
@@ -171,7 +171,7 @@ describe('ScheduleComponent', () => {
   })
 
   it('restores the persisted day after accepting discard to edit the catalog', async () => {
-    confirmDialog.open.and.returnValue(of(true))
+    confirmDialog.open.mockReturnValue(of(true))
     selectMonday()
     const custom: HTMLInputElement = fixture.nativeElement.querySelector('.ui-segmented-input__custom')
     custom.value = '15'

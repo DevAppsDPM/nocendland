@@ -34,6 +34,8 @@ engineStrict: true
 packageManagerStrict: true
 packageManagerStrictVersion: true
 managePackageManagerVersions: false
+# Los runners opcionales de Angular deben declararse de forma explícita.
+autoInstallPeers: false
 
 savePrefix: ''
 preferFrozenLockfile: true

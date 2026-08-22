@@ -7,23 +7,23 @@ describe('ToastService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({})
     service = TestBed.inject(ToastService)
-    jasmine.clock().install()
-    jasmine.clock().mockDate(new Date('2026-08-14T12:00:00Z'))
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-14T12:00:00Z'))
   })
 
-  afterEach(() => jasmine.clock().uninstall())
+  afterEach(() => vi.useRealTimers())
 
   it('publishes and automatically dismisses a success message', () => {
     service.success('Horario guardado', {description: 'Tus cambios ya están al día.', durationMs: 1000})
 
     expect(service.messages().length).toBe(1)
-    expect(service.messages()[0]).toEqual(jasmine.objectContaining({
+    expect(service.messages()[0]).toEqual(expect.objectContaining({
       kind: 'success',
       title: 'Horario guardado',
       description: 'Tus cambios ya están al día.',
     }))
 
-    jasmine.clock().tick(1000)
+    vi.advanceTimersByTime(1000)
     expect(service.messages()).toEqual([])
   })
 
@@ -38,16 +38,16 @@ describe('ToastService', () => {
 
   it('pauses and resumes automatic dismissal', () => {
     const id = service.error('Sin conexión', {durationMs: 1000})
-    jasmine.clock().tick(400)
+    vi.advanceTimersByTime(400)
 
     service.pause(id)
-    jasmine.clock().tick(2000)
+    vi.advanceTimersByTime(2000)
     expect(service.messages().length).toBe(1)
 
     service.resume(id)
-    jasmine.clock().tick(599)
+    vi.advanceTimersByTime(599)
     expect(service.messages().length).toBe(1)
-    jasmine.clock().tick(1)
+    vi.advanceTimersByTime(1)
     expect(service.messages()).toEqual([])
   })
 })

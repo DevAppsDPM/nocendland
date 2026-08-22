@@ -32,6 +32,7 @@ export class NutritionStore {
   private readonly objectiveListState = signal<NutritionObjective[]>([])
   private readonly loadingObjectiveListState = signal(false)
   private readonly objectivesState = signal<NutritionObjectiveTotals | undefined>(undefined)
+  private readonly objectiveTotalsErrorState = signal(false)
 
   readonly dateSelected = this.dateSelectedState.asReadonly()
   readonly ingredientList = this.ingredientListState.asReadonly()
@@ -43,6 +44,7 @@ export class NutritionStore {
   readonly objectiveList = this.objectiveListState.asReadonly()
   readonly loadingObjectiveList = this.loadingObjectiveListState.asReadonly()
   readonly objectives = this.objectivesState.asReadonly()
+  readonly objectiveTotalsError = this.objectiveTotalsErrorState.asReadonly()
 
   get savingIngredient() {
     return this.ingredientRepository.savingIngredient
@@ -200,6 +202,9 @@ export class NutritionStore {
   }
 
   public async loadObjectiveSumByDate(): Promise<void> {
+    this.objectivesState.set(undefined)
+    this.objectiveTotalsErrorState.set(false)
+
     const initialTotals: NutritionObjectiveTotals = {
       calories: 0,
       carbohydrates: 0,
@@ -209,16 +214,21 @@ export class NutritionStore {
       id_user: ''
     }
 
-    const values = await this.nutritionTotalsRepository.getIntakeJoinIngredientOnlyValues(this.dateSelectedState())
-    const totals = values.reduce<NutritionObjectiveTotals>((currentTotals, value) => ({
-      ...currentTotals,
-      calories: (currentTotals.calories ?? 0) + (value.calories ?? 0),
-      carbohydrates: (currentTotals.carbohydrates ?? 0) + (value.carbohydrates ?? 0),
-      fats: (currentTotals.fats ?? 0) + (value.fats ?? 0),
-      proteins: (currentTotals.proteins ?? 0) + (value.proteins ?? 0),
-    }), initialTotals)
+    try {
+      const values = await this.nutritionTotalsRepository.getIntakeJoinIngredientOnlyValues(this.dateSelectedState())
+      const totals = values.reduce<NutritionObjectiveTotals>((currentTotals, value) => ({
+        ...currentTotals,
+        calories: (currentTotals.calories ?? 0) + (value.calories ?? 0),
+        carbohydrates: (currentTotals.carbohydrates ?? 0) + (value.carbohydrates ?? 0),
+        fats: (currentTotals.fats ?? 0) + (value.fats ?? 0),
+        proteins: (currentTotals.proteins ?? 0) + (value.proteins ?? 0),
+      }), initialTotals)
 
-    this.objectivesState.set(totals)
+      this.objectivesState.set(totals)
+    } catch (error) {
+      this.objectiveTotalsErrorState.set(true)
+      throw error
+    }
   }
 
   /* OBJETIVOS */
@@ -240,7 +250,7 @@ export class NutritionStore {
   private effectDateSelected(): void {
     effect(() => {
       this.dateSelectedState()
-      void this.reloadDateSelectedDependent()
+      void this.reloadDateSelectedDependent().catch(() => undefined)
     })
   }
 }

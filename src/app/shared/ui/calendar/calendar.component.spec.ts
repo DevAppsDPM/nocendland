@@ -22,7 +22,7 @@ describe('CalendarComponent', () => {
   });
 
   it('presents the controlled date without replacing it on initialization', () => {
-    const emitted = jasmine.createSpy('dateSelected')
+    const emitted = vi.fn()
     component.dateSelected.subscribe(emitted)
     fixture.componentRef.setInput('date', new Date(2026, 7, 3))
     fixture.detectChanges()

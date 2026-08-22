@@ -22,8 +22,11 @@
           #inputQuantity
           class="ui-input"
           type="number"
+          [min]="limits.intakeQuantityInGrams.min"
+          [max]="limits.intakeQuantityInGrams.max"
           [(ngModel)]="currentIntakeJoinIngredient.quantity_in_grams"
-          (ngModelChange)="saveChanges()"
+          #quantityModel="ngModel"
+          (ngModelChange)="saveChanges(quantityModel.valid)"
         >
       </label>
 
@@ -32,8 +35,11 @@
         <input
           class="ui-input"
           type="number"
+          [min]="limits.intakeUnits.min"
+          [max]="limits.intakeUnits.max"
           [(ngModel)]="currentIntakeJoinIngredient.units"
-          (ngModelChange)="calculateQuantityInGrams()"
+          #unitsModel="ngModel"
+          (ngModelChange)="calculateQuantityInGrams(unitsModel.valid)"
         >
       </label>
     </div>

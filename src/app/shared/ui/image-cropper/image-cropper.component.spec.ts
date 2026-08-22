@@ -26,7 +26,7 @@ describe('ImageCropperComponent', () => {
     })
     fixture.detectChanges()
     const viewport = fixture.nativeElement.querySelector('.image-cropper__viewport') as HTMLElement
-    spyOn(viewport, 'getBoundingClientRect').and.returnValue({
+    vi.spyOn(viewport, 'getBoundingClientRect').mockReturnValue({
       width: 400,
       height: 200,
       top: 0,
@@ -38,7 +38,10 @@ describe('ImageCropperComponent', () => {
       toJSON: () => ({}),
     })
     const image = fixture.nativeElement.querySelector('img') as HTMLImageElement
-    if (!image.complete) await new Promise<void>(resolve => image.addEventListener('load', () => resolve(), {once: true}))
+    Object.defineProperties(image, {
+      naturalWidth: {configurable: true, value: 800},
+      naturalHeight: {configurable: true, value: 400},
+    })
     image.dispatchEvent(new Event('load'))
     fixture.detectChanges()
 
@@ -56,7 +59,7 @@ describe('ImageCropperComponent', () => {
     fixture.componentRef.setInput('source', TEST_IMAGE)
     fixture.detectChanges()
     const viewport = fixture.nativeElement.querySelector('.image-cropper__viewport') as HTMLElement
-    spyOn(viewport, 'getBoundingClientRect').and.returnValue({
+    vi.spyOn(viewport, 'getBoundingClientRect').mockReturnValue({
       width: 300,
       height: 300,
       top: 0,
@@ -68,7 +71,10 @@ describe('ImageCropperComponent', () => {
       toJSON: () => ({}),
     })
     const image = fixture.nativeElement.querySelector('img') as HTMLImageElement
-    if (!image.complete) await new Promise<void>(resolve => image.addEventListener('load', () => resolve(), {once: true}))
+    Object.defineProperties(image, {
+      naturalWidth: {configurable: true, value: 800},
+      naturalHeight: {configurable: true, value: 400},
+    })
     image.dispatchEvent(new Event('load'))
     fixture.detectChanges()
 
@@ -86,7 +92,7 @@ describe('ImageCropperComponent', () => {
     let cancelled = false
     component.cancelled.subscribe(() => cancelled = true)
     ;(fixture.nativeElement.querySelector('.image-cropper__actions .ui-button') as HTMLButtonElement).click()
-    expect(cancelled).toBeTrue()
+    expect(cancelled).toBe(true)
   })
 
   it('reports an unreadable source', () => {

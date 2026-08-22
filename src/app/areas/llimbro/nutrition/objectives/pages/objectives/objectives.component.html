@@ -9,9 +9,15 @@
     </button>
   </header>
 
-  <article class="objectives-page__grid">
-    @for (progressConfig of progressConfigList(); track progressConfig.title) {
-      <app-progress-viewer [config]="progressConfig"/>
-    }
-  </article>
+  @if (nutritionStore.objectiveTotalsError()) {
+    <p class="objectives-page__error ui-card" role="alert">
+      No se pudieron calcular los valores nutricionales de esta fecha.
+    </p>
+  } @else {
+    <article class="objectives-page__grid">
+      @for (progressConfig of progressConfigList(); track progressConfig.title) {
+        <app-progress-viewer [config]="progressConfig"/>
+      }
+    </article>
+  }
 </main>

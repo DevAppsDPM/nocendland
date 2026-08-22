@@ -8,7 +8,7 @@ import {ExerciseDetailComponent} from './exercise-detail.component'
 
 describe('ExerciseDetailComponent', () => {
   let fixture: ComponentFixture<ExerciseDetailComponent>
-  const navigation = {to: jasmine.createSpy('to').and.resolveTo(true)}
+  const navigation = {to: vi.fn().mockResolvedValue(true)}
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

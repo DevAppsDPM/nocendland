@@ -25,22 +25,22 @@ describe('TooltipDirective', () => {
   afterEach(() => fixture.destroy())
 
   it('opens after a short mouse hover and restores aria-describedby on leave', () => {
-    jasmine.clock().install()
+    vi.useFakeTimers()
     try {
       button.dispatchEvent(new PointerEvent('pointerenter', {pointerType: 'mouse'}))
-      jasmine.clock().tick(249)
+      vi.advanceTimersByTime(249)
       expect(overlayElement.querySelector('[role="tooltip"]')).toBeNull()
 
-      jasmine.clock().tick(1)
+      vi.advanceTimersByTime(1)
       const tooltip: HTMLElement | null = overlayElement.querySelector('[role="tooltip"]')
       expect(tooltip?.textContent).toContain('Explicación de prueba')
       expect(button.getAttribute('aria-describedby')).toBe(tooltip!.id)
 
       button.dispatchEvent(new PointerEvent('pointerleave', {pointerType: 'mouse'}))
       expect(overlayElement.querySelector('[role="tooltip"]')).toBeNull()
-      expect(button.hasAttribute('aria-describedby')).toBeFalse()
+      expect(button.hasAttribute('aria-describedby')).toBe(false)
     } finally {
-      jasmine.clock().uninstall()
+      vi.useRealTimers()
     }
   })
 

@@ -1,11 +1,11 @@
 ---
 Nombre: Revisar vulnerabilidades transitivas
 Estado: Pendiente
-Resumen: Revisar y resolver de forma controlada los 59 avisos actuales de pnpm audit, incluidos 35 de severidad alta, sin aplicar correcciones automáticas ni relajar la política de seguridad.
-Decisiones: La mayoría de rutas detectadas pertenecen a herramientas de desarrollo como Karma, Tailwind con Sucrase y Angular CLI; se revisarán actualizaciones y overrides exactos caso por caso antes de modificar el lockfile.
+Resumen: Revisar y resolver de forma controlada los 31 avisos actuales de pnpm audit, incluidos 19 de severidad alta, sin aplicar correcciones automáticas ni relajar la política de seguridad.
+Decisiones: Tras retirar Karma y actualizar Vitest a una versión sin vulnerabilidades críticas, las rutas restantes pertenecen principalmente a herramientas de desarrollo como Tailwind con Sucrase y Angular CLI; se revisarán actualizaciones y overrides exactos caso por caso antes de modificar el lockfile.
 Bloqueada: []
 Fecha de creación: 2026-08-06T19:21:20
-Última modificación: 2026-08-12T17:44:00+02:00
+Última modificación: 2026-08-21
 ---
 
 # Revisar vulnerabilidades transitivas
@@ -15,6 +15,8 @@ Fecha de creación: 2026-08-06T19:21:20
 La ejecución de `pnpm audit --audit-level high` del 6 de agosto de 2026 encontró 53 vulnerabilidades: 5 bajas, 16 moderadas y 32 altas. Entre las rutas afectadas aparecen dependencias transitivas de Karma, Tailwind/Sucrase y Angular CLI, como `glob`, `minimatch`, `brace-expansion`, `flatted`, `socket.io-parser`, `fast-uri` e `ip-address`.
 
 La comprobación repetida el 12 de agosto de 2026, durante la migración a Node 24, encontró 59 vulnerabilidades: 6 bajas, 18 moderadas y 35 altas. Se mantienen concentradas en dependencias transitivas y se conserva este trabajo separado para revisar cada actualización sin correcciones automáticas.
+
+La migración a Vitest del 21 de agosto de 2026 retiró las rutas de Karma. La primera versión evaluada de Vitest tenía una vulnerabilidad crítica, por lo que se actualizó a la versión 4.1.10, ya fuera de cuarentena. La auditoría final quedó en 31 vulnerabilidades: 2 bajas, 10 moderadas y 19 altas, sin vulnerabilidades críticas.
 
 `pnpm ignored-builds` indicó que no podía identificar scripts ignorados porque no encontraba `node_modules`, aunque la compilación y las pruebas sí resolvieron las dependencias mediante el runtime del workspace. Esta discrepancia también debe aclararse antes de cambiar la configuración.
 

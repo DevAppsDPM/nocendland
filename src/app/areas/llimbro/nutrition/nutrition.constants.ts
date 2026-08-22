@@ -13,6 +13,14 @@ export const NUTRITION_ASSETS = {
   ],
 } as const
 
+export const NUTRITION_LIMITS = {
+  caloriesPer100: {min: 0, max: 1000},
+  macroPer100: {min: 0, max: 100},
+  gramsPerUnit: {min: 0, max: 32767},
+  intakeQuantityInGrams: {min: 0, max: 100000},
+  intakeUnits: {min: 0, max: 10000},
+} as const
+
 export const NUTRITION_TEXT = {
   common: {
     loading: 'Cargando...',

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CallbackComponent } from './callback.component';
-import {provideRouter} from '@angular/router';
+import {ActivatedRoute, convertToParamMap, Router} from '@angular/router';
 import {AuthService} from '@platform/auth/auth.service';
 import {createAuthServiceStub} from '@testing/auth-service.stub';
 
@@ -13,7 +13,8 @@ describe('CallbackComponent', () => {
     await TestBed.configureTestingModule({
       imports: [CallbackComponent],
       providers: [
-        provideRouter([]),
+        {provide: Router, useValue: {navigateByUrl: vi.fn().mockResolvedValue(true)}},
+        {provide: ActivatedRoute, useValue: {snapshot: {queryParamMap: convertToParamMap({})}}},
         {provide: AuthService, useFactory: createAuthServiceStub}
       ]
     })

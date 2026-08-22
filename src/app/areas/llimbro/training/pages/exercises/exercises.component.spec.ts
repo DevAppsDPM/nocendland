@@ -6,7 +6,7 @@ import {ExercisesComponent} from './exercises.component'
 
 describe('ExercisesComponent', () => {
   let fixture: ComponentFixture<ExercisesComponent>
-  const navigation = {to: jasmine.createSpy('to').and.resolveTo(true)}
+  const navigation = {to: vi.fn().mockResolvedValue(true)}
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -30,7 +30,7 @@ describe('ExercisesComponent', () => {
 
     expect(detail.textContent).toContain('Patrón dominante de rodilla')
     expect(badges.map(badge => badge.textContent?.trim())).toEqual(['Fuerza', 'Cuádriceps', 'Sentadilla'])
-    expect(badges.every(badge => badge.dataset['status'] === 'primary')).toBeTrue()
+    expect(badges.every(badge => badge.dataset['status'] === 'primary')).toBe(true)
   })
 
   it('opens the creation form from the primary action', () => {

@@ -8,8 +8,8 @@ describe('analyzeLoadProgression', () => {
     const sameWeight = analyzeLoadProgression(target, [session('2026-08-11', [40, 40, 40]), session('2026-08-04', [40, 40, 40])])
     const increasedWeight = analyzeLoadProgression(target, [session('2026-08-11', [42.5, 42.5, 42.5]), session('2026-08-04', [40, 40, 40])])
 
-    expect(sameWeight).toEqual(jasmine.objectContaining({previousWorkingWeightKg: 40, latestWorkingWeightKg: 40}))
-    expect(increasedWeight).toEqual(jasmine.objectContaining({previousWorkingWeightKg: 40, latestWorkingWeightKg: 42.5}))
+    expect(sameWeight).toEqual(expect.objectContaining({previousWorkingWeightKg: 40, latestWorkingWeightKg: 40}))
+    expect(increasedWeight).toEqual(expect.objectContaining({previousWorkingWeightKg: 40, latestWorkingWeightKg: 42.5}))
   })
 
   it('ignores sets beyond the configured target', () => {

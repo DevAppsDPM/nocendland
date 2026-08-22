@@ -93,9 +93,16 @@ Estas instrucciones son obligatorias aunque otro agente, herramienta o conversac
 - Al modificar código heredado con nombres en otro idioma o erratas, se debe valorar corregirlo dentro del alcance del cambio, manteniendo compatibilidad cuando sea necesario.
 - No se deben introducir abreviaturas opacas ni mezclar inglés y español en un mismo identificador.
 
+### 5. Todo cambio de código debe evaluar sus tests
+
+- Cada vez que se genere o modifique código se debe revisar expresamente si el comportamiento afectado necesita pruebas nuevas o la actualización de pruebas existentes.
+- Se deben añadir o actualizar tests cuando el cambio introduzca lógica, corrija un defecto, altere un contrato, modifique estados o interacciones, o cubra un caso de regresión relevante.
+- No se deben crear pruebas sin valor que se limiten a repetir detalles internos de implementación. Si no conviene añadir tests, la decisión debe poder justificarse por el alcance del cambio y por la cobertura existente.
+- La evaluación de tests forma parte del trabajo y debe realizarse antes de considerar el cambio verificado o completado.
+
 ## Propósito del proyecto
 
-Nocendland es una aplicación personal orientada a monitorizar y ayudar al usuario en diferentes aspectos de su vida. El primer ámbito desarrollado es **Llimbro**, nombre jocoso derivado de «gym bro», que agrupa capacidades relacionadas con salud y entrenamiento. Actualmente su feature funcional es Alimentación y existe espacio previsto para Entrenamiento. En el futuro, Nocendland debe poder incorporar áreas independientes como Finanzas.
+Nocendland es una aplicación personal orientada a monitorizar y ayudar al usuario en diferentes aspectos de su vida. El primer ámbito desarrollado es **Llimbro**, nombre jocoso derivado de «gym bro», que agrupa capacidades relacionadas con salud y entrenamiento. La aplicación incorpora además **Miscelánea**, destinada a utilidades que aún no justifican un dominio propio, y **Finanzas**, destinada a la economía personal; ambas permanecen inicialmente como áreas en desarrollo sin features definidas.
 
 ## Arquitectura objetivo
 
@@ -134,6 +141,7 @@ src/app/
     │   │   ├── intakes/
     │   │   └── objectives/
     │   └── training/
+    ├── miscellaneous/
     └── finances/
 ```
 
@@ -197,6 +205,7 @@ La jerarquía de URL refleja la jerarquía funcional:
 /llimbro/nutrition/intakes
 /llimbro/nutrition/objectives
 /llimbro/training/...
+/miscellaneous
 /finances/...
 ```
 
@@ -211,7 +220,7 @@ Cuando se sustituya una ruta publicada, se mantendrá un redirect temporal desde
 
 ### Estado actual y siguientes límites
 
-La primera migración estructural ya refleja esta arquitectura: rutas standalone, shell, plataforma, shared y Llimbro dividido en Nutrición y Entrenamiento. Las URLs antiguas de Nutrición conservan redirects de compatibilidad. El acceso a datos específico ya no vive en servicios globales y las páginas escriben mediante la fachada de Nutrición.
+La primera migración estructural ya refleja esta arquitectura: rutas standalone, shell, plataforma, shared y Llimbro dividido en Nutrición y Entrenamiento. Miscelánea y Finanzas existen como límites lazy con páginas temporales hasta que se definan sus primeras features. Miscelánea utiliza una identidad ámbar y terracota, flexible y lúdica; Finanzas utiliza azul petróleo y cian, con una expresión precisa y estructurada. Las URLs antiguas de Nutrición conservan redirects de compatibilidad. El acceso a datos específico ya no vive en servicios globales y las páginas escriben mediante la fachada de Nutrición.
 
 La retirada de componentes Angular Material y la definición del lenguaje visual son un trabajo posterior e independiente. El presupuesto del bundle inicial también continúa como tarea de rendimiento; no se debe mezclar su resolución con cambios arquitectónicos sin medir antes el origen del peso.
 

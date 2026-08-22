@@ -119,6 +119,13 @@ describe('DataListComponent', () => {
     const tools: HTMLElement = fixture.nativeElement.querySelector('.data-list__tools')
     const content: HTMLElement = fixture.nativeElement.querySelector('.data-list__content')
     const footer: HTMLElement = fixture.nativeElement.querySelector('.data-list__footer')
+    Object.defineProperties(content, {
+      scrollHeight: {configurable: true, value: 600},
+      clientHeight: {configurable: true, value: 200},
+    })
+    vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({top: 0, bottom: 320} as DOMRect)
+    vi.spyOn(tools, 'getBoundingClientRect').mockReturnValue({top: 0} as DOMRect)
+    vi.spyOn(footer, 'getBoundingClientRect').mockReturnValue({bottom: 320} as DOMRect)
     const rootRect = root.getBoundingClientRect()
 
     expect(content.scrollHeight).toBeGreaterThan(content.clientHeight)
@@ -138,18 +145,18 @@ describe('DataListComponent', () => {
   })
 
   it('requests a reload from the toolbar', () => {
-    const reload = jasmine.createSpy('reload')
+    const reload = vi.fn()
     fixture.componentRef.setInput('config', {label: 'Elementos', actions: {reload}})
     fixture.detectChanges()
 
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('[aria-label="Actualizar lista"]')
     button.click()
 
-    expect(reload).toHaveBeenCalledOnceWith()
+    expect(reload).toHaveBeenCalledOnce()
   })
 
   it('confirms the selected domain values', () => {
-    const confirm = jasmine.createSpy('confirm')
+    const confirm = vi.fn()
     fixture.componentRef.setInput('config', {
       label: 'Elementos',
       actions: {confirm},
@@ -160,13 +167,13 @@ describe('DataListComponent', () => {
 
     const item: HTMLButtonElement = fixture.nativeElement.querySelector('.data-list__item')
     const confirmation: HTMLButtonElement = fixture.nativeElement.querySelector('.data-list__footer button')
-    expect(confirmation.disabled).toBeTrue()
+    expect(confirmation.disabled).toBe(true)
 
     item.click()
     fixture.detectChanges()
-    expect(confirmation.disabled).toBeFalse()
+    expect(confirmation.disabled).toBe(false)
     confirmation.click()
 
-    expect(confirm).toHaveBeenCalledOnceWith([{id: 1}])
+    expect(confirm).toHaveBeenCalledExactlyOnceWith([{id: 1}])
   })
 });

@@ -18,7 +18,7 @@ import {CardDataComponent} from '@shared/ui/card-data'
 import {DIALOG_DATA, DialogRef} from '@shared/ui/dialog'
 import {UtilService} from "@shared/utilities/util.service"
 import {MathService} from "@shared/utilities/math.service"
-import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
+import {NUTRITION_LIMITS, NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants"
 
 @Component({
   selector: 'app-intake-viewer',
@@ -34,6 +34,7 @@ export class IntakeViewerComponent implements OnDestroy {
   protected readonly data = inject(DIALOG_DATA) as {currentIndex: number}
   protected readonly dialogRef = inject<DialogRef<void>>(DialogRef)
   protected currentIndex: WritableSignal<number> = signal(0)
+  protected readonly limits = NUTRITION_LIMITS
 
   protected inputQuantity: Signal<ElementRef | undefined> = viewChild<ElementRef>('inputQuantity')
 
@@ -77,7 +78,9 @@ export class IntakeViewerComponent implements OnDestroy {
       : this.currentIndex() + 1)
   }
 
-  saveChanges() {
+  saveChanges(valid: boolean | null = true) {
+    if (valid !== true) return
+
     this.util.debounce(() => {
       const {nutrition_ingredient: ingredient, ...intake} = structuredClone(this.currentIntakeJoinIngredient)
       void this.nutritionStore.saveIntake({...intake, ingredient: ingredient.id} as NutritionIntake)
@@ -94,14 +97,16 @@ export class IntakeViewerComponent implements OnDestroy {
     })
   }
 
-  protected calculateQuantityInGrams(): void {
+  protected calculateQuantityInGrams(valid: boolean | null = true): void {
+    if (valid !== true) return
+
     const units: number | null = this.currentIntakeJoinIngredient.units
     if (!units) return
 
     console.log('Calculando cantidad en gramos...', units)
 
     this.currentIntakeJoinIngredient.quantity_in_grams = (this.currentIntakeJoinIngredient.nutrition_ingredient.grams_per_unit || 0) * units
-    this.saveChanges()
+    this.saveChanges(this.currentIntakeJoinIngredient.quantity_in_grams <= NUTRITION_LIMITS.intakeQuantityInGrams.max)
   }
 
   /* EFECTOS */

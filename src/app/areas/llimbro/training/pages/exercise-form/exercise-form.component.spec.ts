@@ -12,10 +12,10 @@ describe('ExerciseFormComponent', () => {
     exercises: ReturnType<typeof signal<never[]>>
     savingExercise: ReturnType<typeof signal<boolean>>
     savingExerciseImage: ReturnType<typeof signal<boolean>>
-    saveExercise: jasmine.Spy
-    uploadExerciseImage: jasmine.Spy
-    removeExerciseImage: jasmine.Spy
-    loadExercises: jasmine.Spy
+    saveExercise: ReturnType<typeof vi.fn>
+    uploadExerciseImage: ReturnType<typeof vi.fn>
+    removeExerciseImage: ReturnType<typeof vi.fn>
+    loadExercises: ReturnType<typeof vi.fn>
   }
 
   beforeEach(async () => {
@@ -23,18 +23,18 @@ describe('ExerciseFormComponent', () => {
       exercises: signal([]),
       savingExercise: signal(false),
       savingExerciseImage: signal(false),
-      saveExercise: jasmine.createSpy().and.resolveTo({id: 8}),
-      uploadExerciseImage: jasmine.createSpy().and.resolveTo('training_exercise/user/8'),
-      removeExerciseImage: jasmine.createSpy().and.resolveTo(),
-      loadExercises: jasmine.createSpy().and.resolveTo(),
+      saveExercise: vi.fn().mockResolvedValue({id: 8}),
+      uploadExerciseImage: vi.fn().mockResolvedValue('training_exercise/user/8'),
+      removeExerciseImage: vi.fn().mockResolvedValue(undefined),
+      loadExercises: vi.fn().mockResolvedValue(undefined),
     }
     await TestBed.configureTestingModule({
       imports: [ExerciseFormComponent],
       providers: [
         {provide: ActivatedRoute, useValue: {snapshot: {params: {id: 'new'}, queryParamMap: convertToParamMap({})}}},
         {provide: TrainingStore, useValue: store},
-        {provide: NavigationService, useValue: {to: jasmine.createSpy().and.resolveTo()}},
-        {provide: ConfirmDialogService, useValue: {open: jasmine.createSpy()}},
+        {provide: NavigationService, useValue: {to: vi.fn().mockResolvedValue(undefined)}},
+        {provide: ConfirmDialogService, useValue: {open: vi.fn()}},
       ],
     }).compileComponents()
     fixture = TestBed.createComponent(ExerciseFormComponent)
@@ -43,7 +43,7 @@ describe('ExerciseFormComponent', () => {
 
   it('opens the file selector when the image preview is clicked', () => {
     const input = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement
-    spyOn(input, 'click')
+    vi.spyOn(input, 'click')
     ;(fixture.nativeElement.querySelector('.exercise-form__image-button') as HTMLButtonElement).click()
     expect(input.click).toHaveBeenCalled()
   })
@@ -74,7 +74,7 @@ describe('ExerciseFormComponent', () => {
     ;(fixture.nativeElement.querySelector('form') as HTMLFormElement).dispatchEvent(new Event('submit'))
     await fixture.whenStable()
 
-    const draft = store.saveExercise.calls.mostRecent().args[0]
+    const draft = store.saveExercise.mock.lastCall?.[0]
     expect(draft.video_url).toBe('https://example.com/deadlift')
     expect(draft.training_modalities).toEqual(['strength'])
     expect(draft.muscle_groups).toEqual(['chest'])

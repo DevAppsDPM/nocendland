@@ -1,7 +1,7 @@
 import {afterNextRender, ChangeDetectionStrategy, Component, effect, ElementRef, inject, signal, ViewChild} from '@angular/core';
 
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants";
+import {NUTRITION_LIMITS, NUTRITION_TEXT} from "@areas/llimbro/nutrition/nutrition.constants";
 import {ActivatedRoute} from "@angular/router";
 import {AvatarComponent} from '@shared/ui/avatar'
 import {ConfirmDialogService, DialogConfirm} from '@shared/ui/confirm-dialog'
@@ -37,6 +37,7 @@ export class IngredientFormComponent {
   private readonly cssTokens = inject(CssTokenService)
   private readonly theme = inject(ThemeService)
   protected readonly formLabels = NUTRITION_TEXT.ingredients.formLabels
+  protected readonly limits = NUTRITION_LIMITS
 
   protected ingredientForm: FormGroup | undefined
   private ingredientId: number = 0
@@ -79,12 +80,12 @@ export class IngredientFormComponent {
   private buildForm(): void {
     this.ingredientForm = this.formBuilder.group({
       name: ['', Validators.required],
-      calories_per_100: [0],
-      proteins_per_100: [0],
-      fats_per_100: [0],
-      carbohydrates_per_100: [0],
+      calories_per_100: [0, [Validators.min(NUTRITION_LIMITS.caloriesPer100.min), Validators.max(NUTRITION_LIMITS.caloriesPer100.max)]],
+      proteins_per_100: [0, [Validators.min(NUTRITION_LIMITS.macroPer100.min), Validators.max(NUTRITION_LIMITS.macroPer100.max)]],
+      fats_per_100: [0, [Validators.min(NUTRITION_LIMITS.macroPer100.min), Validators.max(NUTRITION_LIMITS.macroPer100.max)]],
+      carbohydrates_per_100: [0, [Validators.min(NUTRITION_LIMITS.macroPer100.min), Validators.max(NUTRITION_LIMITS.macroPer100.max)]],
       description: [''],
-      grams_per_unit: [0],
+      grams_per_unit: [0, [Validators.min(NUTRITION_LIMITS.gramsPerUnit.min), Validators.max(NUTRITION_LIMITS.gramsPerUnit.max)]],
       image_route: [this.resources.getRandomDefaultIngredientStoragePath()],
       ...(!this.new && {id: [this.ingredientId, Validators.required]})
     })
@@ -123,6 +124,11 @@ export class IngredientFormComponent {
   }
 
   public saveIngredient(): void {
+    if (this.ingredientForm?.invalid) {
+      this.ingredientForm.markAllAsTouched()
+      return
+    }
+
     this.nutritionStore.saveIngredient(this.ingredientForm!.value)
       .then(ingredient => {
         this.new = false

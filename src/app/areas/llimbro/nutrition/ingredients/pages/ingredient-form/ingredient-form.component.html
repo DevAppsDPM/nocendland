@@ -34,25 +34,25 @@
         <h2 class="ingredient-form__wide">Por cada 100 g</h2>
         <label class="ui-field">
           {{ formLabels.calories }}
-          <input #calories class="ui-input" type="number" formControlName="calories_per_100" (focus)="calories.select()">
+          <input #calories class="ui-input" type="number" formControlName="calories_per_100" [min]="limits.caloriesPer100.min" [max]="limits.caloriesPer100.max" (focus)="calories.select()">
         </label>
         <label class="ui-field">
           {{ formLabels.proteins }}
-          <input #proteins class="ui-input" type="number" formControlName="proteins_per_100" (focus)="proteins.select()">
+          <input #proteins class="ui-input" type="number" formControlName="proteins_per_100" [min]="limits.macroPer100.min" [max]="limits.macroPer100.max" (focus)="proteins.select()">
         </label>
         <label class="ui-field">
           {{ formLabels.fats }}
-          <input #fats class="ui-input" type="number" formControlName="fats_per_100" (focus)="fats.select()">
+          <input #fats class="ui-input" type="number" formControlName="fats_per_100" [min]="limits.macroPer100.min" [max]="limits.macroPer100.max" (focus)="fats.select()">
         </label>
         <label class="ui-field">
           {{ formLabels.carbohydrates }}
-          <input #carbohydrates class="ui-input" type="number" formControlName="carbohydrates_per_100" (focus)="carbohydrates.select()">
+          <input #carbohydrates class="ui-input" type="number" formControlName="carbohydrates_per_100" [min]="limits.macroPer100.min" [max]="limits.macroPer100.max" (focus)="carbohydrates.select()">
         </label>
 
         <h2 class="ingredient-form__wide">Otras configuraciones</h2>
         <label class="ui-field ingredient-form__wide">
           {{ formLabels.gramsPerUnit }}
-          <input #gramsPerUnit class="ui-input" type="number" formControlName="grams_per_unit" (focus)="gramsPerUnit.select()">
+          <input #gramsPerUnit class="ui-input" type="number" formControlName="grams_per_unit" [min]="limits.gramsPerUnit.min" [max]="limits.gramsPerUnit.max" (focus)="gramsPerUnit.select()">
         </label>
       </form>
     }

@@ -28,3 +28,8 @@
   display: grid;
   gap: var(--space-3);
 }
+
+.objectives-page__error {
+  margin: 0;
+  color: var(--color-danger);
+}

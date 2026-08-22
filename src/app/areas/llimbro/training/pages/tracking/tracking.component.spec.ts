@@ -8,7 +8,7 @@ import {TrackingComponent} from './tracking.component'
 describe('TrackingComponent', () => {
   let fixture: ComponentFixture<TrackingComponent>
   let store: ReturnType<typeof createTrainingStoreStub>
-  const navigation = {to: jasmine.createSpy('to').and.resolveTo(true)}
+  const navigation = {to: vi.fn().mockResolvedValue(true)}
 
   beforeEach(async () => {
     store = createTrainingStoreStub()
@@ -46,7 +46,7 @@ describe('TrackingComponent', () => {
       dirty(): boolean
     }
     expect(component.drafts()[0].sets[0].repetitions).toBe(12)
-    expect(component.dirty()).toBeTrue()
+    expect(component.dirty()).toBe(true)
   })
 
   it('uses count badges for set positions', () => {
@@ -85,7 +85,7 @@ describe('TrackingComponent', () => {
   })
 
   it('requests the previous session when adding an exercise during editing', () => {
-    const loadPreviousSessions = spyOn(store, 'loadPreviousSessions').and.resolveTo()
+    const loadPreviousSessions = vi.spyOn(store, 'loadPreviousSessions').mockResolvedValue(undefined)
     const exercise = {...store.exercises()[0], id: 2, name: 'Press banca'}
     store.schedule.set([{...store.schedule()[0], id: 11, exercise_id: 2}])
     const component = fixture.componentInstance as unknown as {
@@ -94,7 +94,7 @@ describe('TrackingComponent', () => {
     }
     component.addEntries([exercise])
 
-    expect(loadPreviousSessions).toHaveBeenCalledOnceWith([2])
+    expect(loadPreviousSessions).toHaveBeenCalledExactlyOnceWith([2])
     expect(component.drafts().find(entry => entry.exerciseId === 2)?.sets.map(set => set.repetitions))
       .toEqual([10, 10, 10])
   })

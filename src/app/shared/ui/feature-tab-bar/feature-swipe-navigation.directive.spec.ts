@@ -36,14 +36,27 @@ describe('FeatureSwipeNavigationDirective', () => {
   })
 
   it('should navigate to the next tab after a horizontal swipe', () => {
-    const navigate = spyOn(router, 'navigate').and.resolveTo(true)
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true)
     const host = fixture.nativeElement.querySelector('section') as HTMLElement
     const start = new Touch({identifier: 1, target: host, clientX: 260, clientY: 120})
     const end = new Touch({identifier: 1, target: host, clientX: 120, clientY: 126})
+    const touchStart = new TouchEvent('touchstart')
+    const touchEnd = new TouchEvent('touchend')
+    Object.defineProperty(touchStart, 'touches', {value: touchList(start)})
+    Object.defineProperty(touchEnd, 'changedTouches', {value: touchList(end)})
 
-    host.dispatchEvent(new TouchEvent('touchstart', {touches: [start]}))
-    host.dispatchEvent(new TouchEvent('touchend', {changedTouches: [end]}))
+    host.dispatchEvent(touchStart)
+    host.dispatchEvent(touchEnd)
 
-    expect(navigate).toHaveBeenCalledOnceWith(['/second'])
+    expect(navigate).toHaveBeenCalledExactlyOnceWith(['/second'])
   })
 })
+
+function touchList(touch: Touch): TouchList {
+  return {
+    0: touch,
+    length: 1,
+    item: index => index === 0 ? touch : null,
+    [Symbol.iterator]: () => [touch].values(),
+  }
+}

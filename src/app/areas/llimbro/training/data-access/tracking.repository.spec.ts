@@ -24,21 +24,21 @@ describe('TrackingRepository', () => {
       training_set: latest.training_set.map(set => ({...set, id: set.id - 2, entry_id: 19})),
     }
     const builder = {
-      select: jasmine.createSpy('select'),
-      eq: jasmine.createSpy('eq'),
-      lt: jasmine.createSpy('lt'),
-      order: jasmine.createSpy('order'),
-      limit: jasmine.createSpy('limit'),
+      select: vi.fn(),
+      eq: vi.fn(),
+      lt: vi.fn(),
+      order: vi.fn(),
+      limit: vi.fn(),
       then: (resolve: (value: {data: typeof latest[]; error: null}) => unknown) =>
         Promise.resolve(resolve({data: [latest, previous], error: null})),
     }
-    builder.select.and.returnValue(builder)
-    builder.eq.and.returnValue(builder)
-    builder.lt.and.returnValue(builder)
-    builder.order.and.returnValue(builder)
-    builder.limit.and.returnValue(builder)
-    const supabase = {client: {from: jasmine.createSpy('from').and.returnValue(builder)}}
-    const auth = {requireUserId: jasmine.createSpy('requireUserId').and.returnValue('test-user')}
+    builder.select.mockReturnValue(builder)
+    builder.eq.mockReturnValue(builder)
+    builder.lt.mockReturnValue(builder)
+    builder.order.mockReturnValue(builder)
+    builder.limit.mockReturnValue(builder)
+    const supabase = {client: {from: vi.fn().mockReturnValue(builder)}}
+    const auth = {requireUserId: vi.fn().mockReturnValue('test-user')}
     const repository = new TrackingRepository(
       supabase as unknown as SupabaseClientService,
       auth as unknown as AuthService,
@@ -46,11 +46,11 @@ describe('TrackingRepository', () => {
 
     const result = await repository.readRecentBeforeByExercise(3, '2026-08-05')
 
-    expect(builder.eq.calls.allArgs()).toEqual([['id_user', 'test-user'], ['exercise_id', 3]])
-    expect(builder.lt).toHaveBeenCalledOnceWith('performed_on', '2026-08-05')
-    expect(builder.order).toHaveBeenCalledOnceWith('performed_on', {ascending: false})
-    expect(builder.limit).toHaveBeenCalledOnceWith(2)
+    expect(builder.eq.mock.calls).toEqual([['id_user', 'test-user'], ['exercise_id', 3]])
+    expect(builder.lt).toHaveBeenCalledExactlyOnceWith('performed_on', '2026-08-05')
+    expect(builder.order).toHaveBeenCalledExactlyOnceWith('performed_on', {ascending: false})
+    expect(builder.limit).toHaveBeenCalledExactlyOnceWith(2)
     expect(result.map(entry => entry.performed_on)).toEqual(['2026-07-29', '2026-07-22'])
-    expect(result.every(entry => entry.training_set.map(set => set.position).join() === '1,2')).toBeTrue()
+    expect(result.every(entry => entry.training_set.map(set => set.position).join() === '1,2')).toBe(true)
   })
 })

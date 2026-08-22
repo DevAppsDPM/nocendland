@@ -9,11 +9,11 @@ describe('AppUpdateService', () => {
   const swUpdate = {
     isEnabled: true,
     versionUpdates,
-    checkForUpdate: jasmine.createSpy('checkForUpdate').and.resolveTo(false),
+    checkForUpdate: vi.fn().mockResolvedValue(false),
   }
 
   beforeEach(() => {
-    swUpdate.checkForUpdate.calls.reset()
+    swUpdate.checkForUpdate.mockReset()
     TestBed.configureTestingModule({
       providers: [{provide: SwUpdate, useValue: swUpdate}],
     })
@@ -28,8 +28,8 @@ describe('AppUpdateService', () => {
       latestVersion: {hash: 'latest'},
     })
 
-    expect(service.updateAvailable()).toBeTrue()
+    expect(service.updateAvailable()).toBe(true)
     service.dismiss()
-    expect(service.updateAvailable()).toBeFalse()
+    expect(service.updateAvailable()).toBe(false)
   })
 })

@@ -29,6 +29,7 @@ export function createNutritionStoreStub() {
     objectiveList: signal([]),
     loadingObjectiveList: signal(false),
     objectives: signal(undefined),
+    objectiveTotalsError: signal(false),
     loadIngredientList: () => undefined,
     loadObjectiveList: () => undefined,
     loadIntakeJoinIngredientList: async () => undefined,
