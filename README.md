@@ -1,8 +1,4 @@
-nocendland-production.up.railway.app
-
 github http://localhost:5173/
-
-supabase: http://localhost:3000
 
 # Convención de Nomenclatura para Métodos
 En este proyecto, seguimos una convención clara para nombrar los métodos según su propósito:
