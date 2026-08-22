@@ -1,8 +1,7 @@
 <nav class="atlas-navigation" aria-label="Áreas de Nocendland">
   @for (category of menuItems; track category.title) {
     <section class="atlas-navigation__section" [attr.data-area]="category.area">
-      <p class="atlas-navigation__eyebrow">Área</p>
-      <h2>{{ category.title }}</h2>
+      <h2 class="atlas-navigation__eyebrow">{{ category.title }}</h2>
 
       <div class="atlas-navigation__routes">
         @for (button of category.buttons; track button.title) {

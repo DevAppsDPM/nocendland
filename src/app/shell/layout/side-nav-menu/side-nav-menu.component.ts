@@ -21,17 +21,17 @@ export class SideNavMenuComponent {
       ],
     },
     {
-      area: 'miscellaneous',
-      title: 'Miscelánea',
-      buttons: [
-        {title: 'Abrir área', description: 'Ideas y utilidades que no encajan en otro lugar', icon: 'category', action: () => this.open('miscellaneous')},
-      ],
-    },
-    {
       area: 'finances',
       title: 'Finanzas',
       buttons: [
         {title: 'Abrir área', description: 'Dinero, planificación y patrimonio personal', icon: 'account_balance_wallet', action: () => this.open('finances')},
+      ],
+    },
+    {
+      area: 'miscellaneous',
+      title: 'Miscelánea',
+      buttons: [
+        {title: 'Abrir área', description: 'Ideas y utilidades que no encajan en otro lugar', icon: 'category', action: () => this.open('miscellaneous')},
       ],
     },
   ]
